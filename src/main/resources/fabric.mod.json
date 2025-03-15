@@ -1,0 +1,42 @@
+{
+	"schemaVersion": 1,
+	"id": "tiers",
+	"version": "${version}",
+	"name": "Tiers",
+	"description": "Display tiers from mctiers.com, mctiers.io and subtiers.net",
+	"authors": [
+		"Flavio6561"
+	],
+	"custom" : {
+		"fabric-renderer-api-v1:contains_renderer" : true,
+		"modmenu" : {
+			"links" : {
+				"GitHub": "https://github.com/Flavio6561/Tiers",
+				"Modrinth page": "https://modrinth.com/mod/tiers",
+				"Changelogs" : "https://github.com/Flavio6561/Tiers/wiki/Version-changelogs",
+				"GitHub Issues": "https://github.com/Flavio6561/Tiers/issues"
+			}
+		}
+	},
+	"icon": "assets/tiers/icon.png",
+	"entrypoints": {
+		"client": [
+			"com.tiers.TiersClient"
+		],
+		"modmenu": [
+			"com.tiers.ModMenuIntegration"
+		]
+	},
+	"mixins": [
+		{
+			"config": "tiers.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.16.10",
+		"minecraft": "~1.21",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
