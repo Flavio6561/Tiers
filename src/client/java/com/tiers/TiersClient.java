@@ -64,6 +64,9 @@ public class TiersClient implements ClientModInitializer {
     public static Text getFullName(String originalName, Text originalNameText) {
         PlayerProfile profile = addGetPlayer(originalName);
 
+        if (profile.originalName.getString().equalsIgnoreCase(originalNameText.getString()))
+            return profile.modifiedName;
+
         if (profile.status != Status.FOUND
                 || profile.mcTiersCOMProfile == null || profile.mcTiersCOMProfile.status == Status.SEARCHING || profile.mcTiersCOMProfile.status == Status.TIMEOUTED
                 || profile.mcTiersIOProfile == null || profile.mcTiersIOProfile.status == Status.SEARCHING || profile.mcTiersIOProfile.status == Status.TIMEOUTED
@@ -71,6 +74,10 @@ public class TiersClient implements ClientModInitializer {
             return originalNameText;
         }
 
+        return updatePlayerNametag(originalNameText, profile);
+    }
+
+    public static Text updatePlayerNametag(Text originalNameText, PlayerProfile profile) {
         MutableText rightText = Text.literal("");
         MutableText leftText = Text.literal("");
         MutableText iconRight = Text.literal("");
@@ -86,7 +93,8 @@ public class TiersClient implements ClientModInitializer {
                 return originalNameText;
 
             if (displayMode == ModesTierDisplay.HIGHEST) {
-                shown = profile.mcTiersCOMProfile.highest;
+                if (profile.mcTiersCOMProfile.highest.getTierPoints() > shown.getTierPoints())
+                    shown = profile.mcTiersCOMProfile.highest;
             } else if (displayMode == ModesTierDisplay.ADAPTIVE_HIGHEST && shown.tier.equalsIgnoreCase("N/A")) {
                 shown = profile.mcTiersCOMProfile.highest;
             }
@@ -97,7 +105,6 @@ public class TiersClient implements ClientModInitializer {
                     spaceRight = " ";
                 }
                 rightText = (MutableText) shown.displayedTier;
-                separatorRight = Text.literal(" | ");
             }
             if (mcTiersCOMPosition == DisplayStatus.LEFT && !shown.tier.equalsIgnoreCase("N/A")) {
                 if (showIcons) {
@@ -105,7 +112,6 @@ public class TiersClient implements ClientModInitializer {
                     spaceLeft = " ";
                 }
                 leftText = (MutableText) shown.displayedTier;
-                separatorLeft = Text.literal(" | ");
             }
         }
 
@@ -115,7 +121,8 @@ public class TiersClient implements ClientModInitializer {
                 return originalNameText;
 
             if (displayMode == ModesTierDisplay.HIGHEST) {
-                shown = profile.mcTiersIOProfile.highest;
+                if (profile.mcTiersIOProfile.highest.getTierPoints() > shown.getTierPoints())
+                    shown = profile.mcTiersIOProfile.highest;
             } else if (displayMode == ModesTierDisplay.ADAPTIVE_HIGHEST && shown.tier.equalsIgnoreCase("N/A")) {
                 shown = profile.mcTiersIOProfile.highest;
             }
@@ -126,7 +133,6 @@ public class TiersClient implements ClientModInitializer {
                     spaceRight = " ";
                 }
                 rightText = (MutableText) shown.displayedTier;
-                separatorRight = Text.literal(" | ");
             }
             if (mcTiersIOPosition == DisplayStatus.LEFT && !shown.tier.equalsIgnoreCase("N/A")) {
                 if (showIcons) {
@@ -134,7 +140,6 @@ public class TiersClient implements ClientModInitializer {
                     spaceLeft = " ";
                 }
                 leftText = (MutableText) shown.displayedTier;
-                separatorLeft = Text.literal(" | ");
             }
         }
 
@@ -144,7 +149,8 @@ public class TiersClient implements ClientModInitializer {
                 return originalNameText;
 
             if (displayMode == ModesTierDisplay.HIGHEST) {
-                shown = profile.subtiersNETProfile.highest;
+                if (profile.subtiersNETProfile.highest.getTierPoints() > shown.getTierPoints())
+                    shown = profile.subtiersNETProfile.highest;
             } else if (displayMode == ModesTierDisplay.ADAPTIVE_HIGHEST && shown.tier.equalsIgnoreCase("N/A")) {
                 shown = profile.subtiersNETProfile.highest;
             }
@@ -155,7 +161,6 @@ public class TiersClient implements ClientModInitializer {
                     spaceRight = " ";
                 }
                 rightText = (MutableText) shown.displayedTier;
-                separatorRight = Text.literal(" | ");
             }
             if (subtiersNETPosition == DisplayStatus.LEFT && !shown.tier.equalsIgnoreCase("N/A")) {
                 if (showIcons) {
@@ -163,9 +168,13 @@ public class TiersClient implements ClientModInitializer {
                     spaceLeft = " ";
                 }
                 leftText = (MutableText) shown.displayedTier;
-                separatorLeft = Text.literal(" | ");
             }
         }
+
+        if (!rightText.equals(Text.literal("")))
+            separatorRight = Text.literal(" | ");
+        if (!leftText.equals(Text.literal("")))
+            separatorLeft = Text.literal(" | ");
 
         if (isSeparatorAdaptive) {
             separatorRight.setStyle(rightText.getStyle());
@@ -175,7 +184,8 @@ public class TiersClient implements ClientModInitializer {
             separatorLeft.setStyle(Style.EMPTY.withColor(0xaaaaaa));
         }
 
-        return Text.literal("")
+        profile.originalName = originalNameText;
+        profile.modifiedName = Text.literal("")
                 .append(iconLeft)
                 .append(spaceLeft)
                 .append(leftText)
@@ -185,6 +195,21 @@ public class TiersClient implements ClientModInitializer {
                 .append(rightText)
                 .append(spaceRight)
                 .append(iconRight);
+
+        return profile.modifiedName;
+    }
+
+    public static void updateAllTags() {
+        for (PlayerProfile profile : playerProfiles) {
+            if (profile.status != Status.FOUND
+                    || profile.mcTiersCOMProfile == null || profile.mcTiersCOMProfile.status == Status.SEARCHING || profile.mcTiersCOMProfile.status == Status.TIMEOUTED
+                    || profile.mcTiersIOProfile == null || profile.mcTiersIOProfile.status == Status.SEARCHING || profile.mcTiersIOProfile.status == Status.TIMEOUTED
+                    || profile.subtiersNETProfile == null || profile.subtiersNETProfile.status == Status.SEARCHING || profile.subtiersNETProfile.status == Status.TIMEOUTED) {
+                continue;
+            }
+
+            updatePlayerNametag(profile.originalName, profile);
+        }
     }
 
     public static void sendMessageToPlayer(String chat_message, int color) {
@@ -232,46 +257,55 @@ public class TiersClient implements ClientModInitializer {
 
     public static void toggleSeparatorAdaptive() {
         isSeparatorAdaptive = !isSeparatorAdaptive;
+        updateAllTags();
         ConfigManager.saveConfig();
     }
 
     public static void toggleShowIcons() {
         showIcons = !showIcons;
+        updateAllTags();
         ConfigManager.saveConfig();
     }
 
     public static void cycleMCTiersCOMMode() {
         activeMCTiersCOMMode = cycleEnum(activeMCTiersCOMMode, Modes.getMCTiersCOMValues());
+        updateAllTags();
         ConfigManager.saveConfig();
     }
 
     public static void cycleMCTiersIOMode() {
         activeMCTiersIOMode = cycleEnum(activeMCTiersIOMode, Modes.getMCTiersIOValues());
+        updateAllTags();
         ConfigManager.saveConfig();
     }
 
     public static void cycleSubtiersNETMode() {
         activeSubtiersNETMode = cycleEnum(activeSubtiersNETMode, Modes.getSubtiersNETValues());
+        updateAllTags();
         ConfigManager.saveConfig();
     }
 
     public static void cycleMCTiersCOMPosition() {
         mcTiersCOMPosition = cycleEnum(mcTiersCOMPosition, DisplayStatus.values());
+        updateAllTags();
         ConfigManager.saveConfig();
     }
 
     public static void cycleMCTiersIOPosition() {
         mcTiersIOPosition = cycleEnum(mcTiersIOPosition, DisplayStatus.values());
+        updateAllTags();
         ConfigManager.saveConfig();
     }
 
     public static void cycleSubtiersNETPosition() {
         subtiersNETPosition = cycleEnum(subtiersNETPosition, DisplayStatus.values());
+        updateAllTags();
         ConfigManager.saveConfig();
     }
 
     public static void cycleDisplayMode() {
         displayMode = cycleEnum(displayMode, ModesTierDisplay.values());
+        updateAllTags();
         ConfigManager.saveConfig();
     }
 

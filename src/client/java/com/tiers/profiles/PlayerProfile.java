@@ -6,6 +6,7 @@ import com.tiers.profiles.types.MCTiersCOMProfile;
 import com.tiers.profiles.types.MCTiersIOProfile;
 import com.tiers.profiles.types.SubtiersNETProfile;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.text.Text;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -18,6 +19,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class PlayerProfile {
+    public Text originalName;
+    public Text modifiedName;
     public String name;
     public String uuid;
     public Status status = Status.SEARCHING;
@@ -30,6 +33,8 @@ public class PlayerProfile {
 
     public PlayerProfile(String name) {
         this.name = name;
+        originalName = Text.of(name);
+        modifiedName = Text.of(name);
         buildRequest(name);
     }
 
