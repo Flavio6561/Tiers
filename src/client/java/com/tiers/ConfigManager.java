@@ -12,7 +12,7 @@ import java.nio.file.Path;
 
 public class ConfigManager {
     private static Config config;
-    private static final Path configPath = FabricLoader.getInstance().getConfigDir().resolve("tiers.json");
+    private static final Path configPath = FabricLoader.getInstance().getConfigDir().resolve("Tiers.json");
 
     private static class Config {
         boolean toggleMod = true;

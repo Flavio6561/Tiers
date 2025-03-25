@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.command.CommandSource;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -21,7 +22,7 @@ public class CommandRegister {
             return builder.buildFuture();
 
         for (PlayerListEntry entry : client.getNetworkHandler().getPlayerList()) {
-            if (entry.getProfile().getName().length() > 2)
+            if (CommandSource.shouldSuggest(builder.getRemaining(), entry.getProfile().getName()) && entry.getProfile().getName().length() > 2)
                 builder.suggest(entry.getProfile().getName());
         }
 

@@ -19,34 +19,35 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class PlayerProfile {
-    public Text originalName;
-    public Text modifiedName;
+    public Status status = Status.SEARCHING;
+
     public String name;
     public String uuid;
-    public Status status = Status.SEARCHING;
-    public boolean imageSaved = false;
+
     public MCTiersCOMProfile mcTiersCOMProfile;
     public MCTiersIOProfile mcTiersIOProfile;
     public SubtiersNETProfile subtiersNETProfile;
+
+    public Text originalNameText;
+    public boolean imageSaved = false;
     private int numberOfRequests = 0;
     public int numberOfImageRequests = 0;
 
     public PlayerProfile(String name) {
         this.name = name;
-        originalName = Text.of(name);
-        modifiedName = Text.of(name);
+        originalNameText = Text.of(name);
         buildRequest(name);
     }
 
     private void buildRequest(String name) {
-        if (numberOfRequests == 4) {
+        if (numberOfRequests == 4 || status != Status.SEARCHING) {
             status = Status.TIMEOUTED;
             return;
         }
         numberOfRequests++;
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.mojang.com/users/profiles/minecraft/" + name))
-                .header("User-Agent", "TiersMod")
+                .header("User-Agent", "Tiers")
                 .GET()
                 .build();
 
@@ -55,8 +56,7 @@ public class PlayerProfile {
                 .thenAccept(response -> {
                     if (response.statusCode() != 200)
                         status = Status.NOT_EXISTING;
-                    else
-                        parseUUID(response.body());
+                    else parseUUID(response.body());
                 })
                 .exceptionally(exception -> {
                     buildRequest(name);
@@ -67,14 +67,13 @@ public class PlayerProfile {
     private void parseUUID(String json) {
         JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
 
-        if (jsonObject.has("name"))
+        if (jsonObject.has("name") && jsonObject.has("id")) {
             name = jsonObject.get("name").getAsString();
-        else {
+            uuid = jsonObject.get("id").getAsString();
+        } else {
             status = Status.NOT_EXISTING;
             return;
         }
-        uuid = jsonObject.get("id").getAsString();
-        status = Status.FOUND;
 
         savePlayerImage();
         fetchProfiles();
@@ -95,6 +94,14 @@ public class PlayerProfile {
         }
     }
 
+    private void fetchProfiles() {
+        mcTiersCOMProfile = new MCTiersCOMProfile(uuid);
+        mcTiersIOProfile = new MCTiersIOProfile(uuid);
+        subtiersNETProfile = new SubtiersNETProfile(uuid);
+
+        status = Status.READY;
+    }
+
     public void resetDrawnStatus() {
         if (mcTiersCOMProfile == null || mcTiersIOProfile == null || subtiersNETProfile == null)
             return;
@@ -107,11 +114,5 @@ public class PlayerProfile {
             mode.drawn = false;
         for (GameMode mode : subtiersNETProfile.gameModes)
             mode.drawn = false;
-    }
-
-    private void fetchProfiles() {
-        mcTiersCOMProfile = new MCTiersCOMProfile(uuid);
-        mcTiersIOProfile = new MCTiersIOProfile(uuid);
-        subtiersNETProfile = new SubtiersNETProfile(uuid);
     }
 }

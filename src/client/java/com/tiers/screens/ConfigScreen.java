@@ -196,7 +196,7 @@ public class ConfigScreen extends Screen {
         activeSubtiersNETMode = ButtonWidget.builder(Icons.cycle, (buttonWidget) -> TiersClient.cycleSubtiersNETMode()).dimensions(thirdListX - 28, listY + 3 * separator - 4, 16, 16).build();
         activeSubtiersNETMode.setTooltip(Tooltip.of(Text.of("Cycle active Subtiers gamemode")));
 
-        clearPlayerCache = ButtonWidget.builder(Text.of("\uD83D\uDDD1"), (buttonWidget) -> TiersClient.clearPlayerCache()).dimensions(width - 20, height - 20, 16, 16).build();
+        clearPlayerCache = ButtonWidget.builder(Text.of("\uD83D\uDDD1"), (buttonWidget) -> TiersClient.clearCache()).dimensions(width - 20, height - 20, 16, 16).build();
         clearPlayerCache.setTooltip(Tooltip.of(Text.of("Clear player cache")));
 
         this.addDrawableChild(toggleModWidget);

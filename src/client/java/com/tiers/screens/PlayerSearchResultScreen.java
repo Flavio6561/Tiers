@@ -23,19 +23,13 @@ import java.io.IOException;
 public class PlayerSearchResultScreen extends Screen {
     private final PlayerProfile playerProfile;
     private Identifier playerAvatarTexture;
-    private boolean imageReady = false;
 
     private final Identifier MCTIERS_COM_IMAGE = Identifier.of("minecraft", "textures/mctiers_com_logo.png");
     private final Identifier MCTIERS_IO_IMAGE = Identifier.of("minecraft", "textures/mctiers_io_logo.png");
     private final Identifier SUBTIERS_NET_IMAGE = Identifier.of("minecraft", "textures/subtiers_net_logo.png");
 
-    int centerX;
-    int listY;
-    int separator;
-    int firstListX;
-    int thirdListX;
-    int distance;
-    int avatarY;
+    private int separator;
+    private boolean imageReady = false;
 
     public PlayerSearchResultScreen(PlayerProfile playerProfile) {
         super(Text.literal(playerProfile.name));
@@ -54,13 +48,12 @@ public class PlayerSearchResultScreen extends Screen {
             return;
         }
 
-        centerX = width / 2;
-        listY = (int) (height / 2.8);
+        int centerX = width / 2;
+        int listY = (int) (height / 2.8);
         separator = height / 23;
-        firstListX = (int) (centerX - width / 4.3);
-        thirdListX = (int) (centerX + width / 4.3);
-        distance = (int) (height / 7.5);
-        avatarY = height / 18;
+        int firstListX = (int) (centerX - width / 4.3);
+        int thirdListX = (int) (centerX + width / 4.3);
+        int avatarY = height / 18;
 
         super.render(context, mouseX, mouseY, delta);
 
@@ -85,18 +78,17 @@ public class PlayerSearchResultScreen extends Screen {
 
         if (image == MCTIERS_COM_IMAGE)
             context.drawTexture(RenderLayer::getGuiTextured, image, x - 56, y + 5, 0, 0, 112, 21, 112, 21);
-        else
-            context.drawTexture(RenderLayer::getGuiTextured, image, x - 13, y, 0, 0, 26, 26, 26, 26);
+        else context.drawTexture(RenderLayer::getGuiTextured, image, x - 13, y, 0, 0, 26, 26, 26, 26);
 
         if (profile.status == Status.SEARCHING) {
             context.drawCenteredTextWithShadow(this.textRenderer, "Searching...", x, (int) (y + 2.8 * separator), 0x00dd00);
             return;
         }
-        else if (profile.status == Status.NOT_EXISTING) {
+        if (profile.status == Status.NOT_EXISTING) {
             context.drawCenteredTextWithShadow(this.textRenderer, "Unranked", x, (int) (y + 2.8 * separator), 0xdd0000);
             return;
         }
-        else if (profile.status == Status.TIMEOUTED) {
+        if (profile.status == Status.TIMEOUTED) {
             context.drawCenteredTextWithShadow(this.textRenderer, "Search timeouted. Clear cache and retry", x, (int) (y + 2.8 * separator), 0xdd0000);
             return;
         }
@@ -123,7 +115,7 @@ public class PlayerSearchResultScreen extends Screen {
             this.addDrawableChild(overallIcon);
 
             TextWidget region = new TextWidget(profile.displayedRegion, this.textRenderer);
-            region.setPosition(x + 45, (int) (y + 2.4 * separator));
+            region.setPosition(x + 45 - (profile.displayedRegion.getString().length() - 2) * 3, (int) (y + 2.4 * separator));
             region.setTooltip(Tooltip.of(profile.regionTooltip));
             this.addDrawableChild(region);
 
@@ -141,45 +133,23 @@ public class PlayerSearchResultScreen extends Screen {
     private void drawTierList(BaseProfile profile, int x, int y) {
         switch (profile) {
             case MCTiersCOMProfile mcTiersCOMProfile -> {
-                if (drawGameModeTiers(mcTiersCOMProfile.vanilla, x, y)) y += 15;
-                if (drawGameModeTiers(mcTiersCOMProfile.uhc, x, y)) y += 15;
-                if (drawGameModeTiers(mcTiersCOMProfile.pot, x, y)) y += 15;
-                if (drawGameModeTiers(mcTiersCOMProfile.netherite_op, x, y)) y += 15;
-                if (drawGameModeTiers(mcTiersCOMProfile.smp, x, y)) y += 15;
-                if (drawGameModeTiers(mcTiersCOMProfile.sword, x, y)) y += 15;
-                if (drawGameModeTiers(mcTiersCOMProfile.axe, x, y)) y += 15;
-                drawGameModeTiers(mcTiersCOMProfile.mace, x, y);
+                for (GameMode gameMode : mcTiersCOMProfile.gameModes)
+                    if (drawGameModeTiers(gameMode, x, y)) y += 15;
             }
             case MCTiersIOProfile mcTiersIOProfile -> {
-                if (drawGameModeTiers(mcTiersIOProfile.vanilla, x, y)) y += 15;
-                if (drawGameModeTiers(mcTiersIOProfile.uhc, x, y)) y += 15;
-                if (drawGameModeTiers(mcTiersIOProfile.pot, x, y)) y += 15;
-                if (drawGameModeTiers(mcTiersIOProfile.netherite_pot, x, y)) y += 15;
-                if (drawGameModeTiers(mcTiersIOProfile.smp, x, y)) y += 15;
-                if (drawGameModeTiers(mcTiersIOProfile.sword, x, y)) y += 15;
-                if (drawGameModeTiers(mcTiersIOProfile.axe, x, y)) y += 15;
-                drawGameModeTiers(mcTiersIOProfile.elytra, x, y);
+                for (GameMode gameMode : mcTiersIOProfile.gameModes)
+                    if (drawGameModeTiers(gameMode, x, y)) y += 15;
             }
             case SubtiersNETProfile subtiersNETProfile -> {
-                if (drawGameModeTiers(subtiersNETProfile.minecart, x, y)) y += 15;
-                if (drawGameModeTiers(subtiersNETProfile.diamond_crystal, x, y)) y += 15;
-                if (drawGameModeTiers(subtiersNETProfile.iron_pot, x, y)) y += 15;
-                if (drawGameModeTiers(subtiersNETProfile.elytra, x, y)) y += 15;
-                if (drawGameModeTiers(subtiersNETProfile.speed, x, y)) y += 15;
-                if (drawGameModeTiers(subtiersNETProfile.creeper, x, y)) y += 15;
-                if (drawGameModeTiers(subtiersNETProfile.manhunt, x, y)) y += 15;
-                if (drawGameModeTiers(subtiersNETProfile.diamond_smp, x, y)) y += 15;
-                if (drawGameModeTiers(subtiersNETProfile.bow, x, y)) y += 15;
-                if (drawGameModeTiers(subtiersNETProfile.bed, x, y)) y += 15;
-                if (drawGameModeTiers(subtiersNETProfile.og_vanilla, x, y)) y += 15;
-                drawGameModeTiers(subtiersNETProfile.trident, x, y);
+                for (GameMode gameMode : subtiersNETProfile.gameModes)
+                    if (drawGameModeTiers(gameMode, x, y)) y += 15;
             }
             default -> {}
         }
     }
 
     private boolean drawGameModeTiers(GameMode mode, int x, int y) {
-        if (mode.drawn || mode.status == Status.SEARCHING || mode.displayedTier == Text.of("N/A"))
+        if (mode.drawn || mode.status != Status.READY)
             return false;
 
         TextWidget icon = new TextWidget(mode.name.getIcon(), this.textRenderer);
@@ -195,7 +165,7 @@ public class PlayerSearchResultScreen extends Screen {
         tier.setTooltip(Tooltip.of(mode.tierTooltip));
         this.addDrawableChild(tier);
 
-        if (mode.displayedPeakTier != Text.of("N/A") && mode.peakTierTooltip.getStyle().getColor() != null) {
+        if (mode.hasPeak && mode.peakTierTooltip.getStyle().getColor() != null) {
             TextWidget peakTier = new TextWidget(mode.displayedPeakTier, this.textRenderer);
             peakTier.setPosition(x + 142, y);
             peakTier.setTooltip(Tooltip.of(mode.peakTierTooltip));

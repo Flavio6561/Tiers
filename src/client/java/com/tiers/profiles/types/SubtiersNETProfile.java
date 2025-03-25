@@ -5,7 +5,7 @@ import com.tiers.profiles.GameMode;
 
 public class SubtiersNETProfile extends BaseProfile {
     public GameMode minecart = new GameMode(TiersClient.Modes.SUBTIERSNET_MINECART, "minecart");
-    public GameMode diamond_crystal = new GameMode(TiersClient.Modes.SUBTIERSNET_DIAMOND_CRYSTAL, "dia_crystal"); // to confirm
+    public GameMode diamond_crystal = new GameMode(TiersClient.Modes.SUBTIERSNET_DIAMOND_CRYSTAL, "dia_crystal");
     public GameMode iron_pot = new GameMode(TiersClient.Modes.SUBTIERSNET_IRON_POT, "iron_pot");
     public GameMode elytra = new GameMode(TiersClient.Modes.SUBTIERSNET_ELYTRA, "elytra");
     public GameMode speed = new GameMode(TiersClient.Modes.SUBTIERSNET_SPEED, "speed");

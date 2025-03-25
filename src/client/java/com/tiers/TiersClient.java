@@ -4,6 +4,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.tiers.profiles.GameMode;
 import com.tiers.profiles.PlayerProfile;
 import com.tiers.profiles.Status;
+import com.tiers.profiles.types.BaseProfile;
 import com.tiers.screens.PlayerSearchResultScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -22,13 +23,14 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public class TiersClient implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(TiersClient.class);
-    protected static final List<PlayerProfile> playerProfiles = new ArrayList<>();
+    protected static final ArrayList<PlayerProfile> playerProfiles = new ArrayList<>();
+    protected static final HashMap<String, Text> playerTexts = new HashMap<>();
 
     public static boolean toggleMod = true;
     public static boolean showIcons = true;
@@ -47,169 +49,93 @@ public class TiersClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ConfigManager.loadConfig();
-        deleteCacheDir();
+        clearCache();
         CommandRegister.registerCommands();
         FabricLoader.getInstance().getModContainer("tiers").ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "custom-icons"), tiers, ResourcePackActivationType.ALWAYS_ENABLED));
         LOGGER.info("Tiers initialized");
     }
 
-    private static void deleteCacheDir() {
-        try {
-            FileUtils.deleteDirectory(new File(FabricLoader.getInstance().getConfigDir() + "/tiers-cache"));
-        } catch (IOException e) {
-            LOGGER.warn("Error deleting cache folder: {}", e.getMessage());
-        }
-    }
-
     public static Text getFullName(String originalName, Text originalNameText) {
         PlayerProfile profile = addGetPlayer(originalName);
-
-        if (profile.originalName.getString().equalsIgnoreCase(originalNameText.getString()))
-            return profile.modifiedName;
-
-        if (profile.status != Status.FOUND
-                || profile.mcTiersCOMProfile == null || profile.mcTiersCOMProfile.status == Status.SEARCHING || profile.mcTiersCOMProfile.status == Status.TIMEOUTED
-                || profile.mcTiersIOProfile == null || profile.mcTiersIOProfile.status == Status.SEARCHING || profile.mcTiersIOProfile.status == Status.TIMEOUTED
-                || profile.subtiersNETProfile == null || profile.subtiersNETProfile.status == Status.SEARCHING || profile.subtiersNETProfile.status == Status.TIMEOUTED) {
-            return originalNameText;
+        if (profile.status == Status.READY) {
+            if (profile.originalNameText == null || profile.originalNameText != originalNameText)
+                updatePlayerNametag(originalNameText, profile);
         }
 
-        return updatePlayerNametag(originalNameText, profile);
-    }
+        if (playerTexts.containsKey(originalName)) return playerTexts.get(originalName);
 
-    public static Text updatePlayerNametag(Text originalNameText, PlayerProfile profile) {
-        MutableText rightText = Text.literal("");
-        MutableText leftText = Text.literal("");
-        MutableText iconRight = Text.literal("");
-        MutableText iconLeft = Text.literal("");
-        MutableText separatorRight = Text.literal("");
-        MutableText separatorLeft = Text.literal("");
-        String spaceRight = "";
-        String spaceLeft = "";
-
-        if (profile.mcTiersCOMProfile.status == Status.FOUND) {
-            GameMode shown = profile.mcTiersCOMProfile.getGameMode(activeMCTiersCOMMode.toString());
-            if (shown == null)
-                return originalNameText;
-
-            if (displayMode == ModesTierDisplay.HIGHEST) {
-                if (profile.mcTiersCOMProfile.highest.getTierPoints() > shown.getTierPoints())
-                    shown = profile.mcTiersCOMProfile.highest;
-            } else if (displayMode == ModesTierDisplay.ADAPTIVE_HIGHEST && shown.tier.equalsIgnoreCase("N/A")) {
-                shown = profile.mcTiersCOMProfile.highest;
-            }
-
-            if (mcTiersCOMPosition == DisplayStatus.RIGHT && !shown.tier.equalsIgnoreCase("N/A")) {
-                if (showIcons) {
-                    iconRight = (MutableText) shown.name.getIconTag();
-                    spaceRight = " ";
-                }
-                rightText = (MutableText) shown.displayedTier;
-            }
-            if (mcTiersCOMPosition == DisplayStatus.LEFT && !shown.tier.equalsIgnoreCase("N/A")) {
-                if (showIcons) {
-                    iconLeft = (MutableText) shown.name.getIconTag();
-                    spaceLeft = " ";
-                }
-                leftText = (MutableText) shown.displayedTier;
-            }
-        }
-
-        if (profile.mcTiersIOProfile.status == Status.FOUND) {
-            GameMode shown = profile.mcTiersIOProfile.getGameMode(activeMCTiersIOMode.toString());
-            if (shown == null)
-                return originalNameText;
-
-            if (displayMode == ModesTierDisplay.HIGHEST) {
-                if (profile.mcTiersIOProfile.highest.getTierPoints() > shown.getTierPoints())
-                    shown = profile.mcTiersIOProfile.highest;
-            } else if (displayMode == ModesTierDisplay.ADAPTIVE_HIGHEST && shown.tier.equalsIgnoreCase("N/A")) {
-                shown = profile.mcTiersIOProfile.highest;
-            }
-
-            if (mcTiersIOPosition == DisplayStatus.RIGHT && !shown.tier.equalsIgnoreCase("N/A")) {
-                if (showIcons) {
-                    iconRight = (MutableText) shown.name.getIconTag();
-                    spaceRight = " ";
-                }
-                rightText = (MutableText) shown.displayedTier;
-            }
-            if (mcTiersIOPosition == DisplayStatus.LEFT && !shown.tier.equalsIgnoreCase("N/A")) {
-                if (showIcons) {
-                    iconLeft = (MutableText) shown.name.getIconTag();
-                    spaceLeft = " ";
-                }
-                leftText = (MutableText) shown.displayedTier;
-            }
-        }
-
-        if (profile.subtiersNETProfile.status == Status.FOUND) {
-            GameMode shown = profile.subtiersNETProfile.getGameMode(activeSubtiersNETMode.toString());
-            if (shown == null)
-                return originalNameText;
-
-            if (displayMode == ModesTierDisplay.HIGHEST) {
-                if (profile.subtiersNETProfile.highest.getTierPoints() > shown.getTierPoints())
-                    shown = profile.subtiersNETProfile.highest;
-            } else if (displayMode == ModesTierDisplay.ADAPTIVE_HIGHEST && shown.tier.equalsIgnoreCase("N/A")) {
-                shown = profile.subtiersNETProfile.highest;
-            }
-
-            if (subtiersNETPosition == DisplayStatus.RIGHT && !shown.tier.equalsIgnoreCase("N/A")) {
-                if (showIcons) {
-                    iconRight = (MutableText) shown.name.getIconTag();
-                    spaceRight = " ";
-                }
-                rightText = (MutableText) shown.displayedTier;
-            }
-            if (subtiersNETPosition == DisplayStatus.LEFT && !shown.tier.equalsIgnoreCase("N/A")) {
-                if (showIcons) {
-                    iconLeft = (MutableText) shown.name.getIconTag();
-                    spaceLeft = " ";
-                }
-                leftText = (MutableText) shown.displayedTier;
-            }
-        }
-
-        if (!rightText.equals(Text.literal("")))
-            separatorRight = Text.literal(" | ");
-        if (!leftText.equals(Text.literal("")))
-            separatorLeft = Text.literal(" | ");
-
-        if (isSeparatorAdaptive) {
-            separatorRight.setStyle(rightText.getStyle());
-            separatorLeft.setStyle(leftText.getStyle());
-        } else {
-            separatorRight.setStyle(Style.EMPTY.withColor(0xaaaaaa));
-            separatorLeft.setStyle(Style.EMPTY.withColor(0xaaaaaa));
-        }
-
-        profile.originalName = originalNameText;
-        profile.modifiedName = Text.literal("")
-                .append(iconLeft)
-                .append(spaceLeft)
-                .append(leftText)
-                .append(separatorLeft)
-                .append(originalNameText)
-                .append(separatorRight)
-                .append(rightText)
-                .append(spaceRight)
-                .append(iconRight);
-
-        return profile.modifiedName;
+        return originalNameText;
     }
 
     public static void updateAllTags() {
         for (PlayerProfile profile : playerProfiles) {
-            if (profile.status != Status.FOUND
-                    || profile.mcTiersCOMProfile == null || profile.mcTiersCOMProfile.status == Status.SEARCHING || profile.mcTiersCOMProfile.status == Status.TIMEOUTED
-                    || profile.mcTiersIOProfile == null || profile.mcTiersIOProfile.status == Status.SEARCHING || profile.mcTiersIOProfile.status == Status.TIMEOUTED
-                    || profile.subtiersNETProfile == null || profile.subtiersNETProfile.status == Status.SEARCHING || profile.subtiersNETProfile.status == Status.TIMEOUTED) {
-                continue;
-            }
-
-            updatePlayerNametag(profile.originalName, profile);
+            if (profile.status == Status.READY && profile.originalNameText != null)
+                updatePlayerNametag(profile.originalNameText, profile);
         }
+    }
+
+    public static void updatePlayerNametag(Text originalNameText, PlayerProfile profile) {
+        Text rightText = Text.literal("");
+        Text leftText = Text.literal("");
+
+        if (mcTiersCOMPosition == DisplayStatus.RIGHT) {
+            rightText = updateProfileNameTagRight(profile.mcTiersCOMProfile, activeMCTiersCOMMode);
+        } else if (mcTiersCOMPosition == DisplayStatus.LEFT) {
+            leftText = updateProfileNameTagLeft(profile.mcTiersCOMProfile, activeMCTiersCOMMode);
+        }
+        if (mcTiersIOPosition == DisplayStatus.RIGHT) {
+            rightText = updateProfileNameTagRight(profile.mcTiersIOProfile, activeMCTiersIOMode);
+        } else if (mcTiersIOPosition == DisplayStatus.LEFT) {
+            leftText = updateProfileNameTagLeft(profile.mcTiersIOProfile, activeMCTiersIOMode);
+        }
+        if (subtiersNETPosition == DisplayStatus.RIGHT) {
+            rightText = updateProfileNameTagRight(profile.subtiersNETProfile, activeSubtiersNETMode);
+        } else if (subtiersNETPosition == DisplayStatus.LEFT) {
+            leftText = updateProfileNameTagLeft(profile.subtiersNETProfile, activeSubtiersNETMode);
+        }
+
+        playerTexts.put(profile.name, Text.literal("")
+                .append(leftText)
+                .append(originalNameText)
+                .append(rightText));
+
+        profile.originalNameText = originalNameText;
+    }
+
+    private static Text updateProfileNameTagRight(BaseProfile profile, Modes activeMode) {
+        MutableText returnValue = Text.literal("");
+        if (profile.status == Status.READY) {
+            GameMode shown = profile.getGameMode(activeMode);
+            if ((shown == null || shown.status == Status.SEARCHING) || (shown.status == Status.NOT_EXISTING && displayMode == ModesTierDisplay.SELECTED)) return returnValue;
+            if (displayMode == ModesTierDisplay.ADAPTIVE_HIGHEST && shown.status == Status.NOT_EXISTING && profile.highest != null)
+                shown = profile.highest;
+            if (displayMode == ModesTierDisplay.HIGHEST && profile.highest != null && profile.highest.getTierPoints(false) > shown.getTierPoints(false))
+                shown = profile.highest;
+            if (shown == null || shown.status != Status.READY) return returnValue;
+            MutableText separator = Text.literal(" | ").setStyle(isSeparatorAdaptive ? shown.displayedTier.getStyle() : Style.EMPTY.withColor(0xaaaaaa));
+            returnValue.append(Text.literal("").append(separator).append(shown.displayedTier));
+            if (showIcons)
+                returnValue.append(Text.literal(" ").append(shown.name.getIconTag()));
+        }
+        return returnValue;
+    }
+
+    private static Text updateProfileNameTagLeft(BaseProfile profile, Modes activeMode) {
+        MutableText returnValue = Text.literal("");
+        if (profile.status == Status.READY) {
+            GameMode shown = profile.getGameMode(activeMode);
+            if ((shown == null || shown.status == Status.SEARCHING) || (shown.status == Status.NOT_EXISTING && displayMode == ModesTierDisplay.SELECTED)) return returnValue;
+            if (displayMode == ModesTierDisplay.ADAPTIVE_HIGHEST && shown.status == Status.NOT_EXISTING && profile.highest != null)
+                shown = profile.highest;
+            if (displayMode == ModesTierDisplay.HIGHEST && profile.highest != null && profile.highest.getTierPoints(false) > shown.getTierPoints(false))
+                shown = profile.highest;
+            if (shown == null || shown.status != Status.READY) return returnValue;
+            MutableText separator = Text.literal(" | ").setStyle(isSeparatorAdaptive ? shown.displayedTier.getStyle() : Style.EMPTY.withColor(0xaaaaaa));
+            if (showIcons)
+                returnValue = Text.literal("").append(shown.name.getIconTag()).append(" ");
+            returnValue.append(Text.literal("").append(shown.displayedTier).append(separator));
+        }
+        return returnValue;
     }
 
     public static void sendMessageToPlayer(String chat_message, int color) {
@@ -250,9 +176,14 @@ public class TiersClient implements ClientModInitializer {
         return 1;
     }
 
-    public static void clearPlayerCache() {
+    public static void clearCache() {
         playerProfiles.clear();
-        deleteCacheDir();
+        playerTexts.clear();
+        try {
+            FileUtils.deleteDirectory(new File(FabricLoader.getInstance().getConfigDir() + "/tiers-cache"));
+        } catch (IOException e) {
+            LOGGER.warn("Error deleting cache folder: {}", e.getMessage());
+        }
     }
 
     public static void toggleSeparatorAdaptive() {

@@ -10,102 +10,107 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 public class GameMode {
+    public Status status = Status.SEARCHING;
+
+    public String tier;
+    public String pos;
+    public String peakTier;
+    public String peakPos;
+    public String attained;
+    public String retired;
+
+    public Text displayedTier;
+    public String displayedTierUnformatted;
+    public Text displayedPeakTier;
+    public String displayedPeakTierUnformatted;
+    public Text tierTooltip;
+    public Text peakTierTooltip;
+
     public TiersClient.Modes name;
     public String parsingName;
-    public Text displayedTier = Text.of("N/A");
-    public String displayedTierUnformatted = "N/A";
-    public Text displayedPeakTier = Text.of("N/A");
-    public Text tierTooltip = Text.of("N/A");
-    public Text peakTierTooltip = Text.of("N/A");
-    public String tier = "N/A";
-    public String pos = "N/A";
-    public String peakTier = "N/A";
-    public String peakPos = "N/A";
-    public String attained = "N/A";
-    public String retired = "N/A";
-    public boolean drawn;
-    public Status status = Status.SEARCHING;
+    public boolean hasPeak = false;
+    public boolean drawn = false;
 
     public GameMode(TiersClient.Modes name, String parsingName) {
         this.name = name;
         this.parsingName = parsingName;
-        drawn = false;
     }
 
     public void parseTiers(JsonObject jsonObject) {
-        tier = jsonObject.get("tier").getAsString();
-        pos = jsonObject.get("pos").getAsString();
+        if (jsonObject.has("tier") && jsonObject.has("pos") && jsonObject.has("attained") && jsonObject.has("retired")) {
+            tier = jsonObject.get("tier").getAsString();
+            pos = jsonObject.get("pos").getAsString();
 
-        if (jsonObject.get("peak_tier").isJsonNull())
-            peakTier = tier;
-        else
-            peakTier = jsonObject.get("peak_tier").getAsString();
+            if (jsonObject.get("peak_tier").isJsonNull())
+                peakTier = tier;
+            else peakTier = jsonObject.get("peak_tier").getAsString();
 
-        if (jsonObject.get("peak_pos").isJsonNull())
-            peakPos = pos;
-        else
-            peakPos = jsonObject.get("peak_pos").getAsString();
+            if (jsonObject.get("peak_pos").isJsonNull())
+                peakPos = pos;
+            else peakPos = jsonObject.get("peak_pos").getAsString();
 
-        attained = jsonObject.get("attained").getAsString();
-        retired = jsonObject.get("retired").getAsString();
-
-        String displayedTierString = "";
-        if (retired.equalsIgnoreCase("true"))
-            displayedTierString = "R";
-        displayedTierString += pos.equalsIgnoreCase("0") ? "HT" : "LT";
-        displayedTierString += tier;
-
-        displayedTierUnformatted = displayedTierString;
-        displayedTier = Text.literal(displayedTierString).setStyle(Style.EMPTY.withColor(getTierColor(displayedTierString)));
-        tierTooltip = getTierTooltip(displayedTierString);
-
-        if (!tier.equalsIgnoreCase(peakTier) || !(pos.equalsIgnoreCase(peakPos))) {
-            String displayedPeakTierString = "";
-            if (retired.equalsIgnoreCase("true"))
-                displayedPeakTierString = "R";
-            displayedPeakTierString += peakPos.equalsIgnoreCase("0") ? "HT" : "LT";
-            displayedPeakTierString += peakTier;
-            displayedPeakTier = Text.literal(displayedPeakTierString).setStyle(Style.EMPTY.withColor(getTierColor(displayedPeakTierString)));
-            peakTierTooltip = getPeakTierTooltip(displayedPeakTierString);
+            attained = jsonObject.get("attained").getAsString();
+            retired = jsonObject.get("retired").getAsString();
+        } else {
+            status = Status.NOT_EXISTING;
+            return;
         }
 
-        status = Status.FOUND;
+        displayedTierUnformatted = "";
+        if (retired.equalsIgnoreCase("true"))
+            displayedTierUnformatted = "R";
+        displayedTierUnformatted += pos.equalsIgnoreCase("0") ? "HT" : "LT";
+        displayedTierUnformatted += tier;
+
+        displayedTier = Text.literal(displayedTierUnformatted).setStyle(Style.EMPTY.withColor(getTierColor(displayedTierUnformatted)));
+        tierTooltip = getTierTooltip();
+
+        if (!tier.equalsIgnoreCase(peakTier) || !(pos.equalsIgnoreCase(peakPos))) {
+            displayedPeakTierUnformatted = peakPos.equalsIgnoreCase("0") ? "HT" : "LT";
+            displayedPeakTierUnformatted += peakTier;
+
+            displayedPeakTier = Text.literal(displayedPeakTierUnformatted).setStyle(Style.EMPTY.withColor(getTierColor(displayedPeakTierUnformatted)));
+            peakTierTooltip = getPeakTierTooltip();
+
+            hasPeak = true;
+        }
+
+        status = Status.READY;
     }
 
-    private Text getTierTooltip(String tierString) {
+    private Text getTierTooltip() {
         String tierTooltipString = "";
-        if (tierString.contains("R"))
+        if (displayedTierUnformatted.contains("R"))
             tierTooltipString += "Retired ";
 
-        if (tierString.contains("H"))
+        if (displayedTierUnformatted.contains("H"))
             tierTooltipString += "High ";
-        else
-            tierTooltipString += "Low ";
+        else tierTooltipString += "Low ";
 
-        tierTooltipString += "Tier " + tier + "\n\nPoints: " + getTierPoints() + "\nAttained: " + String.valueOf(LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(attained)), ZoneId.systemDefault())).replace("T", " ");
+        tierTooltipString += "Tier " + tier + "\n\nPoints: " + getTierPoints(false) + "\nAttained: " + String.valueOf(LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(attained)), ZoneId.systemDefault())).replace("T", " ");
 
-        return Text.literal(tierTooltipString).setStyle(Style.EMPTY.withColor(getTierColor(tierString)));
+        return Text.literal(tierTooltipString).setStyle(Style.EMPTY.withColor(getTierColor(displayedTierUnformatted)));
     }
 
-    private Text getPeakTierTooltip(String tierString) {
+    private Text getPeakTierTooltip() {
         String peakTierTooltipString = "Peak: ";
-        if (tierString.contains("R"))
+        if (displayedPeakTierUnformatted.contains("R"))
             peakTierTooltipString += "Retired ";
 
-        if (tierString.contains("H"))
+        if (displayedPeakTierUnformatted.contains("H"))
             peakTierTooltipString += "High ";
-        else
-            peakTierTooltipString += "Low ";
+        else peakTierTooltipString += "Low ";
 
-        peakTierTooltipString += "Tier " + tier + "\n\nPoints: " + getTierPoints();
+        peakTierTooltipString += "Tier " + peakTier + "\n\nPoints: " + getTierPoints(true);
 
-        return Text.literal(peakTierTooltipString).setStyle(Style.EMPTY.withColor(getTierColor(tierString)));
+        return Text.literal(peakTierTooltipString).setStyle(Style.EMPTY.withColor(getTierColor(displayedPeakTierUnformatted)));
     }
 
-    public int getTierPoints() {
-        if (displayedTierUnformatted.equalsIgnoreCase("N/A"))
-            return 0;
+    public int getTierPoints(boolean peak) {
+        if (status == Status.NOT_EXISTING) return 0;
         String tier = displayedTierUnformatted;
+        if (peak)
+            tier = displayedPeakTierUnformatted;
         tier = tier.replace("R", "");
         if (tier.equalsIgnoreCase("HT1")) return 60;
         else if (tier.equalsIgnoreCase("LT1"))
