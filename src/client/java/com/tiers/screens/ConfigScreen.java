@@ -6,7 +6,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -75,9 +74,9 @@ public class ConfigScreen extends Screen {
 
     private void drawCategoryList(DrawContext context, Identifier image, int x, int y) {
         if (image == MCTIERS_COM_IMAGE)
-            context.drawTexture(RenderLayer::getGuiTextured, image, x - 56, y + 5, 0, 0, 112, 21, 112, 21);
+            context.drawTexture(image, x - 56, y + 5, 0, 0, 112, 21, 112, 21);
         else
-            context.drawTexture(RenderLayer::getGuiTextured, image, x - 13, y, 0, 0, 26, 26, 26, 26);
+            context.drawTexture(image, x - 13, y, 0, 0, 26, 26, 26, 26);
     }
 
     private void checkUpdates() {

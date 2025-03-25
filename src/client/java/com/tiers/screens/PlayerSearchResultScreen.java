@@ -14,7 +14,6 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -77,8 +76,8 @@ public class PlayerSearchResultScreen extends Screen {
         }
 
         if (image == MCTIERS_COM_IMAGE)
-            context.drawTexture(RenderLayer::getGuiTextured, image, x - 56, y + 5, 0, 0, 112, 21, 112, 21);
-        else context.drawTexture(RenderLayer::getGuiTextured, image, x - 13, y, 0, 0, 26, 26, 26, 26);
+            context.drawTexture(image, x - 56, y + 5, 0, 0, 112, 21, 112, 21);
+        else context.drawTexture(image, x - 13, y, 0, 0, 26, 26, 26, 26);
 
         if (profile.status == Status.SEARCHING) {
             context.drawCenteredTextWithShadow(this.textRenderer, "Searching...", x, (int) (y + 2.8 * separator), 0x00dd00);
@@ -185,7 +184,7 @@ public class PlayerSearchResultScreen extends Screen {
 
     private void drawPlayerAvatar(DrawContext context, int x, int y) {
         if (playerAvatarTexture != null && imageReady)
-            context.drawTexture(RenderLayer::getGuiTextured, playerAvatarTexture, x - width / 32, y, 0, 0, width / 16, (int) (width / 6.666), width / 16, (int) (width / 6.666));
+            context.drawTexture(playerAvatarTexture, x - width / 32, y, 0, 0, width / 16, (int) (width / 6.666), width / 16, (int) (width / 6.666));
         else if (playerProfile.imageSaved) {
             context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Loading " + playerProfile.name + "'s image..."), x, y + 20, 0x00dd00);
             loadPlayerAvatar();
