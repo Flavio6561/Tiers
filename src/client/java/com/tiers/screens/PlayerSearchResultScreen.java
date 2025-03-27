@@ -200,7 +200,7 @@ public class PlayerSearchResultScreen extends Screen {
 
         try (FileInputStream stream = new FileInputStream(avatarFile)) {
             playerAvatarTexture = Identifier.of("tiers-cache", playerProfile.uuid);
-            MinecraftClient.getInstance().getTextureManager().registerTexture(playerAvatarTexture, new NativeImageBackedTexture(NativeImage.read(stream)));
+            MinecraftClient.getInstance().getTextureManager().registerTexture(playerAvatarTexture, new NativeImageBackedTexture(null, NativeImage.read(stream)));
             imageReady = true;
         } catch (IOException ignored) {}
     }

@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.9-SNAPSHOT'
+	id 'fabric-loom' version '1.10-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -18,7 +18,7 @@ repositories {
 loom {
 	splitEnvironmentSourceSets()
 	mods {
-		"fpshud" {
+		"tiers" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}
@@ -31,7 +31,7 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modApi "com.terraformersmc:modmenu:13.0.1"
+	modApi "com.terraformersmc:modmenu:14.0.0-rc.2"
 }
 
 processResources {

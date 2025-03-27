@@ -7,6 +7,10 @@
 	"authors": [
 		"Flavio6561"
 	],
+	"contact": {
+		"issues": "https://github.com/Flavio6561/Tiers/issues",
+		"homepage": "https://github.com/Flavio6561/Tiers"
+	},
 	"custom" : {
 		"fabric-renderer-api-v1:contains_renderer" : true,
 		"modmenu" : {
@@ -35,7 +39,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.16.10",
-		"minecraft": ">=1.21.2",
+		"minecraft": ">=1.21.5",
 		"java": ">=21",
 		"fabric-api": "*"
 	}
