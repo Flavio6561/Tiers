@@ -7,6 +7,10 @@
 	"authors": [
 		"Flavio6561"
 	],
+	"contact": {
+		"issues": "https://github.com/Flavio6561/Tiers/issues",
+		"homepage": "https://github.com/Flavio6561/Tiers"
+	},
 	"custom" : {
 		"fabric-renderer-api-v1:contains_renderer" : true,
 		"modmenu" : {
