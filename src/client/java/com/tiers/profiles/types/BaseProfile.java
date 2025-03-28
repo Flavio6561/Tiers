@@ -3,6 +3,7 @@ package com.tiers.profiles.types;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tiers.TiersClient;
+import com.tiers.misc.ColorControl;
 import com.tiers.profiles.GameMode;
 import com.tiers.profiles.Status;
 import net.minecraft.text.Style;
@@ -30,6 +31,7 @@ public class BaseProfile {
     public ArrayList<GameMode> gameModes = new ArrayList<>();
 
     public GameMode highest;
+    public String originalJson;
     public boolean drawn = false;
     private int numberOfRequests = 0;
 
@@ -62,7 +64,7 @@ public class BaseProfile {
                 });
     }
 
-    private void parseInfo(String json) {
+    public void parseInfo(String json) {
         JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
 
         if (jsonObject.has("name") && jsonObject.has("region") && jsonObject.has("points") && jsonObject.has("overall")) {
@@ -85,6 +87,7 @@ public class BaseProfile {
         parseRankings(jsonObject.getAsJsonObject("rankings"));
 
         status = Status.READY;
+        originalJson = json;
     }
 
     private void parseRankings(JsonObject jsonObject) {
@@ -119,32 +122,32 @@ public class BaseProfile {
     }
 
     private Text getRegionText() {
-        if (region.equalsIgnoreCase("EU")) return Text.literal(region).setStyle(Style.EMPTY.withColor(0x89f19c));
-        else if (region.equalsIgnoreCase("NA")) return Text.literal(region).setStyle(Style.EMPTY.withColor(0xd95c6a));
-        else if (region.equalsIgnoreCase("AS")) return Text.literal(region).setStyle(Style.EMPTY.withColor(0xaf7f91));
-        else if (region.equalsIgnoreCase("AU")) return Text.literal(region).setStyle(Style.EMPTY.withColor(0xd5ad80));
-        else if (region.equalsIgnoreCase("SA")) return Text.literal(region).setStyle(Style.EMPTY.withColor(0x5bc9d9));
-        else if (region.equalsIgnoreCase("ME")) return Text.literal(region).setStyle(Style.EMPTY.withColor(0xffda58));
-        return Text.literal("Unknown").setStyle(Style.EMPTY.withColor(0x222222));
+        if (region.equalsIgnoreCase("EU")) return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("eu")));
+        else if (region.equalsIgnoreCase("NA")) return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("na")));
+        else if (region.equalsIgnoreCase("AS")) return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("as")));
+        else if (region.equalsIgnoreCase("AU")) return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("au")));
+        else if (region.equalsIgnoreCase("SA")) return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("sa")));
+        else if (region.equalsIgnoreCase("ME")) return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("me")));
+        return Text.literal("Unknown").setStyle(Style.EMPTY.withColor(ColorControl.getColor("unknown")));
     }
 
     private Text getRegionTooltip() {
-        if (region.equalsIgnoreCase("EU")) return Text.literal("Europe").setStyle(Style.EMPTY.withColor(0x89f19c));
-        else if (region.equalsIgnoreCase("NA")) return Text.literal("North America").setStyle(Style.EMPTY.withColor(0xd95c6a));
-        else if (region.equalsIgnoreCase("AS")) return Text.literal("Asia").setStyle(Style.EMPTY.withColor(0xaf7f91));
-        else if (region.equalsIgnoreCase("AU")) return Text.literal("Australia").setStyle(Style.EMPTY.withColor(0xd5ad80));
-        else if (region.equalsIgnoreCase("SA")) return Text.literal("South America").setStyle(Style.EMPTY.withColor(0x5bc9d9));
-        else if (region.equalsIgnoreCase("ME")) return Text.literal("Middle East").setStyle(Style.EMPTY.withColor(0xffda58));
-        return Text.literal("Unknown").setStyle(Style.EMPTY.withColor(0x222222));
+        if (region.equalsIgnoreCase("EU")) return Text.literal("Europe").setStyle(Style.EMPTY.withColor(ColorControl.getColor("eu")));
+        else if (region.equalsIgnoreCase("NA")) return Text.literal("North America").setStyle(Style.EMPTY.withColor(ColorControl.getColor("na")));
+        else if (region.equalsIgnoreCase("AS")) return Text.literal("Asia").setStyle(Style.EMPTY.withColor(ColorControl.getColor("as")));
+        else if (region.equalsIgnoreCase("AU")) return Text.literal("Australia").setStyle(Style.EMPTY.withColor(ColorControl.getColor("au")));
+        else if (region.equalsIgnoreCase("SA")) return Text.literal("South America").setStyle(Style.EMPTY.withColor(ColorControl.getColor("sa")));
+        else if (region.equalsIgnoreCase("ME")) return Text.literal("Middle East").setStyle(Style.EMPTY.withColor(ColorControl.getColor("me")));
+        return Text.literal("Unknown").setStyle(Style.EMPTY.withColor(ColorControl.getColor("unknown")));
     }
 
     private Text getOverallText() {
-        if (combatMaster) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(0xfde047));
-        else if (points >= 100) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(0xfda4af));
-        else if (points >= 50) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(0xd8b4fe));
-        else if (points >= 20) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(0xc4b5fd));
-        else if (points >= 10) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(0xc4b5fd));
-        return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(0xd1d5db));
+        if (combatMaster) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("master")));
+        else if (points >= 100) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("ace")));
+        else if (points >= 50) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("specialist")));
+        else if (points >= 20) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("cadet")));
+        else if (points >= 10) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("novice")));
+        return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("rookie")));
     }
 
     private Text getOverallTooltip() {

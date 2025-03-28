@@ -2,7 +2,7 @@
 
 ### Differences from [master](https://github.com/Flavio6561/Tiers):
 
-> PlayerSearchResultScreen.java:203
+> PlayerSearchResultScreen.java:203  
 
 ### Links:
 > - [GitHub page](https://github.com/Flavio6561/Tiers)
