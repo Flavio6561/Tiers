@@ -1,6 +1,7 @@
 package com.tiers.screens;
 
-import com.tiers.Icons;
+import com.tiers.misc.ColorControl;
+import com.tiers.misc.Icons;
 import com.tiers.TiersClient;
 import com.tiers.profiles.*;
 import com.tiers.profiles.types.*;
@@ -40,11 +41,11 @@ public class PlayerSearchResultScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         if (playerProfile.status == Status.NOT_EXISTING) {
             this.close();
-            TiersClient.sendMessageToPlayer(playerProfile.name + " was not found or isn't a premium account", 0xdd0000);
+            TiersClient.sendMessageToPlayer(playerProfile.name + " was not found or isn't a premium account", ColorControl.getColor("red"));
             return;
         } else if (playerProfile.status == Status.TIMEOUTED) {
             this.close();
-            TiersClient.sendMessageToPlayer(playerProfile.name + "'s search was timeouted. Clear cache and retry", 0xdd0000);
+            TiersClient.sendMessageToPlayer(playerProfile.name + "'s search was timeouted. Clear cache and retry", ColorControl.getColor("red"));
             return;
         }
 
@@ -58,12 +59,12 @@ public class PlayerSearchResultScreen extends Screen {
         super.render(context, mouseX, mouseY, delta);
 
         if (playerProfile.status == Status.SEARCHING) {
-            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Searching for " + playerProfile.name + "..."), centerX, listY, 0x00aa00);
+            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Searching for " + playerProfile.name + "..."), centerX, listY, ColorControl.getColor("green"));
             return;
         }
 
         drawPlayerAvatar(context, centerX, avatarY);
-        context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(playerProfile.name + "'s profile"), centerX, height / 70, 0xdddddd);
+        context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(playerProfile.name + "'s profile"), centerX, height / 70, ColorControl.getColor("text"));
 
         drawCategoryList(context, MCTIERS_COM_IMAGE, playerProfile.mcTiersCOMProfile, firstListX, listY);
         drawCategoryList(context, MCTIERS_IO_IMAGE, playerProfile.mcTiersIOProfile, centerX, listY);
@@ -72,7 +73,7 @@ public class PlayerSearchResultScreen extends Screen {
 
     private void drawCategoryList(DrawContext context, Identifier image, BaseProfile profile, int x, int y) {
         if (profile == null) {
-            context.drawCenteredTextWithShadow(this.textRenderer, "Loading from API...", x, (int) (y + 2.8 * separator), 0x00dd00);
+            context.drawCenteredTextWithShadow(this.textRenderer, "Loading from API...", x, (int) (y + 2.8 * separator), ColorControl.getColor("green"));
             return;
         }
 
@@ -81,37 +82,37 @@ public class PlayerSearchResultScreen extends Screen {
         else context.drawTexture(RenderLayer::getGuiTextured, image, x - 13, y, 0, 0, 26, 26, 26, 26);
 
         if (profile.status == Status.SEARCHING) {
-            context.drawCenteredTextWithShadow(this.textRenderer, "Searching...", x, (int) (y + 2.8 * separator), 0x00dd00);
+            context.drawCenteredTextWithShadow(this.textRenderer, "Searching...", x, (int) (y + 2.8 * separator), ColorControl.getColor("green"));
             return;
         }
         if (profile.status == Status.NOT_EXISTING) {
-            context.drawCenteredTextWithShadow(this.textRenderer, "Unranked", x, (int) (y + 2.8 * separator), 0xdd0000);
+            context.drawCenteredTextWithShadow(this.textRenderer, "Unranked", x, (int) (y + 2.8 * separator), ColorControl.getColor("red"));
             return;
         }
         if (profile.status == Status.TIMEOUTED) {
-            context.drawCenteredTextWithShadow(this.textRenderer, "Search timeouted. Clear cache and retry", x, (int) (y + 2.8 * separator), 0xdd0000);
+            context.drawCenteredTextWithShadow(this.textRenderer, "Search timeouted. Clear cache and retry", x, (int) (y + 2.8 * separator), ColorControl.getColor("red"));
             return;
         }
 
         if (!profile.drawn) {
             TextWidget regionLabel = new TextWidget(Text.of("Region"), this.textRenderer);
             regionLabel.setPosition(x - 42, (int) (y + 2.4 * separator));
-            regionLabel.setTextColor(0xcdf7f6);
+            regionLabel.setTextColor(ColorControl.getColor("region"));
             this.addDrawableChild(regionLabel);
 
             TextWidget overallLabel = new TextWidget(Text.of("Overall"), this.textRenderer);
             overallLabel.setPosition(x - 42, (int) (y + 3.2 * separator));
-            overallLabel.setTextColor(0x8fb8de);
+            overallLabel.setTextColor(ColorControl.getColor("overall"));
             this.addDrawableChild(overallLabel);
 
             TextWidget regionIcon = new TextWidget(Icons.globe, this.textRenderer);
             regionIcon.setPosition(x - 62, (int) (y + 2.4 * separator + 2));
-            regionIcon.setTextColor(0xcdf7f6);
+            regionIcon.setTextColor(ColorControl.getColor("region"));
             this.addDrawableChild(regionIcon);
 
             TextWidget overallIcon = new TextWidget(Icons.overall, this.textRenderer);
             overallIcon.setPosition(x - 62, (int) (y + 3.2 * separator + 2));
-            overallIcon.setTextColor(0x8fb8de);
+            overallIcon.setTextColor(ColorControl.getColor("overall"));
             this.addDrawableChild(overallIcon);
 
             TextWidget region = new TextWidget(profile.displayedRegion, this.textRenderer);
@@ -187,10 +188,10 @@ public class PlayerSearchResultScreen extends Screen {
         if (playerAvatarTexture != null && imageReady)
             context.drawTexture(RenderLayer::getGuiTextured, playerAvatarTexture, x - width / 32, y, 0, 0, width / 16, (int) (width / 6.666), width / 16, (int) (width / 6.666));
         else if (playerProfile.imageSaved) {
-            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Loading " + playerProfile.name + "'s image..."), x, y + 20, 0x00dd00);
+            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Loading " + playerProfile.name + "'s image..."), x, y + 20, ColorControl.getColor("green"));
             loadPlayerAvatar();
         } else if (playerProfile.numberOfImageRequests == 5)
-            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(playerProfile.name + "'s image failed to load. Clear cache and retry"), x, y + 20, 0xdd0000);
+            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(playerProfile.name + "'s image failed to load. Clear cache and retry"), x, y + 20, ColorControl.getColor("red"));
     }
 
     private void loadPlayerAvatar() {

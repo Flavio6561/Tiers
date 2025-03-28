@@ -1,6 +1,7 @@
 package com.tiers.screens;
 
-import com.tiers.Icons;
+import com.tiers.misc.ColorControl;
+import com.tiers.misc.Icons;
 import com.tiers.TiersClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -51,24 +52,24 @@ public class ConfigScreen extends Screen {
 
         super.render(context, mouseX, mouseY, delta);
 
-        context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Tiers config"), centerX, 10, 0xdddddd);
+        context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Tiers config"), centerX, 10, ColorControl.getColor("text"));
 
         drawCategoryList(context, MCTIERS_COM_IMAGE, firstListX, listY);
         drawCategoryList(context, MCTIERS_IO_IMAGE, centerX, listY);
         drawCategoryList(context, SUBTIERS_NET_IMAGE, thirdListX, listY);
 
-        context.drawTextWithShadow(this.textRenderer, Text.of("Enable Tiers"), centerX - 19, distance, 0xdddddd);
-        context.drawTextWithShadow(this.textRenderer, Text.of("Enable Icons"), centerX - 19, distance + separator, 0xdddddd);
-        context.drawTextWithShadow(this.textRenderer, Text.of("Dynamic Separator Color"), centerX - 48, distance + 2 * separator, 0xdddddd);
-        context.drawTextWithShadow(this.textRenderer, Text.of("Displayed Tier"), centerX - 25, distance + 3 * separator, 0xdddddd);
+        context.drawTextWithShadow(this.textRenderer, Text.of("Enable Tiers"), centerX - 19, distance, ColorControl.getColor("text"));
+        context.drawTextWithShadow(this.textRenderer, Text.of("Enable Icons"), centerX - 19, distance + separator, ColorControl.getColor("text"));
+        context.drawTextWithShadow(this.textRenderer, Text.of("Dynamic Separator Color"), centerX - 48, distance + 2 * separator, ColorControl.getColor("text"));
+        context.drawTextWithShadow(this.textRenderer, Text.of("Displayed Tier"), centerX - 25, distance + 3 * separator, ColorControl.getColor("text"));
 
-        context.drawTextWithShadow(this.textRenderer, Text.of("Position"), firstListX - 7, listY + 2 * separator, 0xdddddd);
-        context.drawTextWithShadow(this.textRenderer, Text.of("Position"), centerX - 7, listY + 2 * separator, 0xdddddd);
-        context.drawTextWithShadow(this.textRenderer, Text.of("Position"), thirdListX - 7, listY + 2 * separator, 0xdddddd);
+        context.drawTextWithShadow(this.textRenderer, Text.of("Position"), firstListX - 7, listY + 2 * separator, ColorControl.getColor("text"));
+        context.drawTextWithShadow(this.textRenderer, Text.of("Position"), centerX - 7, listY + 2 * separator, ColorControl.getColor("text"));
+        context.drawTextWithShadow(this.textRenderer, Text.of("Position"), thirdListX - 7, listY + 2 * separator, ColorControl.getColor("text"));
 
-        context.drawTextWithShadow(this.textRenderer, Text.of(TiersClient.activeMCTiersCOMMode.getIcon()), firstListX - 6, listY + 3 * separator + 4, 0xdddddd);
-        context.drawTextWithShadow(this.textRenderer, Text.of(TiersClient.activeMCTiersIOMode.getIcon()), centerX - 6, listY + 3 * separator + 4, 0xdddddd);
-        context.drawTextWithShadow(this.textRenderer, Text.of(TiersClient.activeSubtiersNETMode.getIcon()), thirdListX - 6, listY + 3 * separator + 4, 0xdddddd);
+        context.drawTextWithShadow(this.textRenderer, Text.of(TiersClient.activeMCTiersCOMMode.getIcon()), firstListX - 6, listY + 3 * separator + 4, ColorControl.getColor("text"));
+        context.drawTextWithShadow(this.textRenderer, Text.of(TiersClient.activeMCTiersIOMode.getIcon()), centerX - 6, listY + 3 * separator + 4, ColorControl.getColor("text"));
+        context.drawTextWithShadow(this.textRenderer, Text.of(TiersClient.activeSubtiersNETMode.getIcon()), thirdListX - 6, listY + 3 * separator + 4, ColorControl.getColor("text"));
 
         checkUpdates();
     }
@@ -129,21 +130,21 @@ public class ConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        toggleModWidget = ButtonWidget.builder(Text.literal(TiersClient.toggleMod ? "✔" : " ").setStyle(Style.EMPTY.withColor(0x00dd00)), (buttonWidget) -> {
+        toggleModWidget = ButtonWidget.builder(Text.literal(TiersClient.toggleMod ? "✔" : " ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("green"))), (buttonWidget) -> {
             TiersClient.toggleMod();
-            buttonWidget.setMessage(Text.literal(TiersClient.toggleMod ? "✔" : " ").setStyle(Style.EMPTY.withColor(0x00dd00)));
+            buttonWidget.setMessage(Text.literal(TiersClient.toggleMod ? "✔" : " ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("green"))));
         }).dimensions(width / 2 - 40, distance - 4, 16, 16).build();
         toggleModWidget.setTooltip(Tooltip.of(Text.of("✔ - Mod is enabled")));
 
-        toggleShowIcons = ButtonWidget.builder(Text.literal(TiersClient.showIcons ? "✔" : " ").setStyle(Style.EMPTY.withColor(0x00dd00)), (buttonWidget) -> {
+        toggleShowIcons = ButtonWidget.builder(Text.literal(TiersClient.showIcons ? "✔" : " ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("green"))), (buttonWidget) -> {
             TiersClient.toggleShowIcons();
-            buttonWidget.setMessage(Text.literal(TiersClient.showIcons ? "✔" : " ").setStyle(Style.EMPTY.withColor(0x00dd00)));
+            buttonWidget.setMessage(Text.literal(TiersClient.showIcons ? "✔" : " ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("green"))));
         }).dimensions(width / 2 - 40, distance + separator - 4, 16, 16).build();
         toggleShowIcons.setTooltip(Tooltip.of(Text.of("✔ - Icons will be showed next to tier")));
 
-        toggleSeparatorMode = ButtonWidget.builder(Text.literal(TiersClient.isSeparatorAdaptive ? "✔" : " ").setStyle(Style.EMPTY.withColor(0x00dd00)), (buttonWidget) -> {
+        toggleSeparatorMode = ButtonWidget.builder(Text.literal(TiersClient.isSeparatorAdaptive ? "✔" : " ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("green"))), (buttonWidget) -> {
             TiersClient.toggleSeparatorAdaptive();
-            buttonWidget.setMessage(Text.literal(TiersClient.isSeparatorAdaptive ? "✔" : " ").setStyle(Style.EMPTY.withColor(0x00dd00)));
+            buttonWidget.setMessage(Text.literal(TiersClient.isSeparatorAdaptive ? "✔" : " ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("green"))));
         }).dimensions(width / 2 - 69, distance + 2 * separator - 4, 16, 16).build();
         toggleSeparatorMode.setTooltip(Tooltip.of(Text.of("✔ - The separator will be the same color as the tier instead of gray")));
 

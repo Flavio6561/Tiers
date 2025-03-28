@@ -1,4 +1,4 @@
-package com.tiers;
+package com.tiers.misc;
 
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;

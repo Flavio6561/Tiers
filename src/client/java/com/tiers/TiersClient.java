@@ -1,6 +1,9 @@
 package com.tiers;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.tiers.misc.ColorControl;
+import com.tiers.misc.ColorLoader;
+import com.tiers.misc.Icons;
 import com.tiers.profiles.GameMode;
 import com.tiers.profiles.PlayerProfile;
 import com.tiers.profiles.Status;
@@ -12,6 +15,7 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -51,7 +55,8 @@ public class TiersClient implements ClientModInitializer {
         ConfigManager.loadConfig();
         clearCache();
         CommandRegister.registerCommands();
-        FabricLoader.getInstance().getModContainer("tiers").ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "custom-icons"), tiers, ResourcePackActivationType.ALWAYS_ENABLED));
+        FabricLoader.getInstance().getModContainer("tiers").ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "tiers-resources"), tiers, ResourcePackActivationType.ALWAYS_ENABLED));
+        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new ColorLoader());
         LOGGER.info("Tiers initialized");
     }
 
@@ -112,7 +117,7 @@ public class TiersClient implements ClientModInitializer {
             if (displayMode == ModesTierDisplay.HIGHEST && profile.highest != null && profile.highest.getTierPoints(false) > shown.getTierPoints(false))
                 shown = profile.highest;
             if (shown == null || shown.status != Status.READY) return returnValue;
-            MutableText separator = Text.literal(" | ").setStyle(isSeparatorAdaptive ? shown.displayedTier.getStyle() : Style.EMPTY.withColor(0xaaaaaa));
+            MutableText separator = Text.literal(" | ").setStyle(isSeparatorAdaptive ? shown.displayedTier.getStyle() : Style.EMPTY.withColor(ColorControl.getColor("static_separator")));
             returnValue.append(Text.literal("").append(separator).append(shown.displayedTier));
             if (showIcons)
                 returnValue.append(Text.literal(" ").append(shown.name.getIconTag()));
@@ -130,12 +135,25 @@ public class TiersClient implements ClientModInitializer {
             if (displayMode == ModesTierDisplay.HIGHEST && profile.highest != null && profile.highest.getTierPoints(false) > shown.getTierPoints(false))
                 shown = profile.highest;
             if (shown == null || shown.status != Status.READY) return returnValue;
-            MutableText separator = Text.literal(" | ").setStyle(isSeparatorAdaptive ? shown.displayedTier.getStyle() : Style.EMPTY.withColor(0xaaaaaa));
+            MutableText separator = Text.literal(" | ").setStyle(isSeparatorAdaptive ? shown.displayedTier.getStyle() : Style.EMPTY.withColor(ColorControl.getColor("static_separator")));
             if (showIcons)
                 returnValue = Text.literal("").append(shown.name.getIconTag()).append(" ");
             returnValue.append(Text.literal("").append(shown.displayedTier).append(separator));
         }
         return returnValue;
+    }
+
+    public static void restyleAllTexts() {
+        for (PlayerProfile profile : playerProfiles) {
+            if (profile.status == Status.READY) {
+                if (profile.mcTiersCOMProfile.status == Status.READY)
+                    profile.mcTiersCOMProfile.parseInfo(profile.mcTiersCOMProfile.originalJson);
+                if (profile.mcTiersIOProfile.status == Status.READY)
+                    profile.mcTiersIOProfile.parseInfo(profile.mcTiersIOProfile.originalJson);
+                if (profile.subtiersNETProfile.status == Status.READY)
+                    profile.subtiersNETProfile.parseInfo(profile.subtiersNETProfile.originalJson);
+            }
+        }
     }
 
     public static void sendMessageToPlayer(String chat_message, int color) {
@@ -147,7 +165,7 @@ public class TiersClient implements ClientModInitializer {
     protected static int toggleMod(CommandContext<FabricClientCommandSource> ignoredFabricClientCommandSourceCommandContext) {
         toggleMod = !toggleMod;
         ConfigManager.saveConfig();
-        sendMessageToPlayer("Mod is now " + (toggleMod ? "enabled" : "disabled"), (toggleMod ? 0x00ff00 : 0xff0000));
+        sendMessageToPlayer("Tiers is now " + (toggleMod ? "enabled" : "disabled"), (toggleMod ? ColorControl.getColor("green") : ColorControl.getColor("red")));
         return 1;
     }
 
@@ -245,43 +263,52 @@ public class TiersClient implements ClientModInitializer {
     }
 
     public enum Modes {
-        MCTIERSCOM_VANILLA(Icons.vanilla, Icons.vanillaTag, Text.literal("Vanilla").setStyle(Style.EMPTY.withColor(0xc889e6))),
-        MCTIERSCOM_UHC(Icons.uhc, Icons.uhcTag, Text.literal("UHC").setStyle(Style.EMPTY.withColor(0xd44e50))),
-        MCTIERSCOM_POT(Icons.pot, Icons.potTag, Text.literal("Pot").setStyle(Style.EMPTY.withColor(0xd65474))),
-        MCTIERSCOM_NETHERITE_OP(Icons.netherite, Icons.netheriteTag, Text.literal("Netherite Op").setStyle(Style.EMPTY.withColor(0x8f72a5))),
-        MCTIERSCOM_SMP(Icons.smp, Icons.smpTag, Text.literal("Smp").setStyle(Style.EMPTY.withColor(0x0f5045))),
-        MCTIERSCOM_SWORD(Icons.sword, Icons.swordTag, Text.literal("Sword").setStyle(Style.EMPTY.withColor(0x71bfdd))),
-        MCTIERSCOM_AXE(Icons.axe, Icons.axeTag, Text.literal("Axe").setStyle(Style.EMPTY.withColor(0x6195d9))),
-        MCTIERSCOM_MACE(Icons.mace, Icons.maceTag, Text.literal("Mace").setStyle(Style.EMPTY.withColor(0x4c4c5b))),
-        MCTIERSIO_VANILLA(Icons.vanilla, Icons.vanillaTag, Text.literal("Vanilla").setStyle(Style.EMPTY.withColor(0xc889e6))),
-        MCTIERSIO_UHC(Icons.uhc, Icons.uhcTag, Text.literal("UHC").setStyle(Style.EMPTY.withColor(0xd44e50))),
-        MCTIERSIO_POT(Icons.pot, Icons.potTag, Text.literal("Pot").setStyle(Style.EMPTY.withColor(0xd65474))),
-        MCTIERSIO_NETHERITE_POT(Icons.netherite, Icons.netheriteTag, Text.literal("Netherite Pot").setStyle(Style.EMPTY.withColor(0x8f72a5))),
-        MCTIERSIO_SMP(Icons.smp, Icons.smpTag, Text.literal("Smp").setStyle(Style.EMPTY.withColor(0x0f5045))),
-        MCTIERSIO_SWORD(Icons.sword, Icons.swordTag, Text.literal("Sword").setStyle(Style.EMPTY.withColor(0x71bfdd))),
-        MCTIERSIO_AXE(Icons.axe, Icons.axeTag, Text.literal("Axe").setStyle(Style.EMPTY.withColor(0x6195d9))),
-        MCTIERSIO_ELYTRA(Icons.elytra, Icons.elytraTag, Text.literal("Elytra").setStyle(Style.EMPTY.withColor(0x533d4e))),
-        SUBTIERSNET_MINECART(Icons.minecart, Icons.minecartTag, Text.literal("Minecart").setStyle(Style.EMPTY.withColor(0xdb441a))),
-        SUBTIERSNET_DIAMOND_CRYSTAL(Icons.diamond_crystal, Icons.diamond_crystalTag, Text.literal("Diamond Crystal").setStyle(Style.EMPTY.withColor(0x66c4ff))),
-        SUBTIERSNET_IRON_POT(Icons.iron_pot, Icons.iron_potTag, Text.literal("Iron Pot").setStyle(Style.EMPTY.withColor(0xbbbbbb))),
-        SUBTIERSNET_ELYTRA(Icons.subtiers_elytra, Icons.subtiers_elytraTag, Text.literal("Elytra").setStyle(Style.EMPTY.withColor(0x8b8cc8))),
-        SUBTIERSNET_SPEED(Icons.speed, Icons.speedTag, Text.literal("Speed").setStyle(Style.EMPTY.withColor(0x6dc4cd))),
-        SUBTIERSNET_CREEPER(Icons.creeper, Icons.creeperTag, Text.literal("Creeper").setStyle(Style.EMPTY.withColor(0x89df89))),
-        SUBTIERSNET_MANHUNT(Icons.manhunt, Icons.manhuntTag, Text.literal("Manhunt").setStyle(Style.EMPTY.withColor(0x424242))),
-        SUBTIERSNET_DIAMOND_SMP(Icons.diamond_smp, Icons.diamond_smpTag, Text.literal("Diamond Smp").setStyle(Style.EMPTY.withColor(0x8e658c))),
-        SUBTIERSNET_BOW(Icons.bow, Icons.bowTag, Text.literal("Bow").setStyle(Style.EMPTY.withColor(0x91705c))),
-        SUBTIERSNET_BED(Icons.bed, Icons.bedTag, Text.literal("Bed").setStyle(Style.EMPTY.withColor(0xb12f28))),
-        SUBTIERSNET_OG_VANILLA(Icons.og_vanilla, Icons.og_vanillaTag, Text.literal("OG Vanilla").setStyle(Style.EMPTY.withColor(0xe9b750))),
-        SUBTIERSNET_TRIDENT(Icons.trident, Icons.tridentTag, Text.literal("Trident").setStyle(Style.EMPTY.withColor(0x42957e)));
+        MCTIERSCOM_VANILLA(Icons.vanilla, Icons.vanillaTag, "mctierscom_vanilla", "Vanilla"),
+        MCTIERSCOM_UHC(Icons.uhc, Icons.uhcTag, "mctierscom_uhc", "UHC"),
+        MCTIERSCOM_POT(Icons.pot, Icons.potTag, "mctierscom_pot", "Pot"),
+        MCTIERSCOM_NETHERITE_OP(Icons.netherite, Icons.netheriteTag, "mctierscom_netherite_op", "Netherite Op"),
+        MCTIERSCOM_SMP(Icons.smp, Icons.smpTag, "mctierscom_smp", "Smp"),
+        MCTIERSCOM_SWORD(Icons.sword, Icons.swordTag, "mctierscom_sword", "Sword"),
+        MCTIERSCOM_AXE(Icons.axe, Icons.axeTag, "mctierscom_axe", "Axe"),
+        MCTIERSCOM_MACE(Icons.mace, Icons.maceTag, "mctierscom_mace", "Mace"),
+        MCTIERSIO_VANILLA(Icons.vanilla, Icons.vanillaTag, "mctiersio_vanilla", "Vanilla"),
+        MCTIERSIO_UHC(Icons.uhc, Icons.uhcTag, "mctiersio_uhc", "UHC"),
+        MCTIERSIO_POT(Icons.pot, Icons.potTag, "mctiersio_pot", "Pot"),
+        MCTIERSIO_NETHERITE_POT(Icons.netherite, Icons.netheriteTag, "mctiersio_netherite_pot", "Netherite Pot"),
+        MCTIERSIO_SMP(Icons.smp, Icons.smpTag, "mctiersio_smp", "Smp"),
+        MCTIERSIO_SWORD(Icons.sword, Icons.swordTag, "mctiersio_sword", "Sword"),
+        MCTIERSIO_AXE(Icons.axe, Icons.axeTag, "mctiersio_axe", "Axe"),
+        MCTIERSIO_ELYTRA(Icons.elytra, Icons.elytraTag, "mctiersio_elytra", "Elytra"),
+        SUBTIERSNET_MINECART(Icons.minecart, Icons.minecartTag, "subtiersnet_minecart", "Minecart"),
+        SUBTIERSNET_DIAMOND_CRYSTAL(Icons.diamond_crystal, Icons.diamond_crystalTag, "subtiersnet_diamond_crystal", "Diamond Crystal"),
+        SUBTIERSNET_IRON_POT(Icons.iron_pot, Icons.iron_potTag, "subtiersnet_iron_pot", "Iron Pot"),
+        SUBTIERSNET_ELYTRA(Icons.subtiers_elytra, Icons.subtiers_elytraTag, "subtiersnet_elytra", "Elytra"),
+        SUBTIERSNET_SPEED(Icons.speed, Icons.speedTag, "subtiersnet_speed", "Speed"),
+        SUBTIERSNET_CREEPER(Icons.creeper, Icons.creeperTag, "subtiersnet_creeper", "Creeper"),
+        SUBTIERSNET_MANHUNT(Icons.manhunt, Icons.manhuntTag, "subtiersnet_manhunt", "Manhunt"),
+        SUBTIERSNET_DIAMOND_SMP(Icons.diamond_smp, Icons.diamond_smpTag, "subtiersnet_diamond_smp", "Diamond Smp"),
+        SUBTIERSNET_BOW(Icons.bow, Icons.bowTag, "subtiersnet_bow", "Bow"),
+        SUBTIERSNET_BED(Icons.bed, Icons.bedTag, "subtiersnet_bed", "Bed"),
+        SUBTIERSNET_OG_VANILLA(Icons.og_vanilla, Icons.og_vanillaTag, "subtiersnet_og_vanilla", "OG Vanilla"),
+        SUBTIERSNET_TRIDENT(Icons.trident, Icons.tridentTag, "subtiersnet_trident", "Trident");
 
         private final Text icon;
         private final Text iconTag;
-        private final Text label;
+        private final String color;
+        private final String stringLabel;
+        private Text label;
 
-        Modes(Text icon, Text iconTag, Text label) {
+        Modes(Text icon, Text iconTag, String color, String label) {
             this.icon = icon;
             this.iconTag = iconTag;
-            this.label = label;
+            this.color = color;
+            this.stringLabel = label;
+            this.label = Text.literal(label).setStyle(Style.EMPTY.withColor(ColorControl.getColor(color)));
+        }
+
+        public static void updateColors() {
+            for (Modes mode : values())
+                mode.label = Text.literal(mode.stringLabel).setStyle(Style.EMPTY.withColor(ColorControl.getColor(mode.color)));
         }
 
         public Text getIcon() {

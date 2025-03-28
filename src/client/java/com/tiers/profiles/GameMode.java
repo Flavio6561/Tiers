@@ -2,6 +2,7 @@ package com.tiers.profiles;
 
 import com.google.gson.JsonObject;
 import com.tiers.TiersClient;
+import com.tiers.misc.ColorControl;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
@@ -132,13 +133,17 @@ public class GameMode {
     }
 
     private int getTierColor(String tier) {
-        if (tier.contains("R")) return 0x1e2634;
-        else if (tier.equalsIgnoreCase("HT1")) return 0xffcf4a;
-        else if (tier.equalsIgnoreCase("LT1")) return 0xd5b355;
-        else if (tier.equalsIgnoreCase("HT2")) return 0xa4b3c7;
-        else if (tier.equalsIgnoreCase("LT2")) return 0x888d95;
-        else if (tier.equalsIgnoreCase("HT3")) return 0xb56326;
-        else if (tier.equalsIgnoreCase("LT3")) return 0x8f5931;
-        return 0x655b79;
+        if (tier.contains("R")) return ColorControl.getColor("retired");
+        else if (tier.equalsIgnoreCase("HT1")) return ColorControl.getColor("ht1");
+        else if (tier.equalsIgnoreCase("LT1")) return ColorControl.getColor("lt1");
+        else if (tier.equalsIgnoreCase("HT2")) return ColorControl.getColor("ht2");
+        else if (tier.equalsIgnoreCase("LT2")) return ColorControl.getColor("lt2");
+        else if (tier.equalsIgnoreCase("HT3")) return ColorControl.getColor("ht3");
+        else if (tier.equalsIgnoreCase("LT3")) return ColorControl.getColor("lt3");
+        else if (tier.equalsIgnoreCase("HT4")) return ColorControl.getColor("ht4");
+        else if (tier.equalsIgnoreCase("LT4")) return ColorControl.getColor("lt4");
+        else if (tier.equalsIgnoreCase("HT5")) return ColorControl.getColor("ht5");
+        else if (tier.equalsIgnoreCase("LT5")) return ColorControl.getColor("lt5");
+        return ColorControl.getColor("unknown");
     }
 }
