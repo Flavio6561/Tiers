@@ -1,6 +1,6 @@
 {
 	"pack": {
-        	"pack_format": 32,
+        	"pack_format": 15,
         	"description": [{"text":"Custom icons and colors for Tiers"}]
         }
 }

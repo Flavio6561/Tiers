@@ -1,4 +1,4 @@
-## Tiers branch for 1.20.3 - 1.20.6
+## Tiers branch for 1.20 - 1.20.2
 
 ### See [master](https://github.com/Flavio6561/Tiers)
 

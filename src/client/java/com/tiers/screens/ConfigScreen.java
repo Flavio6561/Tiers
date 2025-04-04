@@ -66,9 +66,9 @@ public class ConfigScreen extends Screen {
         context.drawTextWithShadow(this.textRenderer, Text.of("Position"), centerX - 7, listY + 2 * separator, ColorControl.getColor("text"));
         context.drawTextWithShadow(this.textRenderer, Text.of("Position"), thirdListX - 7, listY + 2 * separator, ColorControl.getColor("text"));
 
-        context.drawTextWithShadow(this.textRenderer, Text.of(TiersClient.activeMCTiersCOMMode.getIcon()), firstListX - 6, listY + 3 * separator + 4, ColorControl.getColor("text"));
-        context.drawTextWithShadow(this.textRenderer, Text.of(TiersClient.activeMCTiersIOMode.getIcon()), centerX - 6, listY + 3 * separator + 4, ColorControl.getColor("text"));
-        context.drawTextWithShadow(this.textRenderer, Text.of(TiersClient.activeSubtiersNETMode.getIcon()), thirdListX - 6, listY + 3 * separator + 4, ColorControl.getColor("text"));
+        context.drawTextWithShadow(this.textRenderer, TiersClient.activeMCTiersCOMMode.getIcon(), firstListX - 6, listY + 3 * separator + 4, ColorControl.getColor("text"));
+        context.drawTextWithShadow(this.textRenderer, TiersClient.activeMCTiersIOMode.getIcon(), centerX - 6, listY + 3 * separator + 4, ColorControl.getColor("text"));
+        context.drawTextWithShadow(this.textRenderer, TiersClient.activeSubtiersNETMode.getIcon(), thirdListX - 6, listY + 3 * separator + 4, ColorControl.getColor("text"));
 
         checkUpdates();
     }
