@@ -131,21 +131,8 @@ public class PlayerSearchResultScreen extends Screen {
     }
 
     private void drawTierList(BaseProfile profile, int x, int y) {
-        switch (profile) {
-            case MCTiersCOMProfile mcTiersCOMProfile -> {
-                for (GameMode gameMode : mcTiersCOMProfile.gameModes)
-                    if (drawGameModeTiers(gameMode, x, y)) y += 15;
-            }
-            case MCTiersIOProfile mcTiersIOProfile -> {
-                for (GameMode gameMode : mcTiersIOProfile.gameModes)
-                    if (drawGameModeTiers(gameMode, x, y)) y += 15;
-            }
-            case SubtiersNETProfile subtiersNETProfile -> {
-                for (GameMode gameMode : subtiersNETProfile.gameModes)
-                    if (drawGameModeTiers(gameMode, x, y)) y += 15;
-            }
-            default -> {}
-        }
+        for (GameMode gameMode : profile.gameModes)
+            if (drawGameModeTiers(gameMode, x, y)) y += 15;
     }
 
     private boolean drawGameModeTiers(GameMode mode, int x, int y) {
