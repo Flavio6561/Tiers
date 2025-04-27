@@ -45,7 +45,7 @@ public class TiersClient implements ClientModInitializer {
     public static Modes activeMCTiersCOMMode = Modes.MCTIERSCOM_VANILLA;
 
     public static DisplayStatus mcTiersIOPosition = DisplayStatus.RIGHT;
-    public static Modes activeMCTiersIOMode = Modes.MCTIERSIO_AXE;
+    public static Modes activeMCTiersIOMode = Modes.MCTIERSIO_CRYSTAL;
 
     public static DisplayStatus subtiersNETPosition = DisplayStatus.OFF;
     public static Modes activeSubtiersNETMode = Modes.SUBTIERSNET_MINECART;
@@ -271,7 +271,7 @@ public class TiersClient implements ClientModInitializer {
         MCTIERSCOM_SWORD(Icons.sword, Icons.swordTag, "mctierscom_sword", "Sword"),
         MCTIERSCOM_AXE(Icons.axe, Icons.axeTag, "mctierscom_axe", "Axe"),
         MCTIERSCOM_MACE(Icons.mace, Icons.maceTag, "mctierscom_mace", "Mace"),
-        MCTIERSIO_VANILLA(Icons.vanilla, Icons.vanillaTag, "mctiersio_vanilla", "Vanilla"),
+        MCTIERSIO_CRYSTAL(Icons.vanilla, Icons.vanillaTag, "mctiersio_crystal", "Crystal"),
         MCTIERSIO_UHC(Icons.uhc, Icons.uhcTag, "mctiersio_uhc", "UHC"),
         MCTIERSIO_POT(Icons.pot, Icons.potTag, "mctiersio_pot", "Pot"),
         MCTIERSIO_NETHERITE_POT(Icons.netherite, Icons.netheriteTag, "mctiersio_netherite_pot", "Netherite Pot"),
@@ -281,7 +281,7 @@ public class TiersClient implements ClientModInitializer {
         MCTIERSIO_ELYTRA(Icons.elytra, Icons.elytraTag, "mctiersio_elytra", "Elytra"),
         SUBTIERSNET_MINECART(Icons.minecart, Icons.minecartTag, "subtiersnet_minecart", "Minecart"),
         SUBTIERSNET_DIAMOND_CRYSTAL(Icons.diamond_crystal, Icons.diamond_crystalTag, "subtiersnet_diamond_crystal", "Diamond Crystal"),
-        SUBTIERSNET_IRON_POT(Icons.iron_pot, Icons.iron_potTag, "subtiersnet_iron_pot", "Iron Pot"),
+        SUBTIERSNET_DEBUFF(Icons.debuff, Icons.debuffTag, "subtiersnet_debuff", "DeBuff"),
         SUBTIERSNET_ELYTRA(Icons.subtiers_elytra, Icons.subtiers_elytraTag, "subtiersnet_elytra", "Elytra"),
         SUBTIERSNET_SPEED(Icons.speed, Icons.speedTag, "subtiersnet_speed", "Speed"),
         SUBTIERSNET_CREEPER(Icons.creeper, Icons.creeperTag, "subtiersnet_creeper", "Creeper"),

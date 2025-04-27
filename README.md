@@ -1,8 +1,6 @@
-## Tiers for 1.21.2 - 1.21.4
+## Tiers branch for 1.21.2 - 1.21.4
 
-### Differences from [master](https://github.com/Flavio6561/Tiers):
-
-> PlayerSearchResultScreen.java:203  
+### See [master](https://github.com/Flavio6561/Tiers)
 
 ### Links:
 > - [GitHub page](https://github.com/Flavio6561/Tiers)
