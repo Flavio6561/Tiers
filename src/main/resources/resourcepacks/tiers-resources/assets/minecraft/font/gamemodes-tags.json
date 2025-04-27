@@ -65,7 +65,7 @@
     },
     {
       "type": "bitmap",
-      "file": "font/gamemodes/iron_pot.png",
+      "file": "font/gamemodes/debuff.png",
       "height": 7,
       "ascent": 7,
       "chars": ["\uF009"]

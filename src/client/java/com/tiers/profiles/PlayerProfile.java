@@ -45,23 +45,27 @@ public class PlayerProfile {
             return;
         }
         numberOfRequests++;
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.mojang.com/users/profiles/minecraft/" + name))
-                .header("User-Agent", "Tiers")
-                .GET()
-                .build();
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.mojang.com/users/profiles/minecraft/" + name))
+                    .header("User-Agent", "Tiers")
+                    .GET()
+                    .build();
 
-        HttpClient.newHttpClient()
-                .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenAccept(response -> {
-                    if (response.statusCode() != 200)
-                        status = Status.NOT_EXISTING;
-                    else parseUUID(response.body());
-                })
-                .exceptionally(exception -> {
-                    buildRequest(name);
-                    return null;
-                });
+            HttpClient.newHttpClient()
+                    .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenAccept(response -> {
+                        if (response.statusCode() != 200)
+                            status = Status.NOT_EXISTING;
+                        else parseUUID(response.body());
+                    })
+                    .exceptionally(exception -> {
+                        buildRequest(name);
+                        return null;
+                    });
+        } catch (IllegalArgumentException ignored) {
+            status = Status.NOT_EXISTING;
+        }
     }
 
     private void parseUUID(String json) {

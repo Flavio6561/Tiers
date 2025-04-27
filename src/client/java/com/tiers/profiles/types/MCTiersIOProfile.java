@@ -4,7 +4,7 @@ import com.tiers.TiersClient;
 import com.tiers.profiles.GameMode;
 
 public class MCTiersIOProfile extends BaseProfile {
-    public GameMode vanilla = new GameMode(TiersClient.Modes.MCTIERSIO_VANILLA, "vanilla");
+    public GameMode crystal = new GameMode(TiersClient.Modes.MCTIERSIO_CRYSTAL, "crystal");
     public GameMode uhc = new GameMode(TiersClient.Modes.MCTIERSIO_UHC, "uhc");
     public GameMode pot = new GameMode(TiersClient.Modes.MCTIERSIO_POT, "pot");
     public GameMode netherite_pot = new GameMode(TiersClient.Modes.MCTIERSIO_NETHERITE_POT, "neth_pot");
@@ -16,7 +16,7 @@ public class MCTiersIOProfile extends BaseProfile {
     public MCTiersIOProfile(String uuid) {
         super(uuid, "https://mctiers.io/api/profile/");
 
-        gameModes.add(vanilla);
+        gameModes.add(crystal);
         gameModes.add(uhc);
         gameModes.add(pot);
         gameModes.add(netherite_pot);

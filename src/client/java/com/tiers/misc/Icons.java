@@ -13,7 +13,7 @@ public class Icons {
     public static final Text axe = Text.literal("\uF006").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes")));
     public static final Text mace = Text.literal("\uF007").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes")));
     public static final Text minecart = Text.literal("\uF008").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes")));
-    public static final Text iron_pot = Text.literal("\uF009").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes")));
+    public static final Text debuff = Text.literal("\uF009").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes")));
     public static final Text speed = Text.literal("\uF00A").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes")));
     public static final Text creeper = Text.literal("\uF00B").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes")));
     public static final Text manhunt = Text.literal("\uF00C").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes")));
@@ -40,7 +40,7 @@ public class Icons {
     public static final Text axeTag = Text.literal("\uF006").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes-tags")));
     public static final Text maceTag = Text.literal("\uF007").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes-tags")));
     public static final Text minecartTag = Text.literal("\uF008").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes-tags")));
-    public static final Text iron_potTag = Text.literal("\uF009").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes-tags")));
+    public static final Text debuffTag = Text.literal("\uF009").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes-tags")));
     public static final Text speedTag = Text.literal("\uF00A").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes-tags")));
     public static final Text creeperTag = Text.literal("\uF00B").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes-tags")));
     public static final Text manhuntTag = Text.literal("\uF00C").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes-tags")));
