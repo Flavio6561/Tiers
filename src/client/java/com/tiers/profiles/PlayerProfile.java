@@ -40,7 +40,7 @@ public class PlayerProfile {
     }
 
     private void buildRequest(String name) {
-        if (numberOfRequests == 4 || status != Status.SEARCHING) {
+        if (numberOfRequests == 5 || status != Status.SEARCHING) {
             status = Status.TIMEOUTED;
             return;
         }
@@ -55,8 +55,10 @@ public class PlayerProfile {
             HttpClient.newHttpClient()
                     .sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(response -> {
-                        if (response.statusCode() != 200)
+                        if (response.statusCode() == 404)
                             status = Status.NOT_EXISTING;
+                        else if (response.statusCode() != 200)
+                            buildRequest(name);
                         else parseUUID(response.body());
                     })
                     .exceptionally(exception -> {
