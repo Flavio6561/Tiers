@@ -1,6 +1,7 @@
 package com.tiers.misc;
 
 import com.google.gson.JsonObject;
+
 import java.util.HashMap;
 
 public class ColorControl {
