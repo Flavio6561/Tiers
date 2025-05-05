@@ -1,8 +1,8 @@
 package com.tiers.screens;
 
+import com.tiers.TiersClient;
 import com.tiers.misc.ColorControl;
 import com.tiers.misc.Icons;
-import com.tiers.TiersClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;

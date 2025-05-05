@@ -40,28 +40,34 @@ public class PlayerProfile {
     }
 
     private void buildRequest(String name) {
-        if (numberOfRequests == 4 || status != Status.SEARCHING) {
+        if (numberOfRequests == 5 || status != Status.SEARCHING) {
             status = Status.TIMEOUTED;
             return;
         }
         numberOfRequests++;
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.mojang.com/users/profiles/minecraft/" + name))
-                .header("User-Agent", "Tiers")
-                .GET()
-                .build();
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.mojang.com/users/profiles/minecraft/" + name))
+                    .header("User-Agent", "Tiers")
+                    .GET()
+                    .build();
 
-        HttpClient.newHttpClient()
-                .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenAccept(response -> {
-                    if (response.statusCode() != 200)
-                        status = Status.NOT_EXISTING;
-                    else parseUUID(response.body());
-                })
-                .exceptionally(exception -> {
-                    buildRequest(name);
-                    return null;
-                });
+            HttpClient.newHttpClient()
+                    .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenAccept(response -> {
+                        if (response.statusCode() == 404)
+                            status = Status.NOT_EXISTING;
+                        else if (response.statusCode() != 200)
+                            buildRequest(name);
+                        else parseUUID(response.body());
+                    })
+                    .exceptionally(exception -> {
+                        buildRequest(name);
+                        return null;
+                    });
+        } catch (IllegalArgumentException ignored) {
+            status = Status.NOT_EXISTING;
+        }
     }
 
     private void parseUUID(String json) {
