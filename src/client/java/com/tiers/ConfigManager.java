@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 public class ConfigManager {
     private static Config config;
@@ -70,16 +71,23 @@ public class ConfigManager {
         TiersClient.toggleMod = config.toggleMod;
         TiersClient.showIcons = config.showIcons;
         TiersClient.isSeparatorAdaptive = config.isSeparatorAdaptive;
-        TiersClient.displayMode = config.displayMode;
+        if (Arrays.stream(TiersClient.ModesTierDisplay.values()).toList().contains(config.displayMode))
+            TiersClient.displayMode = config.displayMode;
 
-        TiersClient.mcTiersCOMPosition = config.mcTiersCOMPosition;
-        TiersClient.activeMCTiersCOMMode = config.activeMCTiersCOMMode;
+        if (Arrays.stream(TiersClient.DisplayStatus.values()).toList().contains(config.mcTiersCOMPosition))
+            TiersClient.mcTiersCOMPosition = config.mcTiersCOMPosition;
+        if (Arrays.stream(TiersClient.Modes.values()).toList().contains(config.activeMCTiersCOMMode) && config.activeMCTiersCOMMode.toString().contains("MCTIERSCOM"))
+            TiersClient.activeMCTiersCOMMode = config.activeMCTiersCOMMode;
 
-        TiersClient.mcTiersIOPosition = config.mcTiersIOPosition;
-        TiersClient.activeMCTiersIOMode = config.activeMCTiersIOMode;
+        if (Arrays.stream(TiersClient.DisplayStatus.values()).toList().contains(config.mcTiersIOPosition))
+            TiersClient.mcTiersIOPosition = config.mcTiersIOPosition;
+        if (Arrays.stream(TiersClient.Modes.values()).toList().contains(config.activeMCTiersIOMode) && config.activeMCTiersIOMode.toString().contains("MCTIERSIO"))
+            TiersClient.activeMCTiersIOMode = config.activeMCTiersIOMode;
 
-        TiersClient.subtiersNETPosition = config.subtiersNETPosition;
-        TiersClient.activeSubtiersNETMode = config.activeSubtiersNETMode;
+        if (Arrays.stream(TiersClient.DisplayStatus.values()).toList().contains(config.subtiersNETPosition))
+            TiersClient.subtiersNETPosition = config.subtiersNETPosition;
+        if (Arrays.stream(TiersClient.Modes.values()).toList().contains(config.activeSubtiersNETMode) && config.activeSubtiersNETMode.toString().contains("SUBTIERSNET"))
+            TiersClient.activeSubtiersNETMode = config.activeSubtiersNETMode;
 
         saveConfig();
     }
