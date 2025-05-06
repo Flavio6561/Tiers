@@ -45,7 +45,7 @@ public class TiersClient implements ClientModInitializer {
     public static Modes activeMCTiersCOMMode = Modes.MCTIERSCOM_VANILLA;
 
     public static DisplayStatus mcTiersIOPosition = DisplayStatus.RIGHT;
-    public static Modes activeMCTiersIOMode = Modes.MCTIERSIO_AXE;
+    public static Modes activeMCTiersIOMode = Modes.MCTIERSIO_CRYSTAL;
 
     public static DisplayStatus subtiersNETPosition = DisplayStatus.OFF;
     public static Modes activeSubtiersNETMode = Modes.SUBTIERSNET_MINECART;
@@ -55,7 +55,8 @@ public class TiersClient implements ClientModInitializer {
         ConfigManager.loadConfig();
         clearCache();
         CommandRegister.registerCommands();
-        FabricLoader.getInstance().getModContainer("tiers").ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "tiers-resources"), tiers, ResourcePackActivationType.ALWAYS_ENABLED));
+        FabricLoader.getInstance().getModContainer("tiers").ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "modern"), tiers, ResourcePackActivationType.ALWAYS_ENABLED));
+        FabricLoader.getInstance().getModContainer("tiers").ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "classic"), tiers, ResourcePackActivationType.NORMAL));
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new ColorLoader());
         LOGGER.info("Tiers initialized");
     }
@@ -263,34 +264,36 @@ public class TiersClient implements ClientModInitializer {
     }
 
     public enum Modes {
-        MCTIERSCOM_VANILLA(Icons.vanilla, Icons.vanillaTag, "mctierscom_vanilla", "Vanilla"),
-        MCTIERSCOM_UHC(Icons.uhc, Icons.uhcTag, "mctierscom_uhc", "UHC"),
-        MCTIERSCOM_POT(Icons.pot, Icons.potTag, "mctierscom_pot", "Pot"),
-        MCTIERSCOM_NETHERITE_OP(Icons.netherite, Icons.netheriteTag, "mctierscom_netherite_op", "Netherite Op"),
-        MCTIERSCOM_SMP(Icons.smp, Icons.smpTag, "mctierscom_smp", "Smp"),
-        MCTIERSCOM_SWORD(Icons.sword, Icons.swordTag, "mctierscom_sword", "Sword"),
-        MCTIERSCOM_AXE(Icons.axe, Icons.axeTag, "mctierscom_axe", "Axe"),
-        MCTIERSCOM_MACE(Icons.mace, Icons.maceTag, "mctierscom_mace", "Mace"),
-        MCTIERSIO_VANILLA(Icons.vanilla, Icons.vanillaTag, "mctiersio_vanilla", "Vanilla"),
-        MCTIERSIO_UHC(Icons.uhc, Icons.uhcTag, "mctiersio_uhc", "UHC"),
-        MCTIERSIO_POT(Icons.pot, Icons.potTag, "mctiersio_pot", "Pot"),
-        MCTIERSIO_NETHERITE_POT(Icons.netherite, Icons.netheriteTag, "mctiersio_netherite_pot", "Netherite Pot"),
-        MCTIERSIO_SMP(Icons.smp, Icons.smpTag, "mctiersio_smp", "Smp"),
-        MCTIERSIO_SWORD(Icons.sword, Icons.swordTag, "mctiersio_sword", "Sword"),
-        MCTIERSIO_AXE(Icons.axe, Icons.axeTag, "mctiersio_axe", "Axe"),
-        MCTIERSIO_ELYTRA(Icons.elytra, Icons.elytraTag, "mctiersio_elytra", "Elytra"),
-        SUBTIERSNET_MINECART(Icons.minecart, Icons.minecartTag, "subtiersnet_minecart", "Minecart"),
-        SUBTIERSNET_DIAMOND_CRYSTAL(Icons.diamond_crystal, Icons.diamond_crystalTag, "subtiersnet_diamond_crystal", "Diamond Crystal"),
-        SUBTIERSNET_IRON_POT(Icons.iron_pot, Icons.iron_potTag, "subtiersnet_iron_pot", "Iron Pot"),
-        SUBTIERSNET_ELYTRA(Icons.subtiers_elytra, Icons.subtiers_elytraTag, "subtiersnet_elytra", "Elytra"),
-        SUBTIERSNET_SPEED(Icons.speed, Icons.speedTag, "subtiersnet_speed", "Speed"),
-        SUBTIERSNET_CREEPER(Icons.creeper, Icons.creeperTag, "subtiersnet_creeper", "Creeper"),
-        SUBTIERSNET_MANHUNT(Icons.manhunt, Icons.manhuntTag, "subtiersnet_manhunt", "Manhunt"),
-        SUBTIERSNET_DIAMOND_SMP(Icons.diamond_smp, Icons.diamond_smpTag, "subtiersnet_diamond_smp", "Diamond Smp"),
-        SUBTIERSNET_BOW(Icons.bow, Icons.bowTag, "subtiersnet_bow", "Bow"),
-        SUBTIERSNET_BED(Icons.bed, Icons.bedTag, "subtiersnet_bed", "Bed"),
-        SUBTIERSNET_OG_VANILLA(Icons.og_vanilla, Icons.og_vanillaTag, "subtiersnet_og_vanilla", "OG Vanilla"),
-        SUBTIERSNET_TRIDENT(Icons.trident, Icons.tridentTag, "subtiersnet_trident", "Trident");
+        MCTIERSCOM_VANILLA(Icons.MCTIERSCOM_VANILLA, Icons.MCTIERSCOM_VANILLA_TAG, "mctierscom_vanilla", "Vanilla"),
+        MCTIERSCOM_UHC(Icons.MCTIERSCOM_UHC, Icons.MCTIERSCOM_UHC_TAG, "mctierscom_uhc", "UHC"),
+        MCTIERSCOM_POT(Icons.MCTIERSCOM_POT, Icons.MCTIERSCOM_POT_TAG, "mctierscom_pot", "Pot"),
+        MCTIERSCOM_NETHERITE_OP(Icons.MCTIERSCOM_NETHERITE_OP, Icons.MCTIERSCOM_NETHERITE_OP_TAG, "mctierscom_netherite_op", "Netherite Op"),
+        MCTIERSCOM_SMP(Icons.MCTIERSCOM_SMP, Icons.MCTIERSCOM_SMP_TAG, "mctierscom_smp", "Smp"),
+        MCTIERSCOM_SWORD(Icons.MCTIERSCOM_SWORD, Icons.MCTIERSCOM_SWORD_TAG, "mctierscom_sword", "Sword"),
+        MCTIERSCOM_AXE(Icons.MCTIERSCOM_AXE, Icons.MCTIERSCOM_AXE_TAG, "mctierscom_axe", "Axe"),
+        MCTIERSCOM_MACE(Icons.MCTIERSCOM_MACE, Icons.MCTIERSCOM_MACE_TAG, "mctierscom_mace", "Mace"),
+
+        MCTIERSIO_CRYSTAL(Icons.MCTIERSIO_CRYSTAL, Icons.MCTIERSIO_CRYSTAL_TAG, "mctiersio_crystal", "Crystal"),
+        MCTIERSIO_SWORD(Icons.MCTIERSIO_SWORD, Icons.MCTIERSIO_SWORD_TAG, "mctiersio_sword", "Sword"),
+        MCTIERSIO_UHC(Icons.MCTIERSIO_UHC, Icons.MCTIERSIO_UHC_TAG, "mctiersio_uhc", "UHC"),
+        MCTIERSIO_POT(Icons.MCTIERSIO_POT, Icons.MCTIERSIO_POT_TAG, "mctiersio_pot", "Pot"),
+        MCTIERSIO_NETHERITE_POT(Icons.MCTIERSIO_NETHERITE_POT, Icons.MCTIERSIO_NETHERITE_POT_TAG, "mctiersio_netherite_pot", "Netherite Pot"),
+        MCTIERSIO_SMP(Icons.MCTIERSIO_SMP, Icons.MCTIERSIO_SMP_TAG, "mctiersio_smp", "Smp"),
+        MCTIERSIO_AXE(Icons.MCTIERSIO_AXE, Icons.MCTIERSIO_AXE_TAG, "mctiersio_axe", "Axe"),
+        MCTIERSIO_ELYTRA(Icons.MCTIERSIO_ELYTRA, Icons.MCTIERSIO_ELYTRA_TAG, "mctiersio_elytra", "Elytra"),
+
+        SUBTIERSNET_MINECART(Icons.SUBTIERSNET_MINECART, Icons.SUBTIERSNET_MINECART_TAG, "subtiersnet_minecart", "Minecart"),
+        SUBTIERSNET_DIAMOND_CRYSTAL(Icons.SUBTIERSNET_DIAMOND_CRYSTAL, Icons.SUBTIERSNET_DIAMOND_CRYSTAL_TAG, "subtiersnet_diamond_crystal", "Diamond Crystal"),
+        SUBTIERSNET_DEBUFF(Icons.SUBTIERSNET_DEBUFF, Icons.SUBTIERSNET_DEBUFF_TAG, "subtiersnet_debuff", "DeBuff"),
+        SUBTIERSNET_ELYTRA(Icons.SUBTIERSNET_ELYTRA, Icons.SUBTIERSNET_ELYTRA_TAG, "subtiersnet_elytra", "Elytra"),
+        SUBTIERSNET_SPEED(Icons.SUBTIERSNET_SPEED, Icons.SUBTIERSNET_SPEED_TAG, "subtiersnet_speed", "Speed"),
+        SUBTIERSNET_CREEPER(Icons.SUBTIERSNET_CREEPER, Icons.SUBTIERSNET_CREEPER_TAG, "subtiersnet_creeper", "Creeper"),
+        SUBTIERSNET_MANHUNT(Icons.SUBTIERSNET_MANHUNT, Icons.SUBTIERSNET_MANHUNT_TAG, "subtiersnet_manhunt", "Manhunt"),
+        SUBTIERSNET_DIAMOND_SMP(Icons.SUBTIERSNET_DIAMOND_SMP, Icons.SUBTIERSNET_DIAMOND_SMP_TAG, "subtiersnet_diamond_smp", "Diamond Smp"),
+        SUBTIERSNET_BOW(Icons.SUBTIERSNET_BOW, Icons.SUBTIERSNET_BOW_TAG, "subtiersnet_bow", "Bow"),
+        SUBTIERSNET_BED(Icons.SUBTIERSNET_BED, Icons.SUBTIERSNET_BED_TAG, "subtiersnet_bed", "Bed"),
+        SUBTIERSNET_OG_VANILLA(Icons.SUBTIERSNET_OG_VANILLA, Icons.SUBTIERSNET_OG_VANILLA_TAG, "subtiersnet_og_vanilla", "OG Vanilla"),
+        SUBTIERSNET_TRIDENT(Icons.SUBTIERSNET_TRIDENT, Icons.SUBTIERSNET_TRIDENT_TAG, "subtiersnet_trident", "Trident");
 
         private final Text icon;
         private final Text iconTag;
@@ -377,7 +380,7 @@ public class TiersClient implements ClientModInitializer {
             if (this.toString().equalsIgnoreCase("RIGHT"))
                 return "→";
             else if (this.toString().equalsIgnoreCase("LEFT"))
-                    return "←";
+                return "←";
             return "●";
         }
     }

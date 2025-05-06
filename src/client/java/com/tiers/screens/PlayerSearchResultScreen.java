@@ -1,21 +1,26 @@
 package com.tiers.screens;
 
+import com.tiers.TiersClient;
 import com.tiers.misc.ColorControl;
 import com.tiers.misc.Icons;
-import com.tiers.TiersClient;
-import com.tiers.profiles.*;
-import com.tiers.profiles.types.*;
+import com.tiers.profiles.GameMode;
+import com.tiers.profiles.PlayerProfile;
+import com.tiers.profiles.Status;
+import com.tiers.profiles.types.BaseProfile;
+import com.tiers.profiles.types.MCTiersCOMProfile;
+import com.tiers.profiles.types.MCTiersIOProfile;
+import com.tiers.profiles.types.SubtiersNETProfile;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
 
 import java.io.File;
 import java.io.FileInputStream;

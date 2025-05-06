@@ -1,6 +1,7 @@
 package com.tiers;
 
-import com.terraformersmc.modmenu.api.*;
+import com.terraformersmc.modmenu.api.ConfigScreenFactory;
+import com.terraformersmc.modmenu.api.ModMenuApi;
 import com.tiers.screens.ConfigScreen;
 
 public class ModMenuIntegration implements ModMenuApi {
