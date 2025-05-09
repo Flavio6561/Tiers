@@ -10,7 +10,8 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(PlayerEntity.class)
 public abstract class ModifyNameTagsClientMixin {
-	@Shadow public abstract String getEntityName();
+	@Shadow
+	public abstract String getEntityName();
 
 	@ModifyReturnValue(at = @At("RETURN"), method = "getDisplayName")
 	private Text getDisplayName(Text originalNameText) {
