@@ -12,7 +12,6 @@
 		"homepage": "https://github.com/Flavio6561/Tiers"
 	},
 	"custom" : {
-		"fabric-renderer-api-v1:contains_renderer" : true,
 		"modmenu" : {
 			"links" : {
 				"GitHub": "https://github.com/Flavio6561/Tiers",
@@ -38,7 +37,7 @@
 		}
 	],
 	"depends": {
-		"fabricloader": ">=0.16.10",
+		"fabricloader": ">=0.16.14",
 		"minecraft": "1.21.5",
 		"java": ">=21",
 		"fabric-api": "*"

@@ -17,6 +17,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class PlayerProfile {
     public Status status = Status.SEARCHING;
@@ -36,15 +38,16 @@ public class PlayerProfile {
     public PlayerProfile(String name) {
         this.name = name;
         originalNameText = Text.of(name);
-        buildRequest(name);
     }
 
-    private void buildRequest(String name) {
-        if (numberOfRequests == 5 || status != Status.SEARCHING) {
+    public void buildRequest(String name) {
+        if (numberOfRequests == 12 || status != Status.SEARCHING) {
             status = Status.TIMEOUTED;
             return;
         }
+
         numberOfRequests++;
+
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://api.mojang.com/users/profiles/minecraft/" + name))
@@ -55,14 +58,31 @@ public class PlayerProfile {
             HttpClient.newHttpClient()
                     .sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(response -> {
-                        if (response.statusCode() == 404)
+                        int statusCode = response.statusCode();
+
+                        if (statusCode != 200 && statusCode != 404) {
+                            long delay = switch (numberOfRequests) {
+                                case 1 -> 50;
+                                case 2 -> 100;
+                                case 3 -> 200;
+                                case 4 -> 500;
+                                case 5 -> 800;
+                                case 6 -> 1200;
+                                default -> 2000;
+                            };
+                            CompletableFuture.delayedExecutor(delay, TimeUnit.MILLISECONDS)
+                                    .execute(() -> buildRequest(name));
+                            return;
+                        }
+                        if (statusCode == 404) {
                             status = Status.NOT_EXISTING;
-                        else if (response.statusCode() != 200)
-                            buildRequest(name);
-                        else parseUUID(response.body());
+                            return;
+                        }
+                        parseUUID(response.body());
                     })
                     .exceptionally(exception -> {
-                        buildRequest(name);
+                        CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS)
+                                .execute(() -> buildRequest(name));
                         return null;
                     });
         } catch (IllegalArgumentException ignored) {
@@ -96,7 +116,8 @@ public class PlayerProfile {
             ImageIO.write(ImageIO.read(URI.create(imageUrl).toURL()), "png", new File(savePath));
             imageSaved = true;
         } catch (IOException ignored) {
-            savePlayerImage();
+            CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS)
+                    .execute(this::savePlayerImage);
         }
     }
 

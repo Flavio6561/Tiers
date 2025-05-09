@@ -4,6 +4,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.tiers.misc.ColorControl;
 import com.tiers.misc.ColorLoader;
 import com.tiers.misc.Icons;
+import com.tiers.misc.PlayerProfileQueue;
 import com.tiers.profiles.GameMode;
 import com.tiers.profiles.PlayerProfile;
 import com.tiers.profiles.Status;
@@ -62,7 +63,7 @@ public class TiersClient implements ClientModInitializer {
     }
 
     public static Text getFullName(String originalName, Text originalNameText) {
-        PlayerProfile profile = addGetPlayer(originalName);
+        PlayerProfile profile = addGetPlayer(originalName, false);
         if (profile.status == Status.READY) {
             if (profile.originalNameText == null || profile.originalNameText != originalNameText)
                 updatePlayerNametag(originalNameText, profile);
@@ -175,12 +176,21 @@ public class TiersClient implements ClientModInitializer {
         ConfigManager.saveConfig();
     }
 
-    public static PlayerProfile addGetPlayer(String name) {
+    public static PlayerProfile addGetPlayer(String name, boolean priority) {
         for (PlayerProfile profile : playerProfiles) {
-            if (profile.name.equalsIgnoreCase(name))
+            if (profile.name.equalsIgnoreCase(name)) {
+                if (priority)
+                    PlayerProfileQueue.changeToFirstInQueue(profile);
                 return profile;
+            }
         }
         PlayerProfile newProfile = new PlayerProfile(name);
+
+        if (priority)
+            PlayerProfileQueue.putFirstInQueue(newProfile);
+        else
+            PlayerProfileQueue.enqueue(newProfile);
+
         playerProfiles.add(newProfile);
         return newProfile;
     }
@@ -191,13 +201,14 @@ public class TiersClient implements ClientModInitializer {
 
     protected static int searchPlayer(String name) {
         CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS)
-                .execute(() -> MinecraftClient.getInstance().execute(() -> openPlayerSearchResultScreen(addGetPlayer(name))));
+                .execute(() -> MinecraftClient.getInstance().execute(() -> openPlayerSearchResultScreen(addGetPlayer(name, true))));
         return 1;
     }
 
     public static void clearCache() {
         playerProfiles.clear();
         playerTexts.clear();
+        PlayerProfileQueue.clearQueue();
         try {
             FileUtils.deleteDirectory(new File(FabricLoader.getInstance().getConfigDir() + "/tiers-cache"));
         } catch (IOException e) {

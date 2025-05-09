@@ -14,6 +14,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class BaseProfile {
     public Status status = Status.SEARCHING;
@@ -44,7 +46,9 @@ public class BaseProfile {
             status = Status.TIMEOUTED;
             return;
         }
+
         numberOfRequests++;
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl + uuid))
                 .header("User-Agent", "Tiers")
@@ -59,7 +63,8 @@ public class BaseProfile {
                     else parseInfo(response.body());
                 })
                 .exceptionally(exception -> {
-                    buildRequest(uuid, apiUrl);
+                    CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS)
+                            .execute(() -> buildRequest(uuid, apiUrl));
                     return null;
                 });
     }
