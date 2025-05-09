@@ -1,21 +1,23 @@
 package com.tiers.screens;
 
+import com.tiers.TiersClient;
 import com.tiers.misc.ColorControl;
 import com.tiers.misc.Icons;
-import com.tiers.TiersClient;
-import com.tiers.profiles.*;
-import com.tiers.profiles.types.*;
+import com.tiers.profiles.GameMode;
+import com.tiers.profiles.PlayerProfile;
+import com.tiers.profiles.Status;
+import com.tiers.profiles.types.BaseProfile;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -132,21 +134,8 @@ public class PlayerSearchResultScreen extends Screen {
     }
 
     private void drawTierList(BaseProfile profile, int x, int y) {
-        switch (profile) {
-            case MCTiersCOMProfile mcTiersCOMProfile -> {
-                for (GameMode gameMode : mcTiersCOMProfile.gameModes)
-                    if (drawGameModeTiers(gameMode, x, y)) y += 15;
-            }
-            case MCTiersIOProfile mcTiersIOProfile -> {
-                for (GameMode gameMode : mcTiersIOProfile.gameModes)
-                    if (drawGameModeTiers(gameMode, x, y)) y += 15;
-            }
-            case SubtiersNETProfile subtiersNETProfile -> {
-                for (GameMode gameMode : subtiersNETProfile.gameModes)
-                    if (drawGameModeTiers(gameMode, x, y)) y += 15;
-            }
-            default -> {}
-        }
+        for (GameMode gameMode : profile.gameModes)
+            if (drawGameModeTiers(gameMode, x, y)) y += 15;
     }
 
     private boolean drawGameModeTiers(GameMode mode, int x, int y) {
@@ -187,10 +176,9 @@ public class PlayerSearchResultScreen extends Screen {
     private void drawPlayerAvatar(DrawContext context, int x, int y) {
         if (playerAvatarTexture != null && imageReady)
             context.drawTexture(RenderLayer::getGuiTextured, playerAvatarTexture, x - width / 32, y, 0, 0, width / 16, (int) (width / 6.666), width / 16, (int) (width / 6.666));
-        else if (playerProfile.imageSaved) {
-            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Loading " + playerProfile.name + "'s image..."), x, y + 20, ColorControl.getColor("green"));
+        else if (playerProfile.imageSaved)
             loadPlayerAvatar();
-        } else if (playerProfile.numberOfImageRequests == 5)
+        else if (playerProfile.numberOfImageRequests == 5)
             context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(playerProfile.name + "'s image failed to load. Clear cache and retry"), x, y + 20, ColorControl.getColor("red"));
     }
 
