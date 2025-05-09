@@ -175,10 +175,9 @@ public class PlayerSearchResultScreen extends Screen {
     private void drawPlayerAvatar(DrawContext context, int x, int y) {
         if (playerAvatarTexture != null && imageReady)
             context.drawTexture(playerAvatarTexture, x - width / 32, y, 0, 0, width / 16, (int) (width / 6.666), width / 16, (int) (width / 6.666));
-        else if (playerProfile.imageSaved) {
-            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Loading " + playerProfile.name + "'s image..."), x, y + 20, ColorControl.getColor("green"));
+        else if (playerProfile.imageSaved)
             loadPlayerAvatar();
-        } else if (playerProfile.numberOfImageRequests == 5)
+        else if (playerProfile.numberOfImageRequests == 5)
             context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(playerProfile.name + "'s image failed to load. Clear cache and retry"), x, y + 20, ColorControl.getColor("red"));
     }
 
