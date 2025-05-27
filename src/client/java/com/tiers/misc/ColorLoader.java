@@ -28,9 +28,7 @@ public class ColorLoader implements SimpleSynchronousResourceReloadListener {
                 ColorControl.updateColors(colorData);
                 TiersClient.Modes.updateColors();
                 TiersClient.restyleAllTexts();
-            } catch (IOException ignored) {
-                TiersClient.LOGGER.warn("Error loading colors info");
-            }
+            } catch (IOException ignored) {}
         }
     }
 }

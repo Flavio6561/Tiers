@@ -1,6 +1,5 @@
 package com.tiers;
 
-import com.mojang.brigadier.context.CommandContext;
 import com.tiers.misc.ColorControl;
 import com.tiers.misc.ColorLoader;
 import com.tiers.misc.Icons;
@@ -9,31 +8,29 @@ import com.tiers.profiles.GameMode;
 import com.tiers.profiles.PlayerProfile;
 import com.tiers.profiles.Status;
 import com.tiers.profiles.types.BaseProfile;
-import com.tiers.screens.PlayerSearchResultScreen;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.DisconnectedScreen;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.lwjgl.glfw.GLFW;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 public class TiersClient implements ClientModInitializer {
-    public static final Logger LOGGER = LoggerFactory.getLogger(TiersClient.class);
     protected static final ArrayList<PlayerProfile> playerProfiles = new ArrayList<>();
     protected static final HashMap<String, Text> playerTexts = new HashMap<>();
 
@@ -51,15 +48,23 @@ public class TiersClient implements ClientModInitializer {
     public static DisplayStatus subtiersNETPosition = DisplayStatus.OFF;
     public static Modes activeSubtiersNETMode = Modes.SUBTIERSNET_MINECART;
 
+    private static KeyBinding readConfigKey;
+
     @Override
     public void onInitializeClient() {
         ConfigManager.loadConfig();
         clearCache();
-        CommandRegister.registerCommands();
         FabricLoader.getInstance().getModContainer("tiers").ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "modern"), tiers, ResourcePackActivationType.ALWAYS_ENABLED));
         FabricLoader.getInstance().getModContainer("tiers").ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "classic"), tiers, ResourcePackActivationType.NORMAL));
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new ColorLoader());
-        LOGGER.info("Tiers initialized");
+
+        readConfigKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Read config file", GLFW.GLFW_KEY_F8, "Tiers"));
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (readConfigKey.wasPressed()) {
+                ConfigManager.loadConfig();
+                sendMessageToPlayer("Config file read", 0x00ff00);
+            }
+        });
     }
 
     public static Text getFullName(String originalName, Text originalNameText) {
@@ -164,13 +169,6 @@ public class TiersClient implements ClientModInitializer {
             client.player.sendMessage((Text.literal(chat_message).setStyle(Style.EMPTY.withColor(color))), false);
     }
 
-    protected static int toggleMod(CommandContext<FabricClientCommandSource> ignoredFabricClientCommandSourceCommandContext) {
-        toggleMod = !toggleMod;
-        ConfigManager.saveConfig();
-        sendMessageToPlayer("Tiers is now " + (toggleMod ? "enabled" : "disabled"), (toggleMod ? ColorControl.getColor("green") : ColorControl.getColor("red")));
-        return 1;
-    }
-
     public static void toggleMod() {
         toggleMod = !toggleMod;
         ConfigManager.saveConfig();
@@ -195,25 +193,13 @@ public class TiersClient implements ClientModInitializer {
         return newProfile;
     }
 
-    private static void openPlayerSearchResultScreen(PlayerProfile profile) {
-        MinecraftClient.getInstance().setScreen(new PlayerSearchResultScreen(profile));
-    }
-
-    protected static int searchPlayer(String name) {
-        CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS)
-                .execute(() -> MinecraftClient.getInstance().execute(() -> openPlayerSearchResultScreen(addGetPlayer(name, true))));
-        return 1;
-    }
-
     public static void clearCache() {
         playerProfiles.clear();
         playerTexts.clear();
         PlayerProfileQueue.clearQueue();
         try {
             FileUtils.deleteDirectory(new File(FabricLoader.getInstance().getConfigDir() + "/tiers-cache"));
-        } catch (IOException e) {
-            LOGGER.warn("Error deleting cache folder: {}", e.getMessage());
-        }
+        } catch (IOException ignored) {}
     }
 
     public static void toggleSeparatorAdaptive() {

@@ -1,4 +1,6 @@
-## Tiers branch for 1.20.1 - 1.20.2
+## Tiers (barebones) branch for 1.19-1.19.4
+
+## This version does not include the config screen, the player search result screen and the /tiers commands. Use the keybinding to read the manually-edited config file
 
 ### See [master](https://github.com/Flavio6561/Tiers)
 
