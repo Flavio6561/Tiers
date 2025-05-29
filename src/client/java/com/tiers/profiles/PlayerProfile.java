@@ -65,10 +65,10 @@ public class PlayerProfile {
                                 case 1 -> 50;
                                 case 2 -> 100;
                                 case 3 -> 200;
-                                case 4 -> 500;
-                                case 5 -> 800;
-                                case 6 -> 1200;
-                                default -> 2000;
+                                case 4 -> 400;
+                                case 5 -> 700;
+                                case 6 -> 1100;
+                                default -> 1500;
                             };
                             CompletableFuture.delayedExecutor(delay, TimeUnit.MILLISECONDS)
                                     .execute(() -> buildRequest(name));
@@ -81,7 +81,7 @@ public class PlayerProfile {
                         parseUUID(response.body());
                     })
                     .exceptionally(exception -> {
-                        CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS)
+                        CompletableFuture.delayedExecutor(100, TimeUnit.MILLISECONDS)
                                 .execute(() -> buildRequest(name));
                         return null;
                     });

@@ -12,16 +12,20 @@ import com.tiers.profiles.types.BaseProfile;
 import com.tiers.screens.PlayerSearchResultScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.FileUtils;
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +55,9 @@ public class TiersClient implements ClientModInitializer {
     public static DisplayStatus subtiersNETPosition = DisplayStatus.OFF;
     public static Modes activeSubtiersNETMode = Modes.SUBTIERSNET_MINECART;
 
+    private static KeyBinding cycleRightKey;
+    private static KeyBinding cycleLeftKey;
+
     @Override
     public void onInitializeClient() {
         ConfigManager.loadConfig();
@@ -59,6 +66,9 @@ public class TiersClient implements ClientModInitializer {
         FabricLoader.getInstance().getModContainer("tiers").ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "modern"), tiers, ResourcePackActivationType.ALWAYS_ENABLED));
         FabricLoader.getInstance().getModContainer("tiers").ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "classic"), tiers, ResourcePackActivationType.NORMAL));
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new ColorLoader());
+        cycleRightKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Right Gamemodes", GLFW.GLFW_KEY_I, "Tiers"));
+        cycleLeftKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Left Gamemodes", GLFW.GLFW_KEY_U, "Tiers"));
+        ClientTickEvents.END_CLIENT_TICK.register(TiersClient::checkKeys);
         LOGGER.info("Tiers initialized");
     }
 
@@ -158,6 +168,47 @@ public class TiersClient implements ClientModInitializer {
         }
     }
 
+    public static void checkKeys(MinecraftClient client) {
+        if (cycleRightKey.wasPressed()) {
+            if (client.player == null) return;
+            if (mcTiersCOMPosition.toString().equalsIgnoreCase("RIGHT")) {
+                client.player.sendMessage(Text.literal("Right (MCTiersCOM) is now displaying ")
+                        .setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersCOMMode()), true);
+                return;
+            }
+            if (mcTiersIOPosition.toString().equalsIgnoreCase("RIGHT")) {
+                client.player.sendMessage(Text.literal("Right (MCTiersIO) is now displaying ")
+                        .setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersIOMode()), true);
+                return;
+            }
+            if (subtiersNETPosition.toString().equalsIgnoreCase("RIGHT")) {
+                client.player.sendMessage(Text.literal("Right (SubtiersNET) is now displaying ")
+                        .setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleSubtiersNETMode()), true);
+                return;
+            }
+            client.player.sendMessage(Text.literal("There's nothing on the right display").setStyle(Style.EMPTY.withColor(ColorControl.getColor("red"))), true);
+        }
+        if (cycleLeftKey.wasPressed()) {
+            if (client.player == null) return;
+            if (mcTiersCOMPosition.toString().equalsIgnoreCase("LEFT")) {
+                client.player.sendMessage(Text.literal("Left (MCTiersCOM) is now displaying ")
+                        .setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersCOMMode()), true);
+                return;
+            }
+            if (mcTiersIOPosition.toString().equalsIgnoreCase("LEFT")) {
+                client.player.sendMessage(Text.literal("Left (MCTiersIO) is now displaying ")
+                        .setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersIOMode()), true);
+                return;
+            }
+            if (subtiersNETPosition.toString().equalsIgnoreCase("LEFT")) {
+                client.player.sendMessage(Text.literal("Left (SubtiersNET) is now displaying ")
+                        .setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleSubtiersNETMode()), true);
+                return;
+            }
+            client.player.sendMessage(Text.literal("There's nothing on the left display").setStyle(Style.EMPTY.withColor(ColorControl.getColor("red"))), true);
+        }
+    }
+
     public static void sendMessageToPlayer(String chat_message, int color) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player != null)
@@ -228,22 +279,25 @@ public class TiersClient implements ClientModInitializer {
         ConfigManager.saveConfig();
     }
 
-    public static void cycleMCTiersCOMMode() {
+    public static Text cycleMCTiersCOMMode() {
         activeMCTiersCOMMode = cycleEnum(activeMCTiersCOMMode, Modes.getMCTiersCOMValues());
         updateAllTags();
         ConfigManager.saveConfig();
+        return activeMCTiersCOMMode.label;
     }
 
-    public static void cycleMCTiersIOMode() {
+    public static Text cycleMCTiersIOMode() {
         activeMCTiersIOMode = cycleEnum(activeMCTiersIOMode, Modes.getMCTiersIOValues());
         updateAllTags();
         ConfigManager.saveConfig();
+        return activeMCTiersIOMode.label;
     }
 
-    public static void cycleSubtiersNETMode() {
+    public static Text cycleSubtiersNETMode() {
         activeSubtiersNETMode = cycleEnum(activeSubtiersNETMode, Modes.getSubtiersNETValues());
         updateAllTags();
         ConfigManager.saveConfig();
+        return activeSubtiersNETMode.label;
     }
 
     public static void cycleMCTiersCOMPosition() {
