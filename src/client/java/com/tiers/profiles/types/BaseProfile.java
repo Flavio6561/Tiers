@@ -63,7 +63,7 @@ public class BaseProfile {
                     else parseInfo(response.body());
                 })
                 .exceptionally(exception -> {
-                    CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS)
+                    CompletableFuture.delayedExecutor(100, TimeUnit.MILLISECONDS)
                             .execute(() -> buildRequest(uuid, apiUrl));
                     return null;
                 });
