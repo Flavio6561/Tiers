@@ -22,7 +22,7 @@ public class CommandRegister {
             return builder.buildFuture();
 
         for (PlayerListEntry entry : client.getNetworkHandler().getPlayerList()) {
-            if (CommandSource.shouldSuggest(builder.getRemaining(), entry.getProfile().getName()) && entry.getProfile().getName().length() > 2)
+            if (CommandSource.shouldSuggest(builder.getRemaining().toLowerCase(), entry.getProfile().getName().toLowerCase()) && entry.getProfile().getName().length() > 2)
                 builder.suggest(entry.getProfile().getName());
         }
 
