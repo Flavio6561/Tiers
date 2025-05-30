@@ -1,0 +1,2 @@
+v1	named	intermediary
+METHOD	com/tiers/mixin/client/ModifyNameTagsClientMixin	()Ljava/lang/String;	getNameForScoreboard	method_5820

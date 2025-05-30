@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "com.tiers.mixin.client",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"ModifyNameTagsClientMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

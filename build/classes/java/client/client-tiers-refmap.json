@@ -1,0 +1,14 @@
+{
+  "mappings": {
+    "com/tiers/mixin/client/ModifyNameTagsClientMixin": {
+      "getDisplayName": "Lnet/minecraft/class_1657;method_5476()Lnet/minecraft/class_2561;"
+    }
+  },
+  "data": {
+    "named:intermediary": {
+      "com/tiers/mixin/client/ModifyNameTagsClientMixin": {
+        "getDisplayName": "Lnet/minecraft/class_1657;method_5476()Lnet/minecraft/class_2561;"
+      }
+    }
+  }
+}
