@@ -50,7 +50,7 @@ public class PlayerProfile {
 
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.mojang.com/users/profiles/minecraft/" + name))
+                    .uri(URI.create("https://api.minecraftservices.com/minecraft/profile/lookup/name/" + name))
                     .header("User-Agent", "Tiers")
                     .GET()
                     .build();
