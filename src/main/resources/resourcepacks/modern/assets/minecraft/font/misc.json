@@ -16,17 +16,10 @@
     },
     {
       "type": "bitmap",
-      "file": "font/misc/peak.png",
-      "height": 7,
-      "ascent": 7,
-      "chars": ["\uF002"]
-    },
-    {
-      "type": "bitmap",
       "file": "font/misc/cycle.png",
       "height": 7,
       "ascent": 7,
-      "chars": ["\uF003"]
+      "chars": ["\uF002"]
     }
   ]
 }

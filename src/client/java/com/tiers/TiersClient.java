@@ -1,15 +1,15 @@
 package com.tiers;
 
 import com.mojang.brigadier.context.CommandContext;
-import com.tiers.misc.ColorControl;
-import com.tiers.misc.ColorLoader;
-import com.tiers.misc.Icons;
-import com.tiers.misc.PlayerProfileQueue;
-import com.tiers.profiles.GameMode;
-import com.tiers.profiles.PlayerProfile;
-import com.tiers.profiles.Status;
-import com.tiers.profiles.types.BaseProfile;
+import com.tiers.misc.*;
+import com.tiers.profile.GameMode;
+import com.tiers.profile.PlayerProfile;
+import com.tiers.profile.Status;
+import com.tiers.profile.types.SuperProfile;
+import com.tiers.screens.ConfigScreen;
 import com.tiers.screens.PlayerSearchResultScreen;
+import com.tiers.textures.ColorControl;
+import com.tiers.textures.ColorLoader;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -17,6 +17,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.resource.ResourceType;
@@ -33,13 +34,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public class TiersClient implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(TiersClient.class);
-    protected static final ArrayList<PlayerProfile> playerProfiles = new ArrayList<>();
-    protected static final HashMap<String, Text> playerTexts = new HashMap<>();
+    public static String userAgent = "Tiers";
+    private static final ArrayList<PlayerProfile> playerProfiles = new ArrayList<>();
+    private static final HashMap<String, Text> playerTexts = new HashMap<>();
 
     public static boolean toggleMod = true;
     public static boolean showIcons = true;
@@ -55,61 +58,100 @@ public class TiersClient implements ClientModInitializer {
     public static DisplayStatus subtiersNETPosition = DisplayStatus.OFF;
     public static Modes activeSubtiersNETMode = Modes.SUBTIERSNET_MINECART;
 
+    private static KeyBinding autoDetectKey;
     private static KeyBinding cycleRightKey;
     private static KeyBinding cycleLeftKey;
 
     @Override
     public void onInitializeClient() {
         ConfigManager.loadConfig();
-        clearCache();
+        clearCache(true);
         CommandRegister.registerCommands();
-        FabricLoader.getInstance().getModContainer("tiers").ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "modern"), tiers, ResourcePackActivationType.ALWAYS_ENABLED));
-        FabricLoader.getInstance().getModContainer("tiers").ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "classic"), tiers, ResourcePackActivationType.NORMAL));
-        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new ColorLoader());
+
+        Optional<ModContainer> fabricLoader = FabricLoader.getInstance().getModContainer("tiers");
+        if (fabricLoader.isPresent()) {
+            fabricLoader.ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "modern"), tiers, ResourcePackActivationType.ALWAYS_ENABLED));
+            fabricLoader.ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "classic"), tiers, ResourcePackActivationType.NORMAL));
+            userAgent = "Tiers " + fabricLoader.get().getMetadata().getVersion().getFriendlyString() + " on " + MinecraftClient.getInstance().getGameVersion() + " played by " + MinecraftClient.getInstance().getGameProfile().getName();
+        } else
+            LOGGER.warn("Error initializing Tiers. Please report this issue: https://github.com/Flavio6561/Tiers/issues");
+
+        autoDetectKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Auto Detect Kit", GLFW.GLFW_KEY_Y, "Tiers"));
         cycleRightKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Right Gamemodes", GLFW.GLFW_KEY_I, "Tiers"));
         cycleLeftKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Left Gamemodes", GLFW.GLFW_KEY_U, "Tiers"));
-        ClientTickEvents.END_CLIENT_TICK.register(TiersClient::checkKeys);
-        LOGGER.info("Tiers initialized");
+
+        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new ColorLoader());
+        ClientTickEvents.END_CLIENT_TICK.register(TiersClient::tickUtils);
+
+        LOGGER.info("Tiers initialized | User agent: {}", userAgent);
     }
 
-    public static Text getFullName(String originalName, Text originalNameText) {
+    public static Text getModifiedNametag(String originalName, Text originalNameText) {
         PlayerProfile profile = addGetPlayer(originalName, false);
-        if (profile.status == Status.READY) {
+        if (profile.status == Status.READY)
             if (profile.originalNameText == null || profile.originalNameText != originalNameText)
                 updatePlayerNametag(originalNameText, profile);
-        }
 
         if (playerTexts.containsKey(originalName)) return playerTexts.get(originalName);
 
         return originalNameText;
     }
 
-    public static void updateAllTags() {
-        for (PlayerProfile profile : playerProfiles) {
-            if (profile.status == Status.READY && profile.originalNameText != null)
-                updatePlayerNametag(profile.originalNameText, profile);
-        }
-    }
+    public static Text getNametag(PlayerProfile profile) {
+        if (!toggleMod || profile.status != Status.READY) return profile.originalNameText;
 
-    public static void updatePlayerNametag(Text originalNameText, PlayerProfile profile) {
         Text rightText = Text.literal("");
         Text leftText = Text.literal("");
 
-        if (mcTiersCOMPosition == DisplayStatus.RIGHT) {
+        if (mcTiersCOMPosition == DisplayStatus.RIGHT)
             rightText = updateProfileNameTagRight(profile.mcTiersCOMProfile, activeMCTiersCOMMode);
-        } else if (mcTiersCOMPosition == DisplayStatus.LEFT) {
+        else if (mcTiersCOMPosition == DisplayStatus.LEFT)
             leftText = updateProfileNameTagLeft(profile.mcTiersCOMProfile, activeMCTiersCOMMode);
-        }
-        if (mcTiersIOPosition == DisplayStatus.RIGHT) {
+
+        if (mcTiersIOPosition == DisplayStatus.RIGHT)
             rightText = updateProfileNameTagRight(profile.mcTiersIOProfile, activeMCTiersIOMode);
-        } else if (mcTiersIOPosition == DisplayStatus.LEFT) {
+        else if (mcTiersIOPosition == DisplayStatus.LEFT)
             leftText = updateProfileNameTagLeft(profile.mcTiersIOProfile, activeMCTiersIOMode);
-        }
-        if (subtiersNETPosition == DisplayStatus.RIGHT) {
+
+        if (subtiersNETPosition == DisplayStatus.RIGHT)
             rightText = updateProfileNameTagRight(profile.subtiersNETProfile, activeSubtiersNETMode);
-        } else if (subtiersNETPosition == DisplayStatus.LEFT) {
+        else if (subtiersNETPosition == DisplayStatus.LEFT)
             leftText = updateProfileNameTagLeft(profile.subtiersNETProfile, activeSubtiersNETMode);
-        }
+
+        return Text.literal("")
+                .append(leftText)
+                .append(profile.originalNameText)
+                .append(rightText);
+    }
+
+    private static void updateAllTags() {
+        for (PlayerProfile profile : playerProfiles)
+            if (profile.status == Status.READY && profile.originalNameText != null)
+                updatePlayerNametag(profile.originalNameText, profile);
+
+        if (ConfigScreen.ownProfile.status == Status.READY)
+            updatePlayerNametag(ConfigScreen.ownProfile.originalNameText, ConfigScreen.ownProfile);
+        updatePlayerNametag(ConfigScreen.defaultProfile.originalNameText, ConfigScreen.defaultProfile);
+    }
+
+    private static void updatePlayerNametag(Text originalNameText, PlayerProfile profile) {
+        Text rightText = Text.literal("");
+        Text leftText = Text.literal("");
+
+        if (mcTiersCOMPosition == DisplayStatus.RIGHT)
+            rightText = updateProfileNameTagRight(profile.mcTiersCOMProfile, activeMCTiersCOMMode);
+        else if (mcTiersCOMPosition == DisplayStatus.LEFT)
+            leftText = updateProfileNameTagLeft(profile.mcTiersCOMProfile, activeMCTiersCOMMode);
+
+        if (mcTiersIOPosition == DisplayStatus.RIGHT)
+            rightText = updateProfileNameTagRight(profile.mcTiersIOProfile, activeMCTiersIOMode);
+        else if (mcTiersIOPosition == DisplayStatus.LEFT)
+            leftText = updateProfileNameTagLeft(profile.mcTiersIOProfile, activeMCTiersIOMode);
+
+        if (subtiersNETPosition == DisplayStatus.RIGHT)
+            rightText = updateProfileNameTagRight(profile.subtiersNETProfile, activeSubtiersNETMode);
+        else if (subtiersNETPosition == DisplayStatus.LEFT)
+            leftText = updateProfileNameTagLeft(profile.subtiersNETProfile, activeSubtiersNETMode);
 
         playerTexts.put(profile.name, Text.literal("")
                 .append(leftText)
@@ -119,37 +161,53 @@ public class TiersClient implements ClientModInitializer {
         profile.originalNameText = originalNameText;
     }
 
-    private static Text updateProfileNameTagRight(BaseProfile profile, Modes activeMode) {
+    private static Text updateProfileNameTagRight(SuperProfile profile, Modes activeMode) {
         MutableText returnValue = Text.literal("");
         if (profile.status == Status.READY) {
             GameMode shown = profile.getGameMode(activeMode);
-            if ((shown == null || shown.status == Status.SEARCHING) || (shown.status == Status.NOT_EXISTING && displayMode == ModesTierDisplay.SELECTED)) return returnValue;
+
+            if ((shown == null || shown.status == Status.SEARCHING) || (shown.status == Status.NOT_EXISTING && displayMode == ModesTierDisplay.SELECTED))
+                return returnValue;
+
             if (displayMode == ModesTierDisplay.ADAPTIVE_HIGHEST && shown.status == Status.NOT_EXISTING && profile.highest != null)
                 shown = profile.highest;
+
             if (displayMode == ModesTierDisplay.HIGHEST && profile.highest != null && profile.highest.getTierPoints(false) > shown.getTierPoints(false))
                 shown = profile.highest;
-            if (shown == null || shown.status != Status.READY) return returnValue;
+
+            if (shown == null || shown.status != Status.READY)
+                return returnValue;
+
             MutableText separator = Text.literal(" | ").setStyle(isSeparatorAdaptive ? shown.displayedTier.getStyle() : Style.EMPTY.withColor(ColorControl.getColor("static_separator")));
             returnValue.append(Text.literal("").append(separator).append(shown.displayedTier));
+
             if (showIcons)
-                returnValue.append(Text.literal(" ").append(shown.name.getIconTag()));
+                returnValue.append(Text.literal(" ").append(shown.name.iconTag));
         }
         return returnValue;
     }
 
-    private static Text updateProfileNameTagLeft(BaseProfile profile, Modes activeMode) {
+    private static Text updateProfileNameTagLeft(SuperProfile profile, Modes activeMode) {
         MutableText returnValue = Text.literal("");
         if (profile.status == Status.READY) {
             GameMode shown = profile.getGameMode(activeMode);
-            if ((shown == null || shown.status == Status.SEARCHING) || (shown.status == Status.NOT_EXISTING && displayMode == ModesTierDisplay.SELECTED)) return returnValue;
+
+            if ((shown == null || shown.status == Status.SEARCHING) || (shown.status == Status.NOT_EXISTING && displayMode == ModesTierDisplay.SELECTED))
+                return returnValue;
+
             if (displayMode == ModesTierDisplay.ADAPTIVE_HIGHEST && shown.status == Status.NOT_EXISTING && profile.highest != null)
                 shown = profile.highest;
+
             if (displayMode == ModesTierDisplay.HIGHEST && profile.highest != null && profile.highest.getTierPoints(false) > shown.getTierPoints(false))
                 shown = profile.highest;
-            if (shown == null || shown.status != Status.READY) return returnValue;
+
+            if (shown == null || shown.status != Status.READY)
+                return returnValue;
+
             MutableText separator = Text.literal(" | ").setStyle(isSeparatorAdaptive ? shown.displayedTier.getStyle() : Style.EMPTY.withColor(ColorControl.getColor("static_separator")));
+
             if (showIcons)
-                returnValue = Text.literal("").append(shown.name.getIconTag()).append(" ");
+                returnValue = Text.literal("").append(shown.name.iconTag).append(" ");
             returnValue.append(Text.literal("").append(shown.displayedTier).append(separator));
         }
         return returnValue;
@@ -159,66 +217,118 @@ public class TiersClient implements ClientModInitializer {
         for (PlayerProfile profile : playerProfiles) {
             if (profile.status == Status.READY) {
                 if (profile.mcTiersCOMProfile.status == Status.READY)
-                    profile.mcTiersCOMProfile.parseInfo(profile.mcTiersCOMProfile.originalJson);
+                    profile.mcTiersCOMProfile.parseJson(profile.mcTiersCOMProfile.originalJson);
                 if (profile.mcTiersIOProfile.status == Status.READY)
-                    profile.mcTiersIOProfile.parseInfo(profile.mcTiersIOProfile.originalJson);
+                    profile.mcTiersIOProfile.parseJson(profile.mcTiersIOProfile.originalJson);
                 if (profile.subtiersNETProfile.status == Status.READY)
-                    profile.subtiersNETProfile.parseInfo(profile.subtiersNETProfile.originalJson);
+                    profile.subtiersNETProfile.parseJson(profile.subtiersNETProfile.originalJson);
             }
         }
     }
 
-    public static void checkKeys(MinecraftClient client) {
+    private static void tickUtils(MinecraftClient client) {
+        if (!client.isFinishedLoading()) return;
+
+        if (ConfigScreen.defaultProfile == null) {
+            ConfigScreen.ownProfile = new PlayerProfile(client.getGameProfile().getName(), false);
+            PlayerProfileQueue.enqueue(ConfigScreen.ownProfile);
+
+            ConfigScreen.defaultProfile = new PlayerProfile("{\"id\":\"3b653c04f2d9422a87e7ccf8b146c350\",\"name\":\"TheRandomizer\"}",
+                    "{\"uuid\":\"3b653c04f2d9422a87e7ccf8b146c350\",\"name\":\"TheRandomizer\",\"rankings\":{\"axe\":{\"tier\":1,\"pos\":0,\"peak_tier\":1,\"peak_pos\":0,\"attained\":1701927844,\"retired\":true},\"smp\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1712888458,\"retired\":false},\"sword\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1733880489,\"retired\":false},\"uhc\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1709746421,\"retired\":false},\"vanilla\":{\"tier\":4,\"pos\":0,\"peak_tier\":4,\"peak_pos\":0,\"attained\":1713570014,\"retired\":false},\"nethop\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1710301241,\"retired\":false},\"pot\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1723349754,\"retired\":false},\"mace\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1737168704,\"retired\":false}},\"region\":\"NA\",\"points\":116,\"overall\":28,\"badges\":[{\"title\":\"Axe Champion\",\"desc\":\"Attained T1+ in Axe for any amount of time\"},{\"title\":\"Axe Expert\",\"desc\":\"Attained T2+ in Axe for any amount of time\"},{\"title\":\"Adventurous\",\"desc\":\"Attained a tier on every present current gamemode\"},{\"title\":\"Holding The Crown\",\"desc\":\"T1 category of 1 gamemode for 30 days or more\"}],\"combat_master\":false}",
+                    "{\"uuid\":\"3b653c04f2d9422a87e7ccf8b146c350\",\"name\":\"TheRandomizer\",\"rankings\":{\"pot\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1723349754,\"retired\":false},\"crystal\":{\"tier\":4,\"pos\":0,\"peak_tier\":4,\"peak_pos\":0,\"attained\":1713570014,\"retired\":false},\"uhc\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1709746421,\"retired\":false},\"sword\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1733880489,\"retired\":false},\"smp\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1712888458,\"retired\":false},\"neth_pot\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1710301241,\"retired\":false},\"axe\":{\"tier\":1,\"pos\":1,\"peak_tier\":1,\"peak_pos\":1,\"attained\":1744884400,\"retired\":true}},\"region\":\"EU\",\"points\":90,\"overall\":44,\"badges\":[{\"title\":\"Axe Champion\",\"desc\":\"Attained T1+ in Axe for any amount of time\"},{\"title\":\"Axe Expert\",\"desc\":\"Attained T2+ in Axe for any amount of time\"},{\"title\":\"Adventurous\",\"desc\":\"Attained a tier on every present current gamemode\"},{\"title\":\"Holding The Crown\",\"desc\":\"T1 category of 1 gamemode for 30 days or more\"}]}",
+                    "{\"uuid\":\"3b653c04f2d9422a87e7ccf8b146c350\",\"name\":\"TheRandomizer\",\"rankings\":{\"bed\":{\"tier\":4,\"pos\":0,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1748753398,\"retired\":false},\"speed\":{\"tier\":1,\"pos\":1,\"peak_tier\":1,\"peak_pos\":1,\"attained\":1747584669,\"retired\":false},\"dia_smp\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1734383100,\"retired\":false},\"og_vanilla\":{\"tier\":2,\"pos\":0,\"peak_tier\":2,\"peak_pos\":0,\"attained\":1746316718,\"retired\":true},\"bow\":{\"tier\":4,\"pos\":1,\"peak_tier\":4,\"peak_pos\":1,\"attained\":1747630846,\"retired\":false},\"debuff\":{\"tier\":2,\"pos\":1,\"peak_tier\":2,\"peak_pos\":1,\"attained\":1746668477,\"retired\":false},\"manhunt\":{\"tier\":2,\"pos\":1,\"peak_tier\":2,\"peak_pos\":1,\"attained\":1736014926,\"retired\":true},\"trident\":{\"tier\":3,\"pos\":0,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1741136796,\"retired\":false},\"elytra\":{\"tier\":2,\"pos\":1,\"peak_tier\":2,\"peak_pos\":1,\"attained\":1747112500,\"retired\":false},\"dia_crystal\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1747589669,\"retired\":false},\"minecart\":{\"tier\":3,\"pos\":0,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1747032612,\"retired\":false},\"creeper\":{\"tier\":1,\"pos\":0,\"peak_tier\":1,\"peak_pos\":0,\"attained\":1748398520,\"retired\":false}},\"region\":\"NA\",\"points\":236,\"overall\":1,\"badges\":[{\"title\":\"Speed Expert\",\"desc\":\"Attained T2+ in Speed for any amount of time\"},{\"title\":\"Creeper Expert\",\"desc\":\"Attained T2+ in Creeper for any amount of time\"},{\"title\":\"OG Vanilla Expert\",\"desc\":\"Attained T2+ in OG Vanilla for any amount of time\"},{\"title\":\"Manhunt Expert\",\"desc\":\"Attained T2+ in Manhunt for any amount of time\"},{\"title\":\"Adventurous\",\"desc\":\"Attained a tier on every present current gamemode\"},{\"title\":\"Creeper Champion\",\"desc\":\"Attained T1+ in Creeper for any amount of time\"},{\"title\":\"DeBuff Expert\",\"desc\":\"Attained T2+ in DeBuff for any amount of time\"},{\"title\":\"Holding The Crown\",\"desc\":\"T1 category of 1 gamemode for 30 days or more\"},{\"title\":\"Elytra Expert\",\"desc\":\"Attained T2+ in Elytra for any amount of time\"},{\"title\":\"Speed Champion\",\"desc\":\"Attained T1+ in Speed for any amount of time\"}],\"combat_master\":false}");
+        }
+
+        if (autoDetectKey.wasPressed())
+            InventoryChecker.checkInventory(client);
+
         if (cycleRightKey.wasPressed()) {
-            if (client.player == null) return;
-            if (mcTiersCOMPosition.toString().equalsIgnoreCase("RIGHT")) {
-                client.player.sendMessage(Text.literal("Right (MCTiersCOM) is now displaying ")
-                        .setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersCOMMode()), true);
-                return;
-            }
-            if (mcTiersIOPosition.toString().equalsIgnoreCase("RIGHT")) {
-                client.player.sendMessage(Text.literal("Right (MCTiersIO) is now displaying ")
-                        .setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersIOMode()), true);
-                return;
-            }
-            if (subtiersNETPosition.toString().equalsIgnoreCase("RIGHT")) {
-                client.player.sendMessage(Text.literal("Right (SubtiersNET) is now displaying ")
-                        .setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleSubtiersNETMode()), true);
-                return;
-            }
-            client.player.sendMessage(Text.literal("There's nothing on the right display").setStyle(Style.EMPTY.withColor(ColorControl.getColor("red"))), true);
+            Text message = cycleRightMode();
+
+            if (message != null)
+                sendMessageToPlayer(message, true);
+            else
+                sendMessageToPlayer(Text.literal("There's nothing on the right display").setStyle(Style.EMPTY.withColor(ColorControl.getColor("red"))), true);
         }
+
         if (cycleLeftKey.wasPressed()) {
-            if (client.player == null) return;
-            if (mcTiersCOMPosition.toString().equalsIgnoreCase("LEFT")) {
-                client.player.sendMessage(Text.literal("Left (MCTiersCOM) is now displaying ")
-                        .setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersCOMMode()), true);
-                return;
-            }
-            if (mcTiersIOPosition.toString().equalsIgnoreCase("LEFT")) {
-                client.player.sendMessage(Text.literal("Left (MCTiersIO) is now displaying ")
-                        .setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersIOMode()), true);
-                return;
-            }
-            if (subtiersNETPosition.toString().equalsIgnoreCase("LEFT")) {
-                client.player.sendMessage(Text.literal("Left (SubtiersNET) is now displaying ")
-                        .setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleSubtiersNETMode()), true);
-                return;
-            }
-            client.player.sendMessage(Text.literal("There's nothing on the left display").setStyle(Style.EMPTY.withColor(ColorControl.getColor("red"))), true);
+            Text message = cycleLeftMode();
+
+            if (message != null)
+                sendMessageToPlayer(message, true);
+            else
+                sendMessageToPlayer(Text.literal("There's nothing on the left display").setStyle(Style.EMPTY.withColor(ColorControl.getColor("red"))), true);
         }
     }
 
-    public static void sendMessageToPlayer(String chat_message, int color) {
+    public static Text cycleRightMode() {
+        if (mcTiersCOMPosition.toString().equalsIgnoreCase("RIGHT"))
+            return Text.literal("Right (MCTiersCOM) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersCOMMode());
+
+        if (mcTiersIOPosition.toString().equalsIgnoreCase("RIGHT"))
+            return Text.literal("Right (MCTiersIO) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersIOMode());
+
+        if (subtiersNETPosition.toString().equalsIgnoreCase("RIGHT"))
+            return Text.literal("Right (SubtiersNET) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleSubtiersNETMode());
+
+        return null;
+    }
+
+    public static Text cycleLeftMode() {
+        if (mcTiersCOMPosition.toString().equalsIgnoreCase("LEFT"))
+            return Text.literal("Left (MCTiersCOM) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersCOMMode());
+
+        if (mcTiersIOPosition.toString().equalsIgnoreCase("LEFT"))
+            return Text.literal("Left (MCTiersIO) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersIOMode());
+
+        if (subtiersNETPosition.toString().equalsIgnoreCase("LEFT"))
+            return Text.literal("Left (SubtiersNET) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleSubtiersNETMode());
+
+        return null;
+    }
+
+    public static Text getRightIcon() {
+        if (mcTiersCOMPosition.toString().equalsIgnoreCase("RIGHT"))
+            return activeMCTiersCOMMode.icon;
+
+        if (mcTiersIOPosition.toString().equalsIgnoreCase("RIGHT"))
+            return activeMCTiersIOMode.icon;
+
+        if (subtiersNETPosition.toString().equalsIgnoreCase("RIGHT"))
+            return activeSubtiersNETMode.icon;
+
+        return Text.of("");
+    }
+
+    public static Text getLeftIcon() {
+        if (mcTiersCOMPosition.toString().equalsIgnoreCase("LEFT"))
+            return activeMCTiersCOMMode.icon;
+
+        if (mcTiersIOPosition.toString().equalsIgnoreCase("LEFT"))
+            return activeMCTiersIOMode.icon;
+
+        if (subtiersNETPosition.toString().equalsIgnoreCase("LEFT"))
+            return activeSubtiersNETMode.icon;
+
+        return Text.of("");
+    }
+
+    public static void sendMessageToPlayer(String message, int color, boolean overlay) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player != null)
-            client.player.sendMessage((Text.literal(chat_message).setStyle(Style.EMPTY.withColor(color))), false);
+            client.player.sendMessage((Text.literal(message).setStyle(Style.EMPTY.withColor(color))), overlay);
     }
 
-    protected static int toggleMod(CommandContext<FabricClientCommandSource> ignoredFabricClientCommandSourceCommandContext) {
+    public static void sendMessageToPlayer(Text message, boolean overlay) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.player != null)
+            client.player.sendMessage(message, overlay);
+    }
+
+    public static int toggleMod(CommandContext<FabricClientCommandSource> ignoredFabricClientCommandSourceCommandContext) {
         toggleMod = !toggleMod;
         ConfigManager.saveConfig();
-        sendMessageToPlayer("Tiers is now " + (toggleMod ? "enabled" : "disabled"), (toggleMod ? ColorControl.getColor("green") : ColorControl.getColor("red")));
+        sendMessageToPlayer("Tiers is now " + (toggleMod ? "enabled" : "disabled"), (toggleMod ? ColorControl.getColor("green") : ColorControl.getColor("red")), true);
         return 1;
     }
 
@@ -227,7 +337,7 @@ public class TiersClient implements ClientModInitializer {
         ConfigManager.saveConfig();
     }
 
-    public static PlayerProfile addGetPlayer(String name, boolean priority) {
+    private static PlayerProfile addGetPlayer(String name, boolean priority) {
         for (PlayerProfile profile : playerProfiles) {
             if (profile.name.equalsIgnoreCase(name)) {
                 if (priority)
@@ -235,7 +345,7 @@ public class TiersClient implements ClientModInitializer {
                 return profile;
             }
         }
-        PlayerProfile newProfile = new PlayerProfile(name);
+        PlayerProfile newProfile = new PlayerProfile(name, true);
 
         if (priority)
             PlayerProfileQueue.putFirstInQueue(newProfile);
@@ -247,21 +357,29 @@ public class TiersClient implements ClientModInitializer {
     }
 
     private static void openPlayerSearchResultScreen(PlayerProfile profile) {
-        MinecraftClient.getInstance().setScreen(new PlayerSearchResultScreen(profile));
+        MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().setScreen(new PlayerSearchResultScreen(profile)));
     }
 
-    protected static int searchPlayer(String name) {
-        CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS)
-                .execute(() -> MinecraftClient.getInstance().execute(() -> openPlayerSearchResultScreen(addGetPlayer(name, true))));
+    private static void openConfigScreen() {
+        MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().setScreen(ConfigScreen.getConfigScreen(null)));
+    }
+
+    public static int searchPlayer(String name) {
+        if (name.equalsIgnoreCase("toggle"))
+            toggleMod(null);
+        else if (name.equalsIgnoreCase("config"))
+            CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS).execute(TiersClient::openConfigScreen);
+        else
+            CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS).execute(() -> openPlayerSearchResultScreen(addGetPlayer(name, true)));
         return 1;
     }
 
-    public static void clearCache() {
+    public static void clearCache(boolean start) {
         playerProfiles.clear();
         playerTexts.clear();
         PlayerProfileQueue.clearQueue();
         try {
-            FileUtils.deleteDirectory(new File(FabricLoader.getInstance().getConfigDir() + "/tiers-cache"));
+            FileUtils.deleteDirectory(new File(FabricLoader.getInstance().getGameDir() + (start ? "/cache/tiers" : "/cache/tiers/players")));
         } catch (IOException e) {
             LOGGER.warn("Error deleting cache folder: {}", e.getMessage());
         }
@@ -328,111 +446,17 @@ public class TiersClient implements ClientModInitializer {
         return values[(current.ordinal() + 1) % values.length];
     }
 
-    public enum Modes {
-        MCTIERSCOM_VANILLA(Icons.MCTIERSCOM_VANILLA, Icons.MCTIERSCOM_VANILLA_TAG, "mctierscom_vanilla", "Vanilla"),
-        MCTIERSCOM_UHC(Icons.MCTIERSCOM_UHC, Icons.MCTIERSCOM_UHC_TAG, "mctierscom_uhc", "UHC"),
-        MCTIERSCOM_POT(Icons.MCTIERSCOM_POT, Icons.MCTIERSCOM_POT_TAG, "mctierscom_pot", "Pot"),
-        MCTIERSCOM_NETHERITE_OP(Icons.MCTIERSCOM_NETHERITE_OP, Icons.MCTIERSCOM_NETHERITE_OP_TAG, "mctierscom_netherite_op", "Netherite Op"),
-        MCTIERSCOM_SMP(Icons.MCTIERSCOM_SMP, Icons.MCTIERSCOM_SMP_TAG, "mctierscom_smp", "Smp"),
-        MCTIERSCOM_SWORD(Icons.MCTIERSCOM_SWORD, Icons.MCTIERSCOM_SWORD_TAG, "mctierscom_sword", "Sword"),
-        MCTIERSCOM_AXE(Icons.MCTIERSCOM_AXE, Icons.MCTIERSCOM_AXE_TAG, "mctierscom_axe", "Axe"),
-        MCTIERSCOM_MACE(Icons.MCTIERSCOM_MACE, Icons.MCTIERSCOM_MACE_TAG, "mctierscom_mace", "Mace"),
-
-        MCTIERSIO_CRYSTAL(Icons.MCTIERSIO_CRYSTAL, Icons.MCTIERSIO_CRYSTAL_TAG, "mctiersio_crystal", "Crystal"),
-        MCTIERSIO_SWORD(Icons.MCTIERSIO_SWORD, Icons.MCTIERSIO_SWORD_TAG, "mctiersio_sword", "Sword"),
-        MCTIERSIO_UHC(Icons.MCTIERSIO_UHC, Icons.MCTIERSIO_UHC_TAG, "mctiersio_uhc", "UHC"),
-        MCTIERSIO_POT(Icons.MCTIERSIO_POT, Icons.MCTIERSIO_POT_TAG, "mctiersio_pot", "Pot"),
-        MCTIERSIO_NETHERITE_POT(Icons.MCTIERSIO_NETHERITE_POT, Icons.MCTIERSIO_NETHERITE_POT_TAG, "mctiersio_netherite_pot", "Netherite Pot"),
-        MCTIERSIO_SMP(Icons.MCTIERSIO_SMP, Icons.MCTIERSIO_SMP_TAG, "mctiersio_smp", "Smp"),
-        MCTIERSIO_AXE(Icons.MCTIERSIO_AXE, Icons.MCTIERSIO_AXE_TAG, "mctiersio_axe", "Axe"),
-        MCTIERSIO_ELYTRA(Icons.MCTIERSIO_ELYTRA, Icons.MCTIERSIO_ELYTRA_TAG, "mctiersio_elytra", "Elytra"),
-
-        SUBTIERSNET_MINECART(Icons.SUBTIERSNET_MINECART, Icons.SUBTIERSNET_MINECART_TAG, "subtiersnet_minecart", "Minecart"),
-        SUBTIERSNET_DIAMOND_CRYSTAL(Icons.SUBTIERSNET_DIAMOND_CRYSTAL, Icons.SUBTIERSNET_DIAMOND_CRYSTAL_TAG, "subtiersnet_diamond_crystal", "Diamond Crystal"),
-        SUBTIERSNET_DEBUFF(Icons.SUBTIERSNET_DEBUFF, Icons.SUBTIERSNET_DEBUFF_TAG, "subtiersnet_debuff", "DeBuff"),
-        SUBTIERSNET_ELYTRA(Icons.SUBTIERSNET_ELYTRA, Icons.SUBTIERSNET_ELYTRA_TAG, "subtiersnet_elytra", "Elytra"),
-        SUBTIERSNET_SPEED(Icons.SUBTIERSNET_SPEED, Icons.SUBTIERSNET_SPEED_TAG, "subtiersnet_speed", "Speed"),
-        SUBTIERSNET_CREEPER(Icons.SUBTIERSNET_CREEPER, Icons.SUBTIERSNET_CREEPER_TAG, "subtiersnet_creeper", "Creeper"),
-        SUBTIERSNET_MANHUNT(Icons.SUBTIERSNET_MANHUNT, Icons.SUBTIERSNET_MANHUNT_TAG, "subtiersnet_manhunt", "Manhunt"),
-        SUBTIERSNET_DIAMOND_SMP(Icons.SUBTIERSNET_DIAMOND_SMP, Icons.SUBTIERSNET_DIAMOND_SMP_TAG, "subtiersnet_diamond_smp", "Diamond Smp"),
-        SUBTIERSNET_BOW(Icons.SUBTIERSNET_BOW, Icons.SUBTIERSNET_BOW_TAG, "subtiersnet_bow", "Bow"),
-        SUBTIERSNET_BED(Icons.SUBTIERSNET_BED, Icons.SUBTIERSNET_BED_TAG, "subtiersnet_bed", "Bed"),
-        SUBTIERSNET_OG_VANILLA(Icons.SUBTIERSNET_OG_VANILLA, Icons.SUBTIERSNET_OG_VANILLA_TAG, "subtiersnet_og_vanilla", "OG Vanilla"),
-        SUBTIERSNET_TRIDENT(Icons.SUBTIERSNET_TRIDENT, Icons.SUBTIERSNET_TRIDENT_TAG, "subtiersnet_trident", "Trident");
-
-        private final Text icon;
-        private final Text iconTag;
-        private final String color;
-        private final String stringLabel;
-        private Text label;
-
-        Modes(Text icon, Text iconTag, String color, String label) {
-            this.icon = icon;
-            this.iconTag = iconTag;
-            this.color = color;
-            this.stringLabel = label;
-            this.label = Text.literal(label).setStyle(Style.EMPTY.withColor(ColorControl.getColor(color)));
-        }
-
-        public static void updateColors() {
-            for (Modes mode : values())
-                mode.label = Text.literal(mode.stringLabel).setStyle(Style.EMPTY.withColor(ColorControl.getColor(mode.color)));
-        }
-
-        public Text getIcon() {
-            return icon;
-        }
-
-        public Text getIconTag() {
-            return iconTag;
-        }
-
-        public Text getLabel() {
-            return label;
-        }
-
-        public static Modes[] getMCTiersCOMValues() {
-            Modes[] modesArray = new Modes[8];
-            ArrayList<Modes> modes = new ArrayList<>();
-            for (Modes mode : Modes.values()) {
-                if (mode.toString().contains("MCTIERSCOM"))
-                    modes.add(mode);
-            }
-            return modes.toArray(modesArray);
-        }
-
-        public static Modes[] getMCTiersIOValues() {
-            Modes[] modesArray = new Modes[7];
-            ArrayList<Modes> modes = new ArrayList<>();
-            for (Modes mode : Modes.values()) {
-                if (mode.toString().contains("MCTIERSIO"))
-                    modes.add(mode);
-            }
-            return modes.toArray(modesArray);
-        }
-
-        public static Modes[] getSubtiersNETValues() {
-            Modes[] modesArray = new Modes[9];
-            ArrayList<Modes> modes = new ArrayList<>();
-            for (Modes mode : Modes.values()) {
-                if (mode.toString().contains("SUBTIERSNET"))
-                    modes.add(mode);
-            }
-            return modes.toArray(modesArray);
-        }
-    }
-
     public enum ModesTierDisplay {
         HIGHEST,
         SELECTED,
         ADAPTIVE_HIGHEST;
 
-        public String getIcon() {
+        public String getCurrentMode() {
             if (this.toString().equalsIgnoreCase("HIGHEST"))
-                return "↑";
+                return "Displayed Tiers: Highest";
             else if (this.toString().equalsIgnoreCase("SELECTED"))
-                return "●";
-            return "↓";
+                return "Displayed Tiers: Selected";
+            return "Displayed Tiers: Adaptive Highest";
         }
     }
 
@@ -441,12 +465,12 @@ public class TiersClient implements ClientModInitializer {
         LEFT,
         OFF;
 
-        public String getIcon() {
+        public String getStatus() {
             if (this.toString().equalsIgnoreCase("RIGHT"))
-                return "→";
+                return "Right";
             else if (this.toString().equalsIgnoreCase("LEFT"))
-                return "←";
-            return "●";
+                return "Left";
+            return "Off";
         }
     }
 }

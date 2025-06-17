@@ -1,7 +1,7 @@
-package com.tiers.misc;
+package com.tiers;
 
-import com.tiers.profiles.PlayerProfile;
-import com.tiers.profiles.Status;
+import com.tiers.profile.PlayerProfile;
+import com.tiers.profile.Status;
 
 import java.util.concurrent.*;
 
