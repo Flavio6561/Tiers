@@ -1,4 +1,4 @@
-package com.tiers;
+package com.tiers.misc;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;

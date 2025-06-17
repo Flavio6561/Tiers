@@ -7,6 +7,7 @@
 	"authors": [
 		"Flavio6561"
 	],
+	"license": "GPL-3.0",
 	"contact": {
 		"issues": "https://github.com/Flavio6561/Tiers/issues",
 		"homepage": "https://github.com/Flavio6561/Tiers"
@@ -27,7 +28,7 @@
 			"com.tiers.TiersClient"
 		],
 		"modmenu": [
-			"com.tiers.ModMenuIntegration"
+			"com.tiers.misc.ModMenuIntegration"
 		]
 	},
 	"mixins": [
