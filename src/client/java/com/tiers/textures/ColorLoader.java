@@ -1,8 +1,8 @@
-package com.tiers.misc;
+package com.tiers.textures;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.tiers.TiersClient;
+import com.tiers.misc.Modes;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -12,6 +12,9 @@ import net.minecraft.util.JsonHelper;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+
+import static com.tiers.TiersClient.restyleAllTexts;
+import static com.tiers.TiersClient.LOGGER;
 
 public class ColorLoader implements SimpleSynchronousResourceReloadListener {
     @Override
@@ -26,9 +29,11 @@ public class ColorLoader implements SimpleSynchronousResourceReloadListener {
             try {
                 JsonObject colorData = JsonHelper.deserialize(new Gson(), new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8), JsonObject.class);
                 ColorControl.updateColors(colorData);
-                TiersClient.Modes.updateColors();
-                TiersClient.restyleAllTexts();
-            } catch (IOException ignored) {}
+                Modes.updateColors();
+                restyleAllTexts();
+            } catch (IOException ignored) {
+                LOGGER.warn("Error loading colors info");
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.tiers.misc;
+package com.tiers.textures;
 
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -35,10 +35,9 @@ public class Icons {
     public static final Text SUBTIERSNET_OG_VANILLA = Text.literal("\uF02A").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes")));
     public static final Text SUBTIERSNET_TRIDENT = Text.literal("\uF02B").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes")));
 
-    public static final Text globe = Text.literal("\uF000").styled(style -> style.withFont(Identifier.of("minecraft", "misc")));
-    public static final Text overall = Text.literal("\uF001").styled(style -> style.withFont(Identifier.of("minecraft", "misc")));
-    public static final Text peak = Text.literal("\uF002").styled(style -> style.withFont(Identifier.of("minecraft", "misc")));
-    public static final Text cycle = Text.literal("\uF003").styled(style -> style.withFont(Identifier.of("minecraft", "misc")));
+    public static final Text GLOBE = Text.literal("\uF000").styled(style -> style.withFont(Identifier.of("minecraft", "misc")));
+    public static final Text OVERALL = Text.literal("\uF001").styled(style -> style.withFont(Identifier.of("minecraft", "misc")));
+    public static final Text CYCLE = Text.literal("\uF002").styled(style -> style.withFont(Identifier.of("minecraft", "misc")));
 
     public static final Text MCTIERSCOM_VANILLA_TAG = Text.literal("\uF000").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes-tags")));
     public static final Text MCTIERSCOM_UHC_TAG = Text.literal("\uF001").styled(style -> style.withFont(Identifier.of("minecraft", "gamemodes-tags")));

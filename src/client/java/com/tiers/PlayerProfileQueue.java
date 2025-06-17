@@ -1,12 +1,9 @@
-package com.tiers.misc;
+package com.tiers;
 
-import com.tiers.profiles.PlayerProfile;
-import com.tiers.profiles.Status;
+import com.tiers.profile.PlayerProfile;
+import com.tiers.profile.Status;
 
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class PlayerProfileQueue {
     private static final ConcurrentLinkedDeque<PlayerProfile> queue = new ConcurrentLinkedDeque<>();
