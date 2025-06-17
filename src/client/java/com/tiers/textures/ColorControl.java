@@ -1,6 +1,7 @@
-package com.tiers.misc;
+package com.tiers.textures;
 
 import com.google.gson.JsonObject;
+
 import java.util.HashMap;
 
 public class ColorControl {

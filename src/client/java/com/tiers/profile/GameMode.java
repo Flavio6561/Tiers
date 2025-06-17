@@ -1,8 +1,8 @@
-package com.tiers.profiles;
+package com.tiers.profile;
 
 import com.google.gson.JsonObject;
-import com.tiers.TiersClient;
-import com.tiers.misc.ColorControl;
+import com.tiers.misc.Modes;
+import com.tiers.textures.ColorControl;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
@@ -13,42 +13,46 @@ import java.time.ZoneId;
 public class GameMode {
     public Status status = Status.SEARCHING;
 
-    public String tier;
-    public String pos;
-    public String peakTier;
-    public String peakPos;
-    public String attained;
-    public String retired;
+    private String tier;
+    private String peakTier;
+    private String attained;
 
     public Text displayedTier;
-    public String displayedTierUnformatted;
+    private String displayedTierUnformatted;
     public Text displayedPeakTier;
-    public String displayedPeakTierUnformatted;
+    private String displayedPeakTierUnformatted;
     public Text tierTooltip;
     public Text peakTierTooltip;
 
-    public TiersClient.Modes name;
+    public Modes name;
     public String parsingName;
     public boolean hasPeak = false;
     public boolean drawn = false;
 
-    public GameMode(TiersClient.Modes name, String parsingName) {
+    public GameMode(Modes name, String parsingName) {
         this.name = name;
         this.parsingName = parsingName;
     }
 
     public void parseTiers(JsonObject jsonObject) {
-        if (jsonObject.has("tier") && jsonObject.has("pos") && jsonObject.has("attained") && jsonObject.has("retired")) {
+        String pos;
+        String peakPos;
+        String retired;
+
+        if (jsonObject.has("tier") && jsonObject.has("pos") &&
+                jsonObject.has("attained") && jsonObject.has("retired")) {
             tier = jsonObject.get("tier").getAsString();
             pos = jsonObject.get("pos").getAsString();
 
             if (jsonObject.get("peak_tier").isJsonNull())
                 peakTier = tier;
-            else peakTier = jsonObject.get("peak_tier").getAsString();
+            else
+                peakTier = jsonObject.get("peak_tier").getAsString();
 
             if (jsonObject.get("peak_pos").isJsonNull())
                 peakPos = pos;
-            else peakPos = jsonObject.get("peak_pos").getAsString();
+            else
+                peakPos = jsonObject.get("peak_pos").getAsString();
 
             attained = jsonObject.get("attained").getAsString();
             retired = jsonObject.get("retired").getAsString();
@@ -70,7 +74,7 @@ public class GameMode {
             displayedPeakTierUnformatted = peakPos.equalsIgnoreCase("0") ? "HT" : "LT";
             displayedPeakTierUnformatted += peakTier;
 
-            displayedPeakTier = Text.literal(displayedPeakTierUnformatted).setStyle(Style.EMPTY.withColor(getTierColor(displayedPeakTierUnformatted)));
+            displayedPeakTier = Text.literal("(" + displayedPeakTierUnformatted + ")").setStyle(Style.EMPTY.withColor(getTierColor(displayedPeakTierUnformatted)));
             peakTierTooltip = getPeakTierTooltip();
 
             hasPeak = true;
@@ -88,7 +92,7 @@ public class GameMode {
             tierTooltipString += "High ";
         else tierTooltipString += "Low ";
 
-        tierTooltipString += "Tier " + tier + "\n\nPoints: " + getTierPoints(false) + "\nAttained: " + String.valueOf(LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(attained)), ZoneId.systemDefault())).replace("T", " ");
+        tierTooltipString += "Tier " + tier + "\n\nPoints: " + getTierPoints(false) + "\nAttained: " + LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(attained)), ZoneId.systemDefault()).toString().replace("T", " ");
 
         return Text.literal(tierTooltipString).setStyle(Style.EMPTY.withColor(getTierColor(displayedTierUnformatted)));
     }
@@ -113,17 +117,24 @@ public class GameMode {
         if (peak)
             tier = displayedPeakTierUnformatted;
         tier = tier.replace("R", "");
+
         if (tier.equalsIgnoreCase("HT1")) return 60;
-        else if (tier.equalsIgnoreCase("LT1"))
-            if (name.toString().contains("MCTIERSIO")) return 44;
-            else return 45;
-        else if (tier.equalsIgnoreCase("HT2"))
-            if (name.toString().contains("MCTIERSIO")) return 28;
-            else return 30;
-        else if (tier.equalsIgnoreCase("LT2"))
-            if (name.toString().contains("MCTIERSIO")) return 16;
-            else return 20;
-        else if (tier.equalsIgnoreCase("HT3")) return 10;
+        else if (tier.equalsIgnoreCase("LT1")) {
+            if (name.toString().contains("MCTIERSIO"))
+                return 44;
+            else
+                return 45;
+        } else if (tier.equalsIgnoreCase("HT2")) {
+            if (name.toString().contains("MCTIERSIO"))
+                return 28;
+            else
+                return 30;
+        } else if (tier.equalsIgnoreCase("LT2")) {
+            if (name.toString().contains("MCTIERSIO"))
+                return 16;
+            else
+                return 20;
+        } else if (tier.equalsIgnoreCase("HT3")) return 10;
         else if (tier.equalsIgnoreCase("LT3")) return 6;
         else if (tier.equalsIgnoreCase("HT4")) return 4;
         else if (tier.equalsIgnoreCase("LT4")) return 3;
