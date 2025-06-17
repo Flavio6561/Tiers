@@ -14,11 +14,13 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.text.MutableText;
@@ -62,17 +64,35 @@ public class TiersClient implements ClientModInitializer {
     private static KeyBinding cycleRightKey;
     private static KeyBinding cycleLeftKey;
 
+    private static boolean seenMainMenu = false;
+
     @Override
     public void onInitializeClient() {
         ConfigManager.loadConfig();
         clearCache(true);
         CommandRegister.registerCommands();
 
+        ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+            if (!seenMainMenu && screen instanceof TitleScreen) {
+                seenMainMenu = true;
+
+                CompletableFuture.delayedExecutor(2000, TimeUnit.MILLISECONDS).execute(() -> {
+                    ConfigScreen.ownProfile = new PlayerProfile(client.getSession().getProfile().getName(), false);
+                    PlayerProfileQueue.enqueue(ConfigScreen.ownProfile);
+
+                    ConfigScreen.defaultProfile = new PlayerProfile("{\"id\":\"3b653c04f2d9422a87e7ccf8b146c350\",\"name\":\"TheRandomizer\"}",
+                            "{\"uuid\":\"3b653c04f2d9422a87e7ccf8b146c350\",\"name\":\"TheRandomizer\",\"rankings\":{\"axe\":{\"tier\":1,\"pos\":0,\"peak_tier\":1,\"peak_pos\":0,\"attained\":1701927844,\"retired\":true},\"smp\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1712888458,\"retired\":false},\"sword\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1733880489,\"retired\":false},\"uhc\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1709746421,\"retired\":false},\"vanilla\":{\"tier\":4,\"pos\":0,\"peak_tier\":4,\"peak_pos\":0,\"attained\":1713570014,\"retired\":false},\"nethop\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1710301241,\"retired\":false},\"pot\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1723349754,\"retired\":false},\"mace\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1737168704,\"retired\":false}},\"region\":\"NA\",\"points\":116,\"overall\":28,\"badges\":[{\"title\":\"Axe Champion\",\"desc\":\"Attained T1+ in Axe for any amount of time\"},{\"title\":\"Axe Expert\",\"desc\":\"Attained T2+ in Axe for any amount of time\"},{\"title\":\"Adventurous\",\"desc\":\"Attained a tier on every present current gamemode\"},{\"title\":\"Holding The Crown\",\"desc\":\"T1 category of 1 gamemode for 30 days or more\"}],\"combat_master\":false}",
+                            "{\"uuid\":\"3b653c04f2d9422a87e7ccf8b146c350\",\"name\":\"TheRandomizer\",\"rankings\":{\"pot\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1723349754,\"retired\":false},\"crystal\":{\"tier\":4,\"pos\":0,\"peak_tier\":4,\"peak_pos\":0,\"attained\":1713570014,\"retired\":false},\"uhc\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1709746421,\"retired\":false},\"sword\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1733880489,\"retired\":false},\"smp\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1712888458,\"retired\":false},\"neth_pot\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1710301241,\"retired\":false},\"axe\":{\"tier\":1,\"pos\":1,\"peak_tier\":1,\"peak_pos\":1,\"attained\":1744884400,\"retired\":true}},\"region\":\"EU\",\"points\":90,\"overall\":44,\"badges\":[{\"title\":\"Axe Champion\",\"desc\":\"Attained T1+ in Axe for any amount of time\"},{\"title\":\"Axe Expert\",\"desc\":\"Attained T2+ in Axe for any amount of time\"},{\"title\":\"Adventurous\",\"desc\":\"Attained a tier on every present current gamemode\"},{\"title\":\"Holding The Crown\",\"desc\":\"T1 category of 1 gamemode for 30 days or more\"}]}",
+                            "{\"uuid\":\"3b653c04f2d9422a87e7ccf8b146c350\",\"name\":\"TheRandomizer\",\"rankings\":{\"bed\":{\"tier\":4,\"pos\":0,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1748753398,\"retired\":false},\"speed\":{\"tier\":1,\"pos\":1,\"peak_tier\":1,\"peak_pos\":1,\"attained\":1747584669,\"retired\":false},\"dia_smp\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1734383100,\"retired\":false},\"og_vanilla\":{\"tier\":2,\"pos\":0,\"peak_tier\":2,\"peak_pos\":0,\"attained\":1746316718,\"retired\":true},\"bow\":{\"tier\":4,\"pos\":1,\"peak_tier\":4,\"peak_pos\":1,\"attained\":1747630846,\"retired\":false},\"debuff\":{\"tier\":2,\"pos\":1,\"peak_tier\":2,\"peak_pos\":1,\"attained\":1746668477,\"retired\":false},\"manhunt\":{\"tier\":2,\"pos\":1,\"peak_tier\":2,\"peak_pos\":1,\"attained\":1736014926,\"retired\":true},\"trident\":{\"tier\":3,\"pos\":0,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1741136796,\"retired\":false},\"elytra\":{\"tier\":2,\"pos\":1,\"peak_tier\":2,\"peak_pos\":1,\"attained\":1747112500,\"retired\":false},\"dia_crystal\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1747589669,\"retired\":false},\"minecart\":{\"tier\":3,\"pos\":0,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1747032612,\"retired\":false},\"creeper\":{\"tier\":1,\"pos\":0,\"peak_tier\":1,\"peak_pos\":0,\"attained\":1748398520,\"retired\":false}},\"region\":\"NA\",\"points\":236,\"overall\":1,\"badges\":[{\"title\":\"Speed Expert\",\"desc\":\"Attained T2+ in Speed for any amount of time\"},{\"title\":\"Creeper Expert\",\"desc\":\"Attained T2+ in Creeper for any amount of time\"},{\"title\":\"OG Vanilla Expert\",\"desc\":\"Attained T2+ in OG Vanilla for any amount of time\"},{\"title\":\"Manhunt Expert\",\"desc\":\"Attained T2+ in Manhunt for any amount of time\"},{\"title\":\"Adventurous\",\"desc\":\"Attained a tier on every present current gamemode\"},{\"title\":\"Creeper Champion\",\"desc\":\"Attained T1+ in Creeper for any amount of time\"},{\"title\":\"DeBuff Expert\",\"desc\":\"Attained T2+ in DeBuff for any amount of time\"},{\"title\":\"Holding The Crown\",\"desc\":\"T1 category of 1 gamemode for 30 days or more\"},{\"title\":\"Elytra Expert\",\"desc\":\"Attained T2+ in Elytra for any amount of time\"},{\"title\":\"Speed Champion\",\"desc\":\"Attained T1+ in Speed for any amount of time\"}],\"combat_master\":false}");
+                });
+            }
+        });
+
         Optional<ModContainer> fabricLoader = FabricLoader.getInstance().getModContainer("tiers");
         if (fabricLoader.isPresent()) {
             fabricLoader.ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "modern"), tiers, ResourcePackActivationType.ALWAYS_ENABLED));
             fabricLoader.ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "classic"), tiers, ResourcePackActivationType.NORMAL));
-            userAgent = "Tiers " + fabricLoader.get().getMetadata().getVersion().getFriendlyString() + " on " + MinecraftClient.getInstance().getGameVersion() + " played by " + MinecraftClient.getInstance().getGameProfile().getName();
+            userAgent = "Tiers " + fabricLoader.get().getMetadata().getVersion().getFriendlyString() + " on " + MinecraftClient.getInstance().getGameVersion() + " played by " + MinecraftClient.getInstance().getSession().getProfile().getName();
         } else
             LOGGER.warn("Error initializing Tiers. Please report this issue: https://github.com/Flavio6561/Tiers/issues");
 
@@ -227,18 +247,6 @@ public class TiersClient implements ClientModInitializer {
     }
 
     private static void tickUtils(MinecraftClient client) {
-        if (!client.isFinishedLoading()) return;
-
-        if (ConfigScreen.defaultProfile == null) {
-            ConfigScreen.ownProfile = new PlayerProfile(client.getGameProfile().getName(), false);
-            PlayerProfileQueue.enqueue(ConfigScreen.ownProfile);
-
-            ConfigScreen.defaultProfile = new PlayerProfile("{\"id\":\"3b653c04f2d9422a87e7ccf8b146c350\",\"name\":\"TheRandomizer\"}",
-                    "{\"uuid\":\"3b653c04f2d9422a87e7ccf8b146c350\",\"name\":\"TheRandomizer\",\"rankings\":{\"axe\":{\"tier\":1,\"pos\":0,\"peak_tier\":1,\"peak_pos\":0,\"attained\":1701927844,\"retired\":true},\"smp\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1712888458,\"retired\":false},\"sword\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1733880489,\"retired\":false},\"uhc\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1709746421,\"retired\":false},\"vanilla\":{\"tier\":4,\"pos\":0,\"peak_tier\":4,\"peak_pos\":0,\"attained\":1713570014,\"retired\":false},\"nethop\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1710301241,\"retired\":false},\"pot\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1723349754,\"retired\":false},\"mace\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1737168704,\"retired\":false}},\"region\":\"NA\",\"points\":116,\"overall\":28,\"badges\":[{\"title\":\"Axe Champion\",\"desc\":\"Attained T1+ in Axe for any amount of time\"},{\"title\":\"Axe Expert\",\"desc\":\"Attained T2+ in Axe for any amount of time\"},{\"title\":\"Adventurous\",\"desc\":\"Attained a tier on every present current gamemode\"},{\"title\":\"Holding The Crown\",\"desc\":\"T1 category of 1 gamemode for 30 days or more\"}],\"combat_master\":false}",
-                    "{\"uuid\":\"3b653c04f2d9422a87e7ccf8b146c350\",\"name\":\"TheRandomizer\",\"rankings\":{\"pot\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1723349754,\"retired\":false},\"crystal\":{\"tier\":4,\"pos\":0,\"peak_tier\":4,\"peak_pos\":0,\"attained\":1713570014,\"retired\":false},\"uhc\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1709746421,\"retired\":false},\"sword\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1733880489,\"retired\":false},\"smp\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1712888458,\"retired\":false},\"neth_pot\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1710301241,\"retired\":false},\"axe\":{\"tier\":1,\"pos\":1,\"peak_tier\":1,\"peak_pos\":1,\"attained\":1744884400,\"retired\":true}},\"region\":\"EU\",\"points\":90,\"overall\":44,\"badges\":[{\"title\":\"Axe Champion\",\"desc\":\"Attained T1+ in Axe for any amount of time\"},{\"title\":\"Axe Expert\",\"desc\":\"Attained T2+ in Axe for any amount of time\"},{\"title\":\"Adventurous\",\"desc\":\"Attained a tier on every present current gamemode\"},{\"title\":\"Holding The Crown\",\"desc\":\"T1 category of 1 gamemode for 30 days or more\"}]}",
-                    "{\"uuid\":\"3b653c04f2d9422a87e7ccf8b146c350\",\"name\":\"TheRandomizer\",\"rankings\":{\"bed\":{\"tier\":4,\"pos\":0,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1748753398,\"retired\":false},\"speed\":{\"tier\":1,\"pos\":1,\"peak_tier\":1,\"peak_pos\":1,\"attained\":1747584669,\"retired\":false},\"dia_smp\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1734383100,\"retired\":false},\"og_vanilla\":{\"tier\":2,\"pos\":0,\"peak_tier\":2,\"peak_pos\":0,\"attained\":1746316718,\"retired\":true},\"bow\":{\"tier\":4,\"pos\":1,\"peak_tier\":4,\"peak_pos\":1,\"attained\":1747630846,\"retired\":false},\"debuff\":{\"tier\":2,\"pos\":1,\"peak_tier\":2,\"peak_pos\":1,\"attained\":1746668477,\"retired\":false},\"manhunt\":{\"tier\":2,\"pos\":1,\"peak_tier\":2,\"peak_pos\":1,\"attained\":1736014926,\"retired\":true},\"trident\":{\"tier\":3,\"pos\":0,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1741136796,\"retired\":false},\"elytra\":{\"tier\":2,\"pos\":1,\"peak_tier\":2,\"peak_pos\":1,\"attained\":1747112500,\"retired\":false},\"dia_crystal\":{\"tier\":3,\"pos\":1,\"peak_tier\":3,\"peak_pos\":1,\"attained\":1747589669,\"retired\":false},\"minecart\":{\"tier\":3,\"pos\":0,\"peak_tier\":3,\"peak_pos\":0,\"attained\":1747032612,\"retired\":false},\"creeper\":{\"tier\":1,\"pos\":0,\"peak_tier\":1,\"peak_pos\":0,\"attained\":1748398520,\"retired\":false}},\"region\":\"NA\",\"points\":236,\"overall\":1,\"badges\":[{\"title\":\"Speed Expert\",\"desc\":\"Attained T2+ in Speed for any amount of time\"},{\"title\":\"Creeper Expert\",\"desc\":\"Attained T2+ in Creeper for any amount of time\"},{\"title\":\"OG Vanilla Expert\",\"desc\":\"Attained T2+ in OG Vanilla for any amount of time\"},{\"title\":\"Manhunt Expert\",\"desc\":\"Attained T2+ in Manhunt for any amount of time\"},{\"title\":\"Adventurous\",\"desc\":\"Attained a tier on every present current gamemode\"},{\"title\":\"Creeper Champion\",\"desc\":\"Attained T1+ in Creeper for any amount of time\"},{\"title\":\"DeBuff Expert\",\"desc\":\"Attained T2+ in DeBuff for any amount of time\"},{\"title\":\"Holding The Crown\",\"desc\":\"T1 category of 1 gamemode for 30 days or more\"},{\"title\":\"Elytra Expert\",\"desc\":\"Attained T2+ in Elytra for any amount of time\"},{\"title\":\"Speed Champion\",\"desc\":\"Attained T1+ in Speed for any amount of time\"}],\"combat_master\":false}");
-        }
-
         if (autoDetectKey.wasPressed())
             InventoryChecker.checkInventory(client);
 
