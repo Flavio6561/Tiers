@@ -1,7 +1,9 @@
 package com.tiers;
 
 import com.mojang.brigadier.context.CommandContext;
-import com.tiers.misc.*;
+import com.tiers.misc.CommandRegister;
+import com.tiers.misc.ConfigManager;
+import com.tiers.misc.Modes;
 import com.tiers.profile.GameMode;
 import com.tiers.profile.PlayerProfile;
 import com.tiers.profile.Status;
@@ -43,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 public class TiersClient implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(TiersClient.class);
     public static String userAgent = "Tiers";
+    public static boolean anonymousUserAgent = false;
     private static final ArrayList<PlayerProfile> playerProfiles = new ArrayList<>();
     private static final HashMap<String, Text> playerTexts = new HashMap<>();
 
