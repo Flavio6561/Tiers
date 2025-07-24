@@ -3,7 +3,10 @@ package com.tiers;
 import com.tiers.profile.PlayerProfile;
 import com.tiers.profile.Status;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class PlayerProfileQueue {
     private static final ConcurrentLinkedDeque<PlayerProfile> queue = new ConcurrentLinkedDeque<>();
@@ -12,7 +15,7 @@ public class PlayerProfileQueue {
     private static PlayerProfile currentProfile = null;
 
     static {
-        scheduler.scheduleAtFixedRate(PlayerProfileQueue::processNext, 0, 100, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(PlayerProfileQueue::processNext, 0, 70, TimeUnit.MILLISECONDS);
     }
 
     public static void enqueue(PlayerProfile profile) {

@@ -1,12 +1,12 @@
 package com.tiers.screens;
 
 import com.tiers.TiersClient;
-import com.tiers.textures.ColorControl;
-import com.tiers.textures.Icons;
 import com.tiers.profile.GameMode;
 import com.tiers.profile.PlayerProfile;
 import com.tiers.profile.Status;
 import com.tiers.profile.types.SuperProfile;
+import com.tiers.textures.ColorControl;
+import com.tiers.textures.Icons;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -69,6 +69,9 @@ public class PlayerSearchResultScreen extends Screen {
             context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Searching for " + playerProfile.name + "..."), centerX, listY, ColorControl.getColor("green"));
             return;
         }
+
+        if (playerProfile.numberOfImageRequests == 0)
+            playerProfile.savePlayerImage();
 
         drawPlayerAvatar(context, centerX, avatarY);
         context.drawCenteredTextWithShadow(this.textRenderer, TiersClient.getNametag(playerProfile), centerX, height / 55, ColorControl.getColor("text"));

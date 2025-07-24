@@ -1,7 +1,9 @@
 package com.tiers;
 
 import com.mojang.brigadier.context.CommandContext;
-import com.tiers.misc.*;
+import com.tiers.misc.CommandRegister;
+import com.tiers.misc.ConfigManager;
+import com.tiers.misc.Modes;
 import com.tiers.profile.GameMode;
 import com.tiers.profile.PlayerProfile;
 import com.tiers.profile.Status;
@@ -41,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 public class TiersClient implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(TiersClient.class);
     public static String userAgent = "Tiers";
+    public static boolean anonymousUserAgent = false;
     private static final ArrayList<PlayerProfile> playerProfiles = new ArrayList<>();
     private static final HashMap<String, Text> playerTexts = new HashMap<>();
 
@@ -72,7 +75,11 @@ public class TiersClient implements ClientModInitializer {
         if (fabricLoader.isPresent()) {
             fabricLoader.ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "modern"), tiers, ResourcePackActivationType.ALWAYS_ENABLED));
             fabricLoader.ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "classic"), tiers, ResourcePackActivationType.NORMAL));
-            userAgent = "Tiers " + fabricLoader.get().getMetadata().getVersion().getFriendlyString() + " on " + MinecraftClient.getInstance().getGameVersion() + " played by " + MinecraftClient.getInstance().getGameProfile().getName();
+            userAgent = "Tiers " + fabricLoader.get().getMetadata().getVersion().getFriendlyString();
+            if (anonymousUserAgent)
+                userAgent += " (anonymous user agent)";
+            else
+                userAgent += " on " + MinecraftClient.getInstance().getGameVersion() + " played by " + MinecraftClient.getInstance().getGameProfile().getName();
         } else
             LOGGER.warn("Error initializing Tiers. Please report this issue: https://github.com/Flavio6561/Tiers/issues");
 
