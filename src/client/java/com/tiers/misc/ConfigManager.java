@@ -5,7 +5,10 @@ import com.google.gson.JsonSyntaxException;
 import com.tiers.TiersClient;
 import net.fabricmc.loader.api.FabricLoader;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 
@@ -27,6 +30,8 @@ public class ConfigManager {
 
         TiersClient.DisplayStatus subtiersNETPosition;
         Modes activeSubtiersNETMode;
+
+        boolean anonymousUserAgent;
     }
 
     public static void loadConfig() {
@@ -65,6 +70,8 @@ public class ConfigManager {
         if (Arrays.stream(Modes.values()).toList().contains(config.activeSubtiersNETMode) && config.activeSubtiersNETMode.toString().contains("SUBTIERSNET"))
             TiersClient.activeSubtiersNETMode = config.activeSubtiersNETMode;
 
+        TiersClient.anonymousUserAgent = config.anonymousUserAgent;
+
         saveConfig();
     }
 
@@ -84,6 +91,8 @@ public class ConfigManager {
 
         config.subtiersNETPosition = TiersClient.subtiersNETPosition;
         config.activeSubtiersNETMode = TiersClient.activeSubtiersNETMode;
+
+        config.anonymousUserAgent = TiersClient.anonymousUserAgent;
 
         saveConfig();
     }
@@ -106,6 +115,8 @@ public class ConfigManager {
 
         currentConfig.subtiersNETPosition = TiersClient.subtiersNETPosition;
         currentConfig.activeSubtiersNETMode = TiersClient.activeSubtiersNETMode;
+
+        currentConfig.anonymousUserAgent = TiersClient.anonymousUserAgent;
 
         try (FileWriter writer = new FileWriter(configFile)) {
             gson.toJson(currentConfig, writer);
