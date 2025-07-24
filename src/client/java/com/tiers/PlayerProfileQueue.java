@@ -12,7 +12,7 @@ public class PlayerProfileQueue {
     private static PlayerProfile currentProfile = null;
 
     static {
-        scheduler.scheduleAtFixedRate(PlayerProfileQueue::processNext, 0, 100, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(PlayerProfileQueue::processNext, 0, 70, TimeUnit.MILLISECONDS);
     }
 
     public static void enqueue(PlayerProfile profile) {

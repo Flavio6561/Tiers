@@ -7,11 +7,11 @@ import com.tiers.textures.ColorControl;
 import com.tiers.textures.Icons;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.text.Style;
@@ -63,26 +63,26 @@ public class ConfigScreen extends Screen {
 
         super.render(context, mouseX, mouseY, delta);
 
-        context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Tiers config"), centerX, height / 50, ColorControl.getColor("text"));
+        context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Tiers config"), centerX, height / 50, ColorControl.getColorMinecraftStandard("text"));
 
         drawPlayerAvatar(context, centerX, height - 10 - (int) (width / 6.666));
-        context.drawCenteredTextWithShadow(this.textRenderer, TiersClient.getNametag(useOwnProfile ? ownProfile : defaultProfile), centerX, height - 24 - (int) (width / 6.666), ColorControl.getColor("text"));
+        context.drawCenteredTextWithShadow(this.textRenderer, TiersClient.getNametag(useOwnProfile ? ownProfile : defaultProfile), centerX, height - 24 - (int) (width / 6.666), ColorControl.getColorMinecraftStandard("text"));
 
         drawCategoryList(context, MCTIERS_COM_IMAGE, centerX - 100, distance + 110);
         drawCategoryList(context, MCTIERS_IO_IMAGE, centerX, distance + 110);
         drawCategoryList(context, SUBTIERS_NET_IMAGE, centerX + 100, distance + 110);
 
-        context.drawTextWithShadow(this.textRenderer, Text.of(TiersClient.getRightIcon()), centerX + 90 + 33, distance + 75 + 8, ColorControl.getColor("text"));
-        context.drawTextWithShadow(this.textRenderer, Text.of(TiersClient.getLeftIcon()), centerX - 90 - 33 - 12, distance + 75 + 8, ColorControl.getColor("text"));
+        context.drawTextWithShadow(this.textRenderer, Text.of(TiersClient.getRightIcon()), centerX + 90 + 33, distance + 75 + 8, ColorControl.getColorMinecraftStandard("text"));
+        context.drawTextWithShadow(this.textRenderer, Text.of(TiersClient.getLeftIcon()), centerX - 90 - 33 - 12, distance + 75 + 8, ColorControl.getColorMinecraftStandard("text"));
 
         checkUpdates();
     }
 
     private void drawCategoryList(DrawContext context, Identifier image, int x, int y) {
         if (image == MCTIERS_COM_IMAGE)
-            context.drawTexture(RenderLayer::getGuiTextured, image, x - 56, y + 5, 0, 0, 112, 21, 112, 21);
+            context.drawTexture(RenderPipelines.GUI_TEXTURED, image, x - 56, y + 5, 0, 0, 112, 21, 112, 21);
         else
-            context.drawTexture(RenderLayer::getGuiTextured, image, x - 13, y, 0, 0, 26, 26, 26, 26);
+            context.drawTexture(RenderPipelines.GUI_TEXTURED, image, x - 13, y, 0, 0, 26, 26, 26, 26);
     }
 
     private void checkUpdates() {
@@ -244,9 +244,9 @@ public class ConfigScreen extends Screen {
 
     private void drawPlayerAvatar(DrawContext context, int x, int y) {
         if (playerAvatarTexture != null && imageReady)
-            context.drawTexture(RenderLayer::getGuiTextured, playerAvatarTexture, x - width / 32, y, 0, 0, width / 16, (int) (width / 6.666), width / 16, (int) (width / 6.666));
+            context.drawTexture(RenderPipelines.GUI_TEXTURED, playerAvatarTexture, x - width / 32, y, 0, 0, width / 16, (int) (width / 6.666), width / 16, (int) (width / 6.666));
         else if (ownProfile.numberOfImageRequests > 4)
-            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(ownProfile.name + "'s image failed to load. Clear cache and retry"), x, y + 20, ColorControl.getColor("red"));
+            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(ownProfile.name + "'s image failed to load. Clear cache and retry"), x, y + 20, ColorControl.getColorMinecraftStandard("red"));
         else
             loadPlayerAvatar();
     }

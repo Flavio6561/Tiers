@@ -31,7 +31,7 @@ public class CommandRegister {
         if (CommandSource.shouldSuggest(builder.getRemaining().toLowerCase(), "config"))
             builder.suggest("config", () -> "Open the config screen");
         if (CommandSource.shouldSuggest(builder.getRemaining().toLowerCase(), "toggle"))
-            builder.suggest("toggle", () -> "Toggle the mod");
+            builder.suggest("toggle", () -> "Toggle " + (TiersClient.toggleMod ? "off" : "on") + " Tiers");
 
         return builder.buildFuture();
     }

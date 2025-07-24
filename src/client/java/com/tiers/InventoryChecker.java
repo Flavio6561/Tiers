@@ -13,8 +13,6 @@ import net.minecraft.text.Text;
 import java.util.Set;
 
 public class InventoryChecker {
-    private static boolean issuesAlertShown = false;
-
     public static void checkInventory(MinecraftClient client) {
         if (client.player == null) return;
 
@@ -134,15 +132,10 @@ public class InventoryChecker {
             detected = Modes.SUBTIERSNET_TRIDENT;
         }
 
-        if (detected != null) {
+        if (detected != null)
             client.player.sendMessage(Text.literal("").append(detected.label).append(Text.literal(" was detected").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text")))), true);
-        } else {
-            if (!issuesAlertShown) {
-                TiersClient.sendMessageToPlayer("Have issue with auto-detect? Report the issue to flavio6561 on Discord", ColorControl.getColor("red"), false);
-                issuesAlertShown = true;
-            }
+        else
             client.player.sendMessage(Text.literal("No gamemode detected").setStyle(Style.EMPTY.withColor(ColorControl.getColor("red"))), true);
-        }
 
         ConfigManager.saveConfig();
     }
@@ -453,6 +446,7 @@ public class InventoryChecker {
             hasCobwebs |= hasItem(stack, Items.COBWEB);
             hasPotions |= hasItem(stack, Items.SPLASH_POTION);
             hasRails |= hasItem(stack, Items.RAIL);
+            hasRails |= hasItem(stack, Items.POWERED_RAIL);
             hasEnchantedAxe |= hasItem(stack, Items.NETHERITE_AXE, true);
             hasEnchantedSword |= hasItem(stack, Items.NETHERITE_SWORD, true);
             hasEnchantedHelmet |= hasItem(stack, Items.NETHERITE_HELMET, true);
@@ -1025,8 +1019,6 @@ public class InventoryChecker {
     private static final Set<Item> MINECART_NON_ALLOWED = Set.of(
             Items.SHIELD,
             Items.MACE,
-
-            Items.NETHERITE_PICKAXE,
 
             Items.END_CRYSTAL,
             Items.OBSIDIAN,

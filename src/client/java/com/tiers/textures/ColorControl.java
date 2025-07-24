@@ -16,4 +16,8 @@ public class ColorControl {
     public static int getColor(String name) {
         return colors.getOrDefault(name, 0xaaaaaa);
     }
+
+    public static int getColorMinecraftStandard(String name) {
+        return 0xff000000 | (colors.getOrDefault(name, 0xaaaaaa) & 0x00ffffff);
+    }
 }

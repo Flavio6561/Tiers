@@ -79,8 +79,15 @@ public class PlayerProfile {
     }
 
     public void buildRequest(String name) {
-        if (numberOfRequests > 5)
+        if (!name.matches("^[a-zA-Z0-9_]{3,16}$") || name.contains(".")) {
+            status = Status.NOT_EXISTING;
+            return;
+        }
+
+        if (numberOfRequests > 4) {
             backupRequest("https://api.mojang.com/users/profiles/minecraft/", name);
+            return;
+        }
 
         numberOfRequests++;
 
@@ -116,7 +123,7 @@ public class PlayerProfile {
     }
 
     public void backupRequest(String apiUrl, String name) {
-        if (numberOfRequests == 12 || status != Status.SEARCHING) {
+        if (numberOfRequests > 11 || status != Status.SEARCHING) {
             status = Status.TIMEOUTED;
             return;
         }
@@ -197,7 +204,8 @@ public class PlayerProfile {
             return;
         }
 
-        savePlayerImage();
+        if (!regular)
+            savePlayerImage();
 
         mcTiersCOMProfile = new MCTiersCOMProfile(uuid, "https://mctiers.com/api/profile/");
         mcTiersIOProfile = new MCTiersIOProfile(uuid, "https://mctiers.io/api/profile/");
@@ -206,19 +214,20 @@ public class PlayerProfile {
         status = Status.READY;
     }
 
-    private void savePlayerImage() {
+    public void savePlayerImage() {
         if (numberOfImageRequests == 5)
             return;
         numberOfImageRequests++;
-        String imageUrl = "https://mc-heads.net/body/" + uuid;
-        String savePath = FabricLoader.getInstance().getGameDir() + (regular ? "/cache/tiers/players/" : "/cache/tiers/") + uuid + ".png";
-        try {
-            Files.createDirectories(Paths.get(FabricLoader.getInstance().getGameDir() + (regular ? "/cache/tiers/players/" : "/cache/tiers/")));
-            ImageIO.write(ImageIO.read(URI.create(imageUrl).toURL()), "png", new File(savePath));
-            imageSaved = true;
-        } catch (IOException ignored) {
-            CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS).execute(this::savePlayerImage);
-        }
+        String savePath = FabricLoader.getInstance().getGameDir() + "/cache/tiers/" + (regular ? "players/" : "");
+        CompletableFuture.runAsync(() -> {
+            try {
+                Files.createDirectories(Paths.get(savePath));
+                ImageIO.write(ImageIO.read(URI.create("https://mc-heads.net/body/" + uuid).toURL()), "png", new File(savePath + uuid + ".png"));
+                imageSaved = true;
+            } catch (IOException ignored) {
+                CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS).execute(this::savePlayerImage);
+            }
+        });
     }
 
     public void resetDrawnStatus() {
