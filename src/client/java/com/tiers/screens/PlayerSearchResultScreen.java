@@ -71,6 +71,9 @@ public class PlayerSearchResultScreen extends Screen {
             return;
         }
 
+        if (playerProfile.numberOfImageRequests == 0)
+            playerProfile.savePlayerImage();
+
         drawPlayerAvatar(context, centerX, avatarY);
         context.drawCenteredTextWithShadow(this.textRenderer, TiersClient.getNametag(playerProfile), centerX, height / 55, ColorControl.getColor("text"));
 
