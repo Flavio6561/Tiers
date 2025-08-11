@@ -73,11 +73,9 @@ public class TiersClient implements ClientModInitializer {
         if (fabricLoader.isPresent()) {
             fabricLoader.ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "modern"), tiers, ResourcePackActivationType.ALWAYS_ENABLED));
             fabricLoader.ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "classic"), tiers, ResourcePackActivationType.NORMAL));
-            userAgent = "Tiers " + fabricLoader.get().getMetadata().getVersion().getFriendlyString();
-            if (anonymousUserAgent)
-                userAgent += " (anonymous user agent)";
-            else
-                userAgent += " on " + MinecraftClient.getInstance().getGameVersion() + " played by " + MinecraftClient.getInstance().getGameProfile().getName();
+            userAgent = "Tiers (+https://github.com/Flavio6561/Tiers)";
+            if (!anonymousUserAgent)
+                userAgent += " " + fabricLoader.get().getMetadata().getVersion().getFriendlyString() + " on " + MinecraftClient.getInstance().getGameVersion();
         } else
             LOGGER.warn("Error initializing Tiers. Please report this issue: https://github.com/Flavio6561/Tiers/issues");
 
