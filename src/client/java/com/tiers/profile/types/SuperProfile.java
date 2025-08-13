@@ -56,7 +56,7 @@ public class SuperProfile {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl + uuid))
-                .header("User-Agent", userAgent)
+                //.header("User-Agent", userAgent) // Custom user agent is blocked by PvPTiers, will resolve in future updates
                 .GET()
                 .build();
 
