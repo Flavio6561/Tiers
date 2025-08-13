@@ -137,15 +137,6 @@
     },
     {
       "type": "bitmap",
-      "file": "font/gamemodes/mctiersio_elytra.png",
-      "height": 12,
-      "ascent": 12,
-      "chars": [
-        "\uF017"
-      ]
-    },
-    {
-      "type": "bitmap",
       "file": "font/gamemodes/subtiersnet_minecart.png",
       "height": 12,
       "ascent": 12,

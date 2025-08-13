@@ -22,6 +22,5 @@ public class MCTiersIOProfile extends SuperProfile {
         gameModes.add(new GameMode(Modes.MCTIERSIO_NETHERITE_POT, "neth_pot"));
         gameModes.add(new GameMode(Modes.MCTIERSIO_SMP, "smp"));
         gameModes.add(new GameMode(Modes.MCTIERSIO_AXE, "axe"));
-        gameModes.add(new GameMode(Modes.MCTIERSIO_ELYTRA, "elytra"));
     }
 }

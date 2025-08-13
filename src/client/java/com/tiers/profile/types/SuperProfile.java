@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tiers.misc.Modes;
 import com.tiers.profile.GameMode;
-import com.tiers.textures.ColorControl;
 import com.tiers.profile.Status;
+import com.tiers.textures.ColorControl;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
@@ -16,8 +16,6 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-
-import static com.tiers.TiersClient.userAgent;
 
 public class SuperProfile {
     public Status status = Status.SEARCHING;
@@ -56,7 +54,7 @@ public class SuperProfile {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl + uuid))
-                .header("User-Agent", userAgent)
+                //.header("User-Agent", userAgent) // Custom user agent is blocked by PvPTiers, will resolve in future updates
                 .GET()
                 .build();
 

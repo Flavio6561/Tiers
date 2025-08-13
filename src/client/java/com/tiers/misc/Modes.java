@@ -24,7 +24,6 @@ public enum Modes {
     MCTIERSIO_NETHERITE_POT(Icons.MCTIERSIO_NETHERITE_POT, Icons.MCTIERSIO_NETHERITE_POT_TAG, "mctiersio_netherite_pot", "Netherite Pot"),
     MCTIERSIO_SMP(Icons.MCTIERSIO_SMP, Icons.MCTIERSIO_SMP_TAG, "mctiersio_smp", "Smp"),
     MCTIERSIO_AXE(Icons.MCTIERSIO_AXE, Icons.MCTIERSIO_AXE_TAG, "mctiersio_axe", "Axe"),
-    MCTIERSIO_ELYTRA(Icons.MCTIERSIO_ELYTRA, Icons.MCTIERSIO_ELYTRA_TAG, "mctiersio_elytra", "Elytra"),
 
     SUBTIERSNET_MINECART(Icons.SUBTIERSNET_MINECART, Icons.SUBTIERSNET_MINECART_TAG, "subtiersnet_minecart", "Minecart"),
     SUBTIERSNET_DIAMOND_CRYSTAL(Icons.SUBTIERSNET_DIAMOND_CRYSTAL, Icons.SUBTIERSNET_DIAMOND_CRYSTAL_TAG, "subtiersnet_diamond_crystal", "Diamond Crystal"),
