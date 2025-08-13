@@ -208,7 +208,7 @@ public class PlayerProfile {
             savePlayerImage();
 
         mcTiersCOMProfile = new MCTiersCOMProfile(uuid, "https://mctiers.com/api/profile/");
-        mcTiersIOProfile = new MCTiersIOProfile(uuid, "https://mctiers.io/api/profile/");
+        mcTiersIOProfile = new MCTiersIOProfile(uuid, "https://pvptiers.com/api/profile/");
         subtiersNETProfile = new SubtiersNETProfile(uuid, "https://subtiers.net/api/profile/");
 
         status = Status.READY;
