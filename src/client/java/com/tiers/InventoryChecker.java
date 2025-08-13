@@ -68,11 +68,6 @@ public class InventoryChecker {
             detected = Modes.MCTIERSCOM_MACE;
         }
 
-        if (checkElytra(inventory)) {
-            TiersClient.activeMCTiersIOMode = Modes.MCTIERSIO_ELYTRA;
-            detected = Modes.MCTIERSIO_ELYTRA;
-        }
-
         if (checkMinecart(inventory)) {
             TiersClient.activeSubtiersNETMode = Modes.SUBTIERSNET_MINECART;
             detected = Modes.SUBTIERSNET_MINECART;
@@ -389,39 +384,6 @@ public class InventoryChecker {
 
         return hasGaps && hasPotions && hasTotem && hasPearls && hasElytra && hasShield &&
                 hasEnchantedSword && hasEnchantedAxe && hasEnchantedHelmet && hasEnchantedChestplate && hasEnchantedLeggings && hasEnchantedBoots;
-    }
-
-    private static boolean checkElytra(PlayerInventory inventory) {
-        boolean hasGaps = false;
-        boolean hasGoldenCarrots = false;
-        boolean hasArrows = false;
-        boolean hasFireworks = false;
-        boolean hasCrossbow = false;
-        boolean hasEnchantedSword = false;
-        boolean hasEnchantedHelmet = false;
-        boolean hasEnchantedElytra = false;
-        boolean hasEnchantedLeggings = false;
-        boolean hasEnchantedBoots = false;
-
-        for (int i = 0; i < inventory.size(); i++) {
-            ItemStack stack = inventory.getStack(i);
-
-            hasGaps |= hasItem(stack, Items.GOLDEN_APPLE);
-            hasGoldenCarrots |= hasItem(stack, Items.GOLDEN_CARROT);
-            hasArrows |= hasItem(stack, Items.ARROW);
-            hasFireworks |= hasItem(stack, Items.FIREWORK_ROCKET);
-            hasCrossbow |= hasItem(stack, Items.CROSSBOW);
-            hasEnchantedSword |= hasItem(stack, Items.NETHERITE_SWORD, true);
-            hasEnchantedHelmet |= hasItem(stack, Items.NETHERITE_HELMET, true);
-            hasEnchantedElytra |= hasItem(stack, Items.ELYTRA, true);
-            hasEnchantedLeggings |= hasItem(stack, Items.NETHERITE_LEGGINGS, true);
-            hasEnchantedBoots |= hasItem(stack, Items.NETHERITE_BOOTS, true);
-
-            if (ELYTRA_NON_ALLOWED.contains(stack.getItem())) return false;
-        }
-
-        return hasGaps && hasGoldenCarrots && hasArrows && hasFireworks && hasCrossbow &&
-                hasEnchantedSword && hasEnchantedHelmet && hasEnchantedElytra && hasEnchantedLeggings && hasEnchantedBoots;
     }
 
     private static boolean checkMinecart(PlayerInventory inventory) {
@@ -968,31 +930,6 @@ public class InventoryChecker {
     private static final Set<Item> MACE_NON_ALLOWED = Set.of(
             Items.EXPERIENCE_BOTTLE,
 
-            Items.NETHERITE_PICKAXE,
-
-            Items.DIAMOND_SWORD,
-            Items.DIAMOND_AXE,
-            Items.DIAMOND_PICKAXE,
-            Items.DIAMOND_HELMET,
-            Items.DIAMOND_CHESTPLATE,
-            Items.DIAMOND_LEGGINGS,
-            Items.DIAMOND_BOOTS,
-
-            Items.END_CRYSTAL,
-            Items.OBSIDIAN,
-            Items.RESPAWN_ANCHOR,
-            Items.GLOWSTONE
-    );
-
-    private static final Set<Item> ELYTRA_NON_ALLOWED = Set.of(
-            Items.ENDER_PEARL,
-            Items.SHIELD,
-            Items.SPLASH_POTION,
-            Items.TOTEM_OF_UNDYING,
-            Items.EXPERIENCE_BOTTLE,
-            Items.NETHERITE_CHESTPLATE,
-
-            Items.NETHERITE_AXE,
             Items.NETHERITE_PICKAXE,
 
             Items.DIAMOND_SWORD,
