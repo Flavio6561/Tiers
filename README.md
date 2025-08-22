@@ -3,11 +3,12 @@ a mod that displays tiers from [MCTiers](https://mctiers.com), [PvPTiers](https:
 
 ### Mod showcase:
 
->![NameTags](https://raw.githubusercontent.com/Flavio6561/Gallery/refs/heads/main/Tiers/Modern-Classic.png)  
-> `Modern and Classic styled icons and colors`
+>![NameTags](https://raw.githubusercontent.com/Flavio6561/Gallery/refs/heads/main/Tiers/NameTags.gif)  
+> `Switchable MCTiers, PvPTiers and Subtiers icons and colors`  
+> `Auto detect kit: press 'Y' to autodetect the current gamemode`
 
->![SearchResult](https://raw.githubusercontent.com/Flavio6561/Gallery/refs/heads/main/Tiers/ModernSearchResult.png)  
-> `The profile search result screen with 'Modern' icons`
+>![SearchResultScreen](https://raw.githubusercontent.com/Flavio6561/Gallery/refs/heads/main/Tiers/SearchResultScreen.png)  
+> `The profile search result screen with MCTiers icons`
 
 > Tiers is still in beta. [Report an issue](https://github.com/Flavio6561/Tiers/issues)
 
@@ -17,6 +18,7 @@ a mod that displays tiers from [MCTiers](https://mctiers.com), [PvPTiers](https:
 - **`Search screen:`** see all tiers, peaks, regions, points, global rankings and skin with **/tiers name**
 - **`Change gamemodes and their position:`** choose a gamemode for each ranking site and decide whether to display it on the left or right
 - **`Cycle keybinds:`** press **U** and **I** (editable) to easily cycle between the right and left displayed gamemodes
+- **`Change preset styles:`** you can change the order of the built-in texture packs to switch icons and colors
 - **`Display gamemodes:`** whether to display selected mode, adaptive highest or absolute highest
 
 ### Screen config (ModMenu or /tiers config):
@@ -29,7 +31,7 @@ a mod that displays tiers from [MCTiers](https://mctiers.com), [PvPTiers](https:
 - **`Left and Right gamemode switcher`** switches between gamemodes of the selected provider
 - **`Position Settings`** decides if the specific provider gamemodes are displayer on the right, left or neither
 
->![ConfigScreen](https://raw.githubusercontent.com/Flavio6561/Gallery/refs/heads/main/Tiers/ConfigScreen.png)  
+>![ConfigScreen](https://raw.githubusercontent.com/Flavio6561/Gallery/refs/heads/main/Tiers/ConfigScreen.gif)  
 > `The config screen`
 
 ### Why Tiers?
@@ -38,8 +40,7 @@ a mod that displays tiers from [MCTiers](https://mctiers.com), [PvPTiers](https:
 > Tiers is able to track and display all rankings from all three [MCTiers](https://mctiers.com), [PvPTiers](https://pvptiers.com) and [Subtiers](https://subtiers.net)
 
 **Customizable icons:**
-> With Tiers you can customize gamemodes icons and text colors, as well as choosing where and what gamemode to display  
-> Want to modify the icons or tiers colors? Edit and add in your folder one of the two [default texture packs](https://github.com/Flavio6561/Tiers/tree/master/src/main/resources/resourcepacks)
+> With Tiers you can customize gamemodes icons and text colors, as well as choosing where and what gamemode to display; want to modify the icons or tiers colors? Edit and add in your folder one of the two [default texture packs](https://github.com/Flavio6561/Tiers/tree/master/src/main/resources/resourcepacks)
 
 ### Other:
 
