@@ -24,8 +24,8 @@ public class GameMode {
     public Text tierTooltip;
     public Text peakTierTooltip;
 
-    public Modes name;
-    public String parsingName;
+    public final Modes name;
+    public final String parsingName;
     public boolean hasPeak = false;
     public boolean drawn = false;
 
@@ -120,17 +120,17 @@ public class GameMode {
 
         if (tier.equalsIgnoreCase("HT1")) return 60;
         else if (tier.equalsIgnoreCase("LT1")) {
-            if (name.toString().contains("MCTIERSIO"))
+            if (name.toString().contains("PVPTIERS"))
                 return 44;
             else
                 return 45;
         } else if (tier.equalsIgnoreCase("HT2")) {
-            if (name.toString().contains("MCTIERSIO"))
+            if (name.toString().contains("PVPTIERS"))
                 return 28;
             else
                 return 30;
         } else if (tier.equalsIgnoreCase("LT2")) {
-            if (name.toString().contains("MCTIERSIO"))
+            if (name.toString().contains("PVPTIERS"))
                 return 16;
             else
                 return 20;

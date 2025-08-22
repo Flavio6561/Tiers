@@ -8,35 +8,36 @@ import net.minecraft.text.Text;
 import java.util.ArrayList;
 
 public enum Modes {
-    MCTIERSCOM_VANILLA(Icons.MCTIERSCOM_VANILLA, Icons.MCTIERSCOM_VANILLA_TAG, "mctierscom_vanilla", "Vanilla"),
-    MCTIERSCOM_UHC(Icons.MCTIERSCOM_UHC, Icons.MCTIERSCOM_UHC_TAG, "mctierscom_uhc", "UHC"),
-    MCTIERSCOM_POT(Icons.MCTIERSCOM_POT, Icons.MCTIERSCOM_POT_TAG, "mctierscom_pot", "Pot"),
-    MCTIERSCOM_NETHERITE_OP(Icons.MCTIERSCOM_NETHERITE_OP, Icons.MCTIERSCOM_NETHERITE_OP_TAG, "mctierscom_netherite_op", "Netherite Op"),
-    MCTIERSCOM_SMP(Icons.MCTIERSCOM_SMP, Icons.MCTIERSCOM_SMP_TAG, "mctierscom_smp", "Smp"),
-    MCTIERSCOM_SWORD(Icons.MCTIERSCOM_SWORD, Icons.MCTIERSCOM_SWORD_TAG, "mctierscom_sword", "Sword"),
-    MCTIERSCOM_AXE(Icons.MCTIERSCOM_AXE, Icons.MCTIERSCOM_AXE_TAG, "mctierscom_axe", "Axe"),
-    MCTIERSCOM_MACE(Icons.MCTIERSCOM_MACE, Icons.MCTIERSCOM_MACE_TAG, "mctierscom_mace", "Mace"),
+    MCTIERS_VANILLA(Icons.MCTIERS_VANILLA, Icons.MCTIERS_VANILLA_TAG, "mctiers_vanilla", "Vanilla"),
+    MCTIERS_UHC(Icons.MCTIERS_UHC, Icons.MCTIERS_UHC_TAG, "mctiers_uhc", "UHC"),
+    MCTIERS_POT(Icons.MCTIERS_POT, Icons.MCTIERS_POT_TAG, "mctiers_pot", "Pot"),
+    MCTIERS_NETH_OP(Icons.MCTIERS_NETH_OP, Icons.MCTIERS_NETH_OP_TAG, "mctiers_neth_op", "Neth Op"),
+    MCTIERS_SMP(Icons.MCTIERS_SMP, Icons.MCTIERS_SMP_TAG, "mctiers_smp", "Smp"),
+    MCTIERS_SWORD(Icons.MCTIERS_SWORD, Icons.MCTIERS_SWORD_TAG, "mctiers_sword", "Sword"),
+    MCTIERS_AXE(Icons.MCTIERS_AXE, Icons.MCTIERS_AXE_TAG, "mctiers_axe", "Axe"),
+    MCTIERS_MACE(Icons.MCTIERS_MACE, Icons.MCTIERS_MACE_TAG, "mctiers_mace", "Mace"),
 
-    MCTIERSIO_CRYSTAL(Icons.MCTIERSIO_CRYSTAL, Icons.MCTIERSIO_CRYSTAL_TAG, "mctiersio_crystal", "Crystal"),
-    MCTIERSIO_SWORD(Icons.MCTIERSIO_SWORD, Icons.MCTIERSIO_SWORD_TAG, "mctiersio_sword", "Sword"),
-    MCTIERSIO_UHC(Icons.MCTIERSIO_UHC, Icons.MCTIERSIO_UHC_TAG, "mctiersio_uhc", "UHC"),
-    MCTIERSIO_POT(Icons.MCTIERSIO_POT, Icons.MCTIERSIO_POT_TAG, "mctiersio_pot", "Pot"),
-    MCTIERSIO_NETHERITE_POT(Icons.MCTIERSIO_NETHERITE_POT, Icons.MCTIERSIO_NETHERITE_POT_TAG, "mctiersio_netherite_pot", "Netherite Pot"),
-    MCTIERSIO_SMP(Icons.MCTIERSIO_SMP, Icons.MCTIERSIO_SMP_TAG, "mctiersio_smp", "Smp"),
-    MCTIERSIO_AXE(Icons.MCTIERSIO_AXE, Icons.MCTIERSIO_AXE_TAG, "mctiersio_axe", "Axe"),
+    PVPTIERS_CRYSTAL(Icons.PVPTIERS_CRYSTAL, Icons.PVPTIERS_CRYSTAL_TAG, "pvptiers_crystal", "Crystal"),
+    PVPTIERS_SWORD(Icons.PVPTIERS_SWORD, Icons.PVPTIERS_SWORD_TAG, "pvptiers_sword", "Sword"),
+    PVPTIERS_UHC(Icons.PVPTIERS_UHC, Icons.PVPTIERS_UHC_TAG, "pvptiers_uhc", "UHC"),
+    PVPTIERS_POT(Icons.PVPTIERS_POT, Icons.PVPTIERS_POT_TAG, "pvptiers_pot", "Pot"),
+    PVPTIERS_NETH_POT(Icons.PVPTIERS_NETH_POT, Icons.PVPTIERS_NETH_POT_TAG, "pvptiers_neth_pot", "Neth Pot"),
+    PVPTIERS_SMP(Icons.PVPTIERS_SMP, Icons.PVPTIERS_SMP_TAG, "pvptiers_smp", "Smp"),
+    PVPTIERS_AXE(Icons.PVPTIERS_AXE, Icons.PVPTIERS_AXE_TAG, "pvptiers_axe", "Axe"),
+    PVPTIERS_MACE(Icons.PVPTIERS_MACE, Icons.PVPTIERS_MACE_TAG, "pvptiers_mace", "Mace"),
 
-    SUBTIERSNET_MINECART(Icons.SUBTIERSNET_MINECART, Icons.SUBTIERSNET_MINECART_TAG, "subtiersnet_minecart", "Minecart"),
-    SUBTIERSNET_DIAMOND_CRYSTAL(Icons.SUBTIERSNET_DIAMOND_CRYSTAL, Icons.SUBTIERSNET_DIAMOND_CRYSTAL_TAG, "subtiersnet_diamond_crystal", "Diamond Crystal"),
-    SUBTIERSNET_DEBUFF(Icons.SUBTIERSNET_DEBUFF, Icons.SUBTIERSNET_DEBUFF_TAG, "subtiersnet_debuff", "DeBuff"),
-    SUBTIERSNET_ELYTRA(Icons.SUBTIERSNET_ELYTRA, Icons.SUBTIERSNET_ELYTRA_TAG, "subtiersnet_elytra", "Elytra"),
-    SUBTIERSNET_SPEED(Icons.SUBTIERSNET_SPEED, Icons.SUBTIERSNET_SPEED_TAG, "subtiersnet_speed", "Speed"),
-    SUBTIERSNET_CREEPER(Icons.SUBTIERSNET_CREEPER, Icons.SUBTIERSNET_CREEPER_TAG, "subtiersnet_creeper", "Creeper"),
-    SUBTIERSNET_MANHUNT(Icons.SUBTIERSNET_MANHUNT, Icons.SUBTIERSNET_MANHUNT_TAG, "subtiersnet_manhunt", "Manhunt"),
-    SUBTIERSNET_DIAMOND_SMP(Icons.SUBTIERSNET_DIAMOND_SMP, Icons.SUBTIERSNET_DIAMOND_SMP_TAG, "subtiersnet_diamond_smp", "Diamond Smp"),
-    SUBTIERSNET_BOW(Icons.SUBTIERSNET_BOW, Icons.SUBTIERSNET_BOW_TAG, "subtiersnet_bow", "Bow"),
-    SUBTIERSNET_BED(Icons.SUBTIERSNET_BED, Icons.SUBTIERSNET_BED_TAG, "subtiersnet_bed", "Bed"),
-    SUBTIERSNET_OG_VANILLA(Icons.SUBTIERSNET_OG_VANILLA, Icons.SUBTIERSNET_OG_VANILLA_TAG, "subtiersnet_og_vanilla", "OG Vanilla"),
-    SUBTIERSNET_TRIDENT(Icons.SUBTIERSNET_TRIDENT, Icons.SUBTIERSNET_TRIDENT_TAG, "subtiersnet_trident", "Trident");
+    SUBTIERS_MINECART(Icons.SUBTIERS_MINECART, Icons.SUBTIERS_MINECART_TAG, "subtiers_minecart", "Minecart"),
+    SUBTIERS_DIAMOND_SURVIVAL(Icons.SUBTIERS_DIAMOND_SURVIVAL, Icons.SUBTIERS_DIAMOND_SURVIVAL_TAG, "subtiers_diamond_survival", "Diamond Survival"),
+    SUBTIERS_DEBUFF(Icons.SUBTIERS_DEBUFF, Icons.SUBTIERS_DEBUFF_TAG, "subtiers_debuff", "DeBuff"),
+    SUBTIERS_ELYTRA(Icons.SUBTIERS_ELYTRA, Icons.SUBTIERS_ELYTRA_TAG, "subtiers_elytra", "Elytra"),
+    SUBTIERS_SPEED(Icons.SUBTIERS_SPEED, Icons.SUBTIERS_SPEED_TAG, "subtiers_speed", "Speed"),
+    SUBTIERS_CREEPER(Icons.SUBTIERS_CREEPER, Icons.SUBTIERS_CREEPER_TAG, "subtiers_creeper", "Creeper"),
+    SUBTIERS_MANHUNT(Icons.SUBTIERS_MANHUNT, Icons.SUBTIERS_MANHUNT_TAG, "subtiers_manhunt", "Manhunt"),
+    SUBTIERS_DIAMOND_SMP(Icons.SUBTIERS_DIAMOND_SMP, Icons.SUBTIERS_DIAMOND_SMP_TAG, "subtiers_diamond_smp", "Diamond Smp"),
+    SUBTIERS_BOW(Icons.SUBTIERS_BOW, Icons.SUBTIERS_BOW_TAG, "subtiers_bow", "Bow"),
+    SUBTIERS_BED(Icons.SUBTIERS_BED, Icons.SUBTIERS_BED_TAG, "subtiers_bed", "Bed"),
+    SUBTIERS_OG_VANILLA(Icons.SUBTIERS_OG_VANILLA, Icons.SUBTIERS_OG_VANILLA_TAG, "subtiers_og_vanilla", "OG Vanilla"),
+    SUBTIERS_TRIDENT(Icons.SUBTIERS_TRIDENT, Icons.SUBTIERS_TRIDENT_TAG, "subtiers_trident", "Trident");
 
     public final Text icon;
     public final Text iconTag;
@@ -57,29 +58,29 @@ public enum Modes {
             mode.label = Text.literal(mode.stringLabel).setStyle(Style.EMPTY.withColor(ColorControl.getColor(mode.color)));
     }
 
-    public static Modes[] getMCTiersCOMValues() {
+    public static Modes[] getMCTiersValues() {
         Modes[] modesArray = new Modes[8];
         ArrayList<Modes> modes = new ArrayList<>();
         for (Modes mode : Modes.values())
-            if (mode.toString().contains("MCTIERSCOM"))
+            if (mode.toString().contains("MCTIERS"))
                 modes.add(mode);
         return modes.toArray(modesArray);
     }
 
-    public static Modes[] getMCTiersIOValues() {
+    public static Modes[] getPvPTiersValues() {
         Modes[] modesArray = new Modes[7];
         ArrayList<Modes> modes = new ArrayList<>();
         for (Modes mode : Modes.values())
-            if (mode.toString().contains("MCTIERSIO"))
+            if (mode.toString().contains("PVPTIERS"))
                 modes.add(mode);
         return modes.toArray(modesArray);
     }
 
-    public static Modes[] getSubtiersNETValues() {
+    public static Modes[] getSubtiersValues() {
         Modes[] modesArray = new Modes[9];
         ArrayList<Modes> modes = new ArrayList<>();
         for (Modes mode : Modes.values())
-            if (mode.toString().contains("SUBTIERSNET"))
+            if (mode.toString().contains("SUBTIERS"))
                 modes.add(mode);
         return modes.toArray(modesArray);
     }

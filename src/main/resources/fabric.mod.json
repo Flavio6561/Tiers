@@ -3,7 +3,7 @@
 	"id": "tiers",
 	"version": "${version}",
 	"name": "Tiers",
-	"description": "Display tiers from mctiers.com, mctiers.io and subtiers.net",
+	"description": "Display tiers from MCTiers, PvPTiers and Subtiers",
 	"authors": [
 		"Flavio6561"
 	],

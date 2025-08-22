@@ -3,23 +3,28 @@ package com.tiers.profile;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tiers.TiersClient;
-import com.tiers.profile.types.MCTiersCOMProfile;
-import com.tiers.profile.types.MCTiersIOProfile;
-import com.tiers.profile.types.SubtiersNETProfile;
+import com.tiers.profile.types.MCTiersProfile;
+import com.tiers.profile.types.PvPTiersProfile;
+import com.tiers.profile.types.SubtiersProfile;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.text.Text;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -30,10 +35,11 @@ public class PlayerProfile {
 
     public String name = "";
     public String uuid = "";
+    public UUID uuidObject;
 
-    public MCTiersCOMProfile mcTiersCOMProfile;
-    public MCTiersIOProfile mcTiersIOProfile;
-    public SubtiersNETProfile subtiersNETProfile;
+    public MCTiersProfile profileMCTiers;
+    public PvPTiersProfile profilePvPTiers;
+    public SubtiersProfile profileSubtiers;
 
     public Text originalNameText;
     public boolean imageSaved = false;
@@ -47,7 +53,7 @@ public class PlayerProfile {
         originalNameText = Text.of(name);
     }
 
-    public PlayerProfile(String mojangJson, String mcTiersCOMJson, String mcTiersIOJson, String subtiersNETJson) {
+    public PlayerProfile(String mojangJson, String jsonMCTiers, String jsonPvPTiers, String jsonSubtiers) {
         regular = false;
         JsonObject jsonObject = JsonParser.parseString(mojangJson).getAsJsonObject();
 
@@ -71,9 +77,9 @@ public class PlayerProfile {
             LOGGER.warn("Error copying default image");
         }
 
-        mcTiersCOMProfile = new MCTiersCOMProfile(mcTiersCOMJson);
-        mcTiersIOProfile = new MCTiersIOProfile(mcTiersIOJson);
-        subtiersNETProfile = new SubtiersNETProfile(subtiersNETJson);
+        profileMCTiers = new MCTiersProfile(jsonMCTiers);
+        profilePvPTiers = new PvPTiersProfile(jsonPvPTiers);
+        profileSubtiers = new SubtiersProfile(jsonSubtiers);
 
         status = Status.READY;
     }
@@ -187,9 +193,10 @@ public class PlayerProfile {
             JsonObject data = jsonObject.getAsJsonObject("data");
             if (data.has("player")) {
                 JsonObject player = data.getAsJsonObject("player");
-                if (player.has("username") && player.has("raw_id")) {
+                if (player.has("username") && player.has("raw_id") && player.has("id")) {
                     name = player.get("username").getAsString();
                     uuid = player.get("raw_id").getAsString();
+                    uuidObject = UUID.fromString(player.get("id").getAsString());
                     originalNameText = Text.of(name);
                 }
             }
@@ -207,9 +214,9 @@ public class PlayerProfile {
         if (!regular)
             savePlayerImage();
 
-        mcTiersCOMProfile = new MCTiersCOMProfile(uuid, "https://mctiers.com/api/profile/");
-        mcTiersIOProfile = new MCTiersIOProfile(uuid, "https://pvptiers.com/api/profile/");
-        subtiersNETProfile = new SubtiersNETProfile(uuid, "https://subtiers.net/api/profile/");
+        profileMCTiers = new MCTiersProfile(uuid, "https://mctiers.com/api/profile/");
+        profilePvPTiers = new PvPTiersProfile(uuid, "https://pvptiers.com/api/profile/");
+        profileSubtiers = new SubtiersProfile(uuid, "https://subtiers.net/api/profile/");
 
         status = Status.READY;
     }
@@ -222,25 +229,36 @@ public class PlayerProfile {
         CompletableFuture.runAsync(() -> {
             try {
                 Files.createDirectories(Paths.get(savePath));
-                ImageIO.write(ImageIO.read(URI.create("https://mc-heads.net/body/" + uuid).toURL()), "png", new File(savePath + uuid + ".png"));
-                imageSaved = true;
-            } catch (IOException ignored) {
+                URL uri = new URI("https://mc-heads.net/body/" + uuid).toURL();
+                HttpURLConnection connection = (HttpURLConnection) uri.openConnection();
+                connection.setRequestProperty("User-Agent", userAgent);
+                connection.setRequestMethod("GET");
+                connection.setConnectTimeout(5000);
+                connection.setReadTimeout(5000);
+
+                try (InputStream inputStream = connection.getInputStream()) {
+                    BufferedImage image = ImageIO.read(inputStream);
+                    File outputFile = new File(savePath + uuid + ".png");
+                    ImageIO.write(image, "png", outputFile);
+                    imageSaved = true;
+                }
+            } catch (IOException | URISyntaxException ignored) {
                 CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS).execute(this::savePlayerImage);
             }
         });
     }
 
     public void resetDrawnStatus() {
-        if (mcTiersCOMProfile == null || mcTiersIOProfile == null || subtiersNETProfile == null)
+        if (profileMCTiers == null || profilePvPTiers == null || profileSubtiers == null)
             return;
-        mcTiersCOMProfile.drawn = false;
-        mcTiersIOProfile.drawn = false;
-        subtiersNETProfile.drawn = false;
-        for (GameMode mode : mcTiersCOMProfile.gameModes)
+        profileMCTiers.drawn = false;
+        profilePvPTiers.drawn = false;
+        profileSubtiers.drawn = false;
+        for (GameMode mode : profileMCTiers.gameModes)
             mode.drawn = false;
-        for (GameMode mode : mcTiersIOProfile.gameModes)
+        for (GameMode mode : profilePvPTiers.gameModes)
             mode.drawn = false;
-        for (GameMode mode : subtiersNETProfile.gameModes)
+        for (GameMode mode : profileSubtiers.gameModes)
             mode.drawn = false;
     }
 }

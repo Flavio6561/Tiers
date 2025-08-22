@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TiersClient implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(TiersClient.class);
-    public static String userAgent = "Tiers";
+    public static String userAgent = "Tiers (https://github.com/Flavio6561/Tiers)";
     public static boolean anonymousUserAgent = false;
     private static final ArrayList<PlayerProfile> playerProfiles = new ArrayList<>();
     private static final HashMap<String, Text> playerTexts = new HashMap<>();
@@ -50,14 +50,14 @@ public class TiersClient implements ClientModInitializer {
     public static boolean isSeparatorAdaptive = true;
     public static ModesTierDisplay displayMode = ModesTierDisplay.ADAPTIVE_HIGHEST;
 
-    public static DisplayStatus mcTiersCOMPosition = DisplayStatus.LEFT;
-    public static Modes activeMCTiersCOMMode = Modes.MCTIERSCOM_VANILLA;
+    public static DisplayStatus positionMCTiers = DisplayStatus.LEFT;
+    public static Modes activeMCTiersMode = Modes.MCTIERS_VANILLA;
 
-    public static DisplayStatus mcTiersIOPosition = DisplayStatus.RIGHT;
-    public static Modes activeMCTiersIOMode = Modes.MCTIERSIO_CRYSTAL;
+    public static DisplayStatus positionPvPTiers = DisplayStatus.OFF;
+    public static Modes activePvPTiersMode = Modes.PVPTIERS_CRYSTAL;
 
-    public static DisplayStatus subtiersNETPosition = DisplayStatus.OFF;
-    public static Modes activeSubtiersNETMode = Modes.SUBTIERSNET_MINECART;
+    public static DisplayStatus positionSubtiers = DisplayStatus.RIGHT;
+    public static Modes activeSubtiersMode = Modes.SUBTIERS_MINECART;
 
     private static KeyBinding autoDetectKey;
     private static KeyBinding cycleRightKey;
@@ -70,14 +70,14 @@ public class TiersClient implements ClientModInitializer {
         CommandRegister.registerCommands();
 
         Optional<ModContainer> fabricLoader = FabricLoader.getInstance().getModContainer("tiers");
-        if (fabricLoader.isPresent()) {
-            fabricLoader.ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "modern"), tiers, ResourcePackActivationType.ALWAYS_ENABLED));
-            fabricLoader.ifPresent(tiers -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "classic"), tiers, ResourcePackActivationType.NORMAL));
-            userAgent = "Tiers (+https://github.com/Flavio6561/Tiers)";
+
+        fabricLoader.ifPresent(tiers -> {
+            ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "pvptiers"), tiers, ResourcePackActivationType.ALWAYS_ENABLED);
+            ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "tiers-default"), tiers, ResourcePackActivationType.ALWAYS_ENABLED);
+            ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "mctiers"), tiers, ResourcePackActivationType.ALWAYS_ENABLED);
             if (!anonymousUserAgent)
                 userAgent += " " + fabricLoader.get().getMetadata().getVersion().getFriendlyString() + " on " + MinecraftClient.getInstance().getGameVersion();
-        } else
-            LOGGER.warn("Error initializing Tiers. Please report this issue: https://github.com/Flavio6561/Tiers/issues");
+        });
 
         autoDetectKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Auto Detect Kit", GLFW.GLFW_KEY_Y, "Tiers"));
         cycleRightKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Right Gamemodes", GLFW.GLFW_KEY_I, "Tiers"));
@@ -105,25 +105,30 @@ public class TiersClient implements ClientModInitializer {
 
         Text rightText = Text.literal("");
         Text leftText = Text.literal("");
+        Text nameText = Text.of(profile.name);
 
-        if (mcTiersCOMPosition == DisplayStatus.RIGHT)
-            rightText = updateProfileNameTagRight(profile.mcTiersCOMProfile, activeMCTiersCOMMode);
-        else if (mcTiersCOMPosition == DisplayStatus.LEFT)
-            leftText = updateProfileNameTagLeft(profile.mcTiersCOMProfile, activeMCTiersCOMMode);
+        if (positionMCTiers == DisplayStatus.RIGHT)
+            rightText = updateProfileNameTagRight(profile.profileMCTiers, activeMCTiersMode);
+        else if (positionMCTiers == DisplayStatus.LEFT)
+            leftText = updateProfileNameTagLeft(profile.profileMCTiers, activeMCTiersMode);
 
-        if (mcTiersIOPosition == DisplayStatus.RIGHT)
-            rightText = updateProfileNameTagRight(profile.mcTiersIOProfile, activeMCTiersIOMode);
-        else if (mcTiersIOPosition == DisplayStatus.LEFT)
-            leftText = updateProfileNameTagLeft(profile.mcTiersIOProfile, activeMCTiersIOMode);
+        if (positionPvPTiers == DisplayStatus.RIGHT)
+            rightText = updateProfileNameTagRight(profile.profilePvPTiers, activePvPTiersMode);
+        else if (positionPvPTiers == DisplayStatus.LEFT)
+            leftText = updateProfileNameTagLeft(profile.profilePvPTiers, activePvPTiersMode);
 
-        if (subtiersNETPosition == DisplayStatus.RIGHT)
-            rightText = updateProfileNameTagRight(profile.subtiersNETProfile, activeSubtiersNETMode);
-        else if (subtiersNETPosition == DisplayStatus.LEFT)
-            leftText = updateProfileNameTagLeft(profile.subtiersNETProfile, activeSubtiersNETMode);
+        if (positionSubtiers == DisplayStatus.RIGHT)
+            rightText = updateProfileNameTagRight(profile.profileSubtiers, activeSubtiersMode);
+        else if (positionSubtiers == DisplayStatus.LEFT)
+            leftText = updateProfileNameTagLeft(profile.profileSubtiers, activeSubtiersMode);
+
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (!(client.world == null || client.getNetworkHandler() == null) && profile.uuidObject != null && client.getNetworkHandler().getPlayerUuids().contains(profile.uuidObject))
+            nameText = profile.originalNameText;
 
         return Text.literal("")
                 .append(leftText)
-                .append(profile.originalNameText)
+                .append(nameText)
                 .append(rightText);
     }
 
@@ -141,20 +146,20 @@ public class TiersClient implements ClientModInitializer {
         Text rightText = Text.literal("");
         Text leftText = Text.literal("");
 
-        if (mcTiersCOMPosition == DisplayStatus.RIGHT)
-            rightText = updateProfileNameTagRight(profile.mcTiersCOMProfile, activeMCTiersCOMMode);
-        else if (mcTiersCOMPosition == DisplayStatus.LEFT)
-            leftText = updateProfileNameTagLeft(profile.mcTiersCOMProfile, activeMCTiersCOMMode);
+        if (positionMCTiers == DisplayStatus.RIGHT)
+            rightText = updateProfileNameTagRight(profile.profileMCTiers, activeMCTiersMode);
+        else if (positionMCTiers == DisplayStatus.LEFT)
+            leftText = updateProfileNameTagLeft(profile.profileMCTiers, activeMCTiersMode);
 
-        if (mcTiersIOPosition == DisplayStatus.RIGHT)
-            rightText = updateProfileNameTagRight(profile.mcTiersIOProfile, activeMCTiersIOMode);
-        else if (mcTiersIOPosition == DisplayStatus.LEFT)
-            leftText = updateProfileNameTagLeft(profile.mcTiersIOProfile, activeMCTiersIOMode);
+        if (positionPvPTiers == DisplayStatus.RIGHT)
+            rightText = updateProfileNameTagRight(profile.profilePvPTiers, activePvPTiersMode);
+        else if (positionPvPTiers == DisplayStatus.LEFT)
+            leftText = updateProfileNameTagLeft(profile.profilePvPTiers, activePvPTiersMode);
 
-        if (subtiersNETPosition == DisplayStatus.RIGHT)
-            rightText = updateProfileNameTagRight(profile.subtiersNETProfile, activeSubtiersNETMode);
-        else if (subtiersNETPosition == DisplayStatus.LEFT)
-            leftText = updateProfileNameTagLeft(profile.subtiersNETProfile, activeSubtiersNETMode);
+        if (positionSubtiers == DisplayStatus.RIGHT)
+            rightText = updateProfileNameTagRight(profile.profileSubtiers, activeSubtiersMode);
+        else if (positionSubtiers == DisplayStatus.LEFT)
+            leftText = updateProfileNameTagLeft(profile.profileSubtiers, activeSubtiersMode);
 
         playerTexts.put(profile.name, Text.literal("")
                 .append(leftText)
@@ -219,12 +224,12 @@ public class TiersClient implements ClientModInitializer {
     public static void restyleAllTexts() {
         for (PlayerProfile profile : playerProfiles) {
             if (profile.status == Status.READY) {
-                if (profile.mcTiersCOMProfile.status == Status.READY)
-                    profile.mcTiersCOMProfile.parseJson(profile.mcTiersCOMProfile.originalJson);
-                if (profile.mcTiersIOProfile.status == Status.READY)
-                    profile.mcTiersIOProfile.parseJson(profile.mcTiersIOProfile.originalJson);
-                if (profile.subtiersNETProfile.status == Status.READY)
-                    profile.subtiersNETProfile.parseJson(profile.subtiersNETProfile.originalJson);
+                if (profile.profileMCTiers.status == Status.READY)
+                    profile.profileMCTiers.parseJson(profile.profileMCTiers.originalJson);
+                if (profile.profilePvPTiers.status == Status.READY)
+                    profile.profilePvPTiers.parseJson(profile.profilePvPTiers.originalJson);
+                if (profile.profileSubtiers.status == Status.READY)
+                    profile.profileSubtiers.parseJson(profile.profileSubtiers.originalJson);
             }
         }
     }
@@ -265,53 +270,53 @@ public class TiersClient implements ClientModInitializer {
     }
 
     public static Text cycleRightMode() {
-        if (mcTiersCOMPosition.toString().equalsIgnoreCase("RIGHT"))
-            return Text.literal("Right (MCTiersCOM) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersCOMMode());
+        if (positionMCTiers.toString().equalsIgnoreCase("RIGHT"))
+            return Text.literal("Right (MCTiers) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersMode());
 
-        if (mcTiersIOPosition.toString().equalsIgnoreCase("RIGHT"))
-            return Text.literal("Right (MCTiersIO) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersIOMode());
+        if (positionPvPTiers.toString().equalsIgnoreCase("RIGHT"))
+            return Text.literal("Right (PvPTiers) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cyclePvPTiersMode());
 
-        if (subtiersNETPosition.toString().equalsIgnoreCase("RIGHT"))
-            return Text.literal("Right (SubtiersNET) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleSubtiersNETMode());
+        if (positionSubtiers.toString().equalsIgnoreCase("RIGHT"))
+            return Text.literal("Right (Subtiers) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleSubtiersMode());
 
         return null;
     }
 
     public static Text cycleLeftMode() {
-        if (mcTiersCOMPosition.toString().equalsIgnoreCase("LEFT"))
-            return Text.literal("Left (MCTiersCOM) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersCOMMode());
+        if (positionMCTiers.toString().equalsIgnoreCase("LEFT"))
+            return Text.literal("Left (MCTiers) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersMode());
 
-        if (mcTiersIOPosition.toString().equalsIgnoreCase("LEFT"))
-            return Text.literal("Left (MCTiersIO) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleMCTiersIOMode());
+        if (positionPvPTiers.toString().equalsIgnoreCase("LEFT"))
+            return Text.literal("Left (PvPTiers) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cyclePvPTiersMode());
 
-        if (subtiersNETPosition.toString().equalsIgnoreCase("LEFT"))
-            return Text.literal("Left (SubtiersNET) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleSubtiersNETMode());
+        if (positionSubtiers.toString().equalsIgnoreCase("LEFT"))
+            return Text.literal("Left (Subtiers) is now displaying ").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))).append(cycleSubtiersMode());
 
         return null;
     }
 
     public static Text getRightIcon() {
-        if (mcTiersCOMPosition.toString().equalsIgnoreCase("RIGHT"))
-            return activeMCTiersCOMMode.icon;
+        if (positionMCTiers.toString().equalsIgnoreCase("RIGHT"))
+            return activeMCTiersMode.icon;
 
-        if (mcTiersIOPosition.toString().equalsIgnoreCase("RIGHT"))
-            return activeMCTiersIOMode.icon;
+        if (positionPvPTiers.toString().equalsIgnoreCase("RIGHT"))
+            return activePvPTiersMode.icon;
 
-        if (subtiersNETPosition.toString().equalsIgnoreCase("RIGHT"))
-            return activeSubtiersNETMode.icon;
+        if (positionSubtiers.toString().equalsIgnoreCase("RIGHT"))
+            return activeSubtiersMode.icon;
 
         return Text.of("");
     }
 
     public static Text getLeftIcon() {
-        if (mcTiersCOMPosition.toString().equalsIgnoreCase("LEFT"))
-            return activeMCTiersCOMMode.icon;
+        if (positionMCTiers.toString().equalsIgnoreCase("LEFT"))
+            return activeMCTiersMode.icon;
 
-        if (mcTiersIOPosition.toString().equalsIgnoreCase("LEFT"))
-            return activeMCTiersIOMode.icon;
+        if (positionPvPTiers.toString().equalsIgnoreCase("LEFT"))
+            return activePvPTiersMode.icon;
 
-        if (subtiersNETPosition.toString().equalsIgnoreCase("LEFT"))
-            return activeSubtiersNETMode.icon;
+        if (positionSubtiers.toString().equalsIgnoreCase("LEFT"))
+            return activeSubtiersMode.icon;
 
         return Text.of("");
     }
@@ -400,41 +405,41 @@ public class TiersClient implements ClientModInitializer {
         ConfigManager.saveConfig();
     }
 
-    public static Text cycleMCTiersCOMMode() {
-        activeMCTiersCOMMode = cycleEnum(activeMCTiersCOMMode, Modes.getMCTiersCOMValues());
+    public static Text cycleMCTiersMode() {
+        activeMCTiersMode = cycleEnum(activeMCTiersMode, Modes.getMCTiersValues());
         updateAllTags();
         ConfigManager.saveConfig();
-        return activeMCTiersCOMMode.label;
+        return activeMCTiersMode.label;
     }
 
-    public static Text cycleMCTiersIOMode() {
-        activeMCTiersIOMode = cycleEnum(activeMCTiersIOMode, Modes.getMCTiersIOValues());
+    public static Text cyclePvPTiersMode() {
+        activePvPTiersMode = cycleEnum(activePvPTiersMode, Modes.getPvPTiersValues());
         updateAllTags();
         ConfigManager.saveConfig();
-        return activeMCTiersIOMode.label;
+        return activePvPTiersMode.label;
     }
 
-    public static Text cycleSubtiersNETMode() {
-        activeSubtiersNETMode = cycleEnum(activeSubtiersNETMode, Modes.getSubtiersNETValues());
+    public static Text cycleSubtiersMode() {
+        activeSubtiersMode = cycleEnum(activeSubtiersMode, Modes.getSubtiersValues());
         updateAllTags();
         ConfigManager.saveConfig();
-        return activeSubtiersNETMode.label;
+        return activeSubtiersMode.label;
     }
 
-    public static void cycleMCTiersCOMPosition() {
-        mcTiersCOMPosition = cycleEnum(mcTiersCOMPosition, DisplayStatus.values());
-        updateAllTags();
-        ConfigManager.saveConfig();
-    }
-
-    public static void cycleMCTiersIOPosition() {
-        mcTiersIOPosition = cycleEnum(mcTiersIOPosition, DisplayStatus.values());
+    public static void cycleMCTiersPosition() {
+        positionMCTiers = cycleEnum(positionMCTiers, DisplayStatus.values());
         updateAllTags();
         ConfigManager.saveConfig();
     }
 
-    public static void cycleSubtiersNETPosition() {
-        subtiersNETPosition = cycleEnum(subtiersNETPosition, DisplayStatus.values());
+    public static void cyclePvPTiersPosition() {
+        positionPvPTiers = cycleEnum(positionPvPTiers, DisplayStatus.values());
+        updateAllTags();
+        ConfigManager.saveConfig();
+    }
+
+    public static void cycleSubtiersPosition() {
+        positionSubtiers = cycleEnum(positionSubtiers, DisplayStatus.values());
         updateAllTags();
         ConfigManager.saveConfig();
     }

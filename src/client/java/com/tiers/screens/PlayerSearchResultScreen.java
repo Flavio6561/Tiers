@@ -26,9 +26,9 @@ import java.io.IOException;
 import static com.tiers.TiersClient.sendMessageToPlayer;
 
 public class PlayerSearchResultScreen extends Screen {
-    private final Identifier MCTIERS_COM_IMAGE = Identifier.of("minecraft", "textures/mctiers_com_logo.png");
-    private final Identifier MCTIERS_IO_IMAGE = Identifier.of("minecraft", "textures/mctiers_io_logo.png");
-    private final Identifier SUBTIERS_NET_IMAGE = Identifier.of("minecraft", "textures/subtiers_net_logo.png");
+    private final Identifier MCTIERS_IMAGE = Identifier.of("minecraft", "textures/mctiers_logo.png");
+    private final Identifier PVPTIERS_IMAGE = Identifier.of("minecraft", "textures/pvptiers_logo.png");
+    private final Identifier SUBTIERS_IMAGE = Identifier.of("minecraft", "textures/subtiers_logo.png");
 
     private final PlayerProfile playerProfile;
     private Identifier playerAvatarTexture;
@@ -77,9 +77,9 @@ public class PlayerSearchResultScreen extends Screen {
         drawPlayerAvatar(context, centerX, avatarY);
         context.drawCenteredTextWithShadow(this.textRenderer, TiersClient.getNametag(playerProfile), centerX, height / 55, ColorControl.getColorMinecraftStandard("text"));
 
-        drawCategoryList(context, MCTIERS_COM_IMAGE, playerProfile.mcTiersCOMProfile, firstListX, listY);
-        drawCategoryList(context, MCTIERS_IO_IMAGE, playerProfile.mcTiersIOProfile, centerX, listY);
-        drawCategoryList(context, SUBTIERS_NET_IMAGE, playerProfile.subtiersNETProfile, thirdListX, listY);
+        drawCategoryList(context, MCTIERS_IMAGE, playerProfile.profileMCTiers, firstListX, listY);
+        drawCategoryList(context, PVPTIERS_IMAGE, playerProfile.profilePvPTiers, centerX, listY);
+        drawCategoryList(context, SUBTIERS_IMAGE, playerProfile.profileSubtiers, thirdListX, listY);
     }
 
     private void drawCategoryList(DrawContext context, Identifier image, SuperProfile profile, int x, int y) {
@@ -88,9 +88,12 @@ public class PlayerSearchResultScreen extends Screen {
             return;
         }
 
-        if (image == MCTIERS_COM_IMAGE)
-            context.drawTexture(RenderPipelines.GUI_TEXTURED, image, x - 56, y + 5, 0, 0, 112, 21, 112, 21);
-        else context.drawTexture(RenderPipelines.GUI_TEXTURED, image, x - 13, y, 0, 0, 26, 26, 26, 26);
+        if (image == MCTIERS_IMAGE)
+            context.drawTexture(RenderPipelines.GUI_TEXTURED, image, x - 64, y + 4, 0, 0, 128, 24, 128, 24);
+        else if (image == PVPTIERS_IMAGE)
+            context.drawTexture(RenderPipelines.GUI_TEXTURED, image, x - 12, y + 4, 0, 0, 24, 24, 24, 24);
+        else
+            context.drawTexture(RenderPipelines.GUI_TEXTURED, image, (int) (x - 15.5), y, 0, 0, 31, 31, 31, 31);
 
         if (profile.status == Status.SEARCHING) {
             context.drawCenteredTextWithShadow(this.textRenderer, "Searching...", x, (int) (y + 2.8 * separator), ColorControl.getColorMinecraftStandard("green"));
@@ -184,7 +187,9 @@ public class PlayerSearchResultScreen extends Screen {
         else if (playerProfile.imageSaved)
             loadPlayerAvatar();
         else if (playerProfile.numberOfImageRequests == 5)
-            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(playerProfile.name + "'s image failed to load. Clear cache and retry"), x, y + 20, ColorControl.getColorMinecraftStandard("red"));
+            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(playerProfile.name + "'s skin failed to load. Clear cache and retry"), x, y + 50, ColorControl.getColorMinecraftStandard("red"));
+        else
+            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Loading " + playerProfile.name + "'s skin"), x, y + 50, ColorControl.getColorMinecraftStandard("green"));
     }
 
     private void loadPlayerAvatar() {

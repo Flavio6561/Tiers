@@ -31,7 +31,7 @@ public class SuperProfile {
     public Text overallTooltip;
     public Text regionTooltip;
 
-    public ArrayList<GameMode> gameModes = new ArrayList<>();
+    public final ArrayList<GameMode> gameModes = new ArrayList<>();
 
     public GameMode highest;
     public String originalJson;
@@ -56,7 +56,7 @@ public class SuperProfile {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl + uuid))
-                //.header("User-Agent", userAgent) // Custom user agent is blocked by PvPTiers, will resolve in future updates
+                .header("User-Agent", userAgent)
                 .GET()
                 .build();
 
@@ -150,6 +150,10 @@ public class SuperProfile {
             return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("sa")));
         else if (region.equalsIgnoreCase("ME"))
             return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("me")));
+        else if (region.equalsIgnoreCase("AF"))
+            return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("af")));
+        else if (region.equalsIgnoreCase("OC"))
+            return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("oc")));
         return Text.literal("Unknown").setStyle(Style.EMPTY.withColor(ColorControl.getColor("unknown")));
     }
 
@@ -166,30 +170,32 @@ public class SuperProfile {
             return Text.literal("South America").setStyle(Style.EMPTY.withColor(ColorControl.getColor("sa")));
         else if (region.equalsIgnoreCase("ME"))
             return Text.literal("Middle East").setStyle(Style.EMPTY.withColor(ColorControl.getColor("me")));
+        else if (region.equalsIgnoreCase("AF"))
+            return Text.literal("Africa").setStyle(Style.EMPTY.withColor(ColorControl.getColor("af")));
+        else if (region.equalsIgnoreCase("OC"))
+            return Text.literal("Oceania").setStyle(Style.EMPTY.withColor(ColorControl.getColor("oc")));
         return Text.literal("Unknown").setStyle(Style.EMPTY.withColor(ColorControl.getColor("unknown")));
     }
 
     private Text getOverallText() {
-        if (points >= 250)
-            return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("master")));
-        else if (points >= 100)
-            return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("ace")));
-        else if (points >= 50)
-            return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("specialist")));
-        else if (points >= 20)
-            return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("cadet")));
-        else if (points >= 10)
-            return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("novice")));
+        if (!(this instanceof PvPTiersProfile) && points >= 250) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("master")));
+        else if (this instanceof PvPTiersProfile && points >= 200) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("master")));
+        else if (points >= 100) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("ace")));
+        else if (points >= 50) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("specialist")));
+        else if (points >= 20) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("cadet")));
+        else if (points >= 10) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("novice")));
+
         return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("rookie")));
     }
 
     private Text getOverallTooltip() {
         String overallTooltip = "Combat ";
 
-        if (this instanceof SubtiersNETProfile)
+        if (this instanceof SubtiersProfile)
             overallTooltip = "Subtiers ";
-        if (points >= 400) overallTooltip += "Grandmaster";
-        else if (points >= 250) overallTooltip += "Master";
+        if (!(this instanceof PvPTiersProfile) && points >= 400) overallTooltip += "Grandmaster";
+        else if (!(this instanceof PvPTiersProfile) && points >= 250) overallTooltip += "Master";
+        else if (this instanceof PvPTiersProfile && points >= 200) overallTooltip += "Master";
         else if (points >= 100) overallTooltip += "Ace";
         else if (points >= 50) overallTooltip += "Specialist";
         else if (points >= 20) overallTooltip += "Cadet";

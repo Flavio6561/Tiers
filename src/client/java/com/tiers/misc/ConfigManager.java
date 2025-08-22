@@ -19,14 +19,14 @@ public class ConfigManager {
         boolean isSeparatorAdaptive = true;
         TiersClient.ModesTierDisplay displayMode;
 
-        TiersClient.DisplayStatus mcTiersCOMPosition;
-        Modes activeMCTiersCOMMode;
+        TiersClient.DisplayStatus positionMCTiers;
+        Modes activeMCTiersMode;
 
-        TiersClient.DisplayStatus mcTiersIOPosition;
-        Modes activeMCTiersIOMode;
+        TiersClient.DisplayStatus positionPvPTiers;
+        Modes activePvPTiersMode;
 
-        TiersClient.DisplayStatus subtiersNETPosition;
-        Modes activeSubtiersNETMode;
+        TiersClient.DisplayStatus positionSubtiers;
+        Modes activeSubtiersMode;
 
         boolean anonymousUserAgent;
     }
@@ -52,20 +52,20 @@ public class ConfigManager {
         if (Arrays.stream(TiersClient.ModesTierDisplay.values()).toList().contains(config.displayMode))
             TiersClient.displayMode = config.displayMode;
 
-        if (Arrays.stream(TiersClient.DisplayStatus.values()).toList().contains(config.mcTiersCOMPosition))
-            TiersClient.mcTiersCOMPosition = config.mcTiersCOMPosition;
-        if (Arrays.stream(Modes.values()).toList().contains(config.activeMCTiersCOMMode) && config.activeMCTiersCOMMode.toString().contains("MCTIERSCOM"))
-            TiersClient.activeMCTiersCOMMode = config.activeMCTiersCOMMode;
+        if (Arrays.stream(TiersClient.DisplayStatus.values()).toList().contains(config.positionMCTiers))
+            TiersClient.positionMCTiers = config.positionMCTiers;
+        if (Arrays.stream(Modes.values()).toList().contains(config.activeMCTiersMode) && config.activeMCTiersMode.toString().contains("MCTIERS"))
+            TiersClient.activeMCTiersMode = config.activeMCTiersMode;
 
-        if (Arrays.stream(TiersClient.DisplayStatus.values()).toList().contains(config.mcTiersIOPosition))
-            TiersClient.mcTiersIOPosition = config.mcTiersIOPosition;
-        if (Arrays.stream(Modes.values()).toList().contains(config.activeMCTiersIOMode) && config.activeMCTiersIOMode.toString().contains("MCTIERSIO"))
-            TiersClient.activeMCTiersIOMode = config.activeMCTiersIOMode;
+        if (Arrays.stream(TiersClient.DisplayStatus.values()).toList().contains(config.positionPvPTiers))
+            TiersClient.positionPvPTiers = config.positionPvPTiers;
+        if (Arrays.stream(Modes.values()).toList().contains(config.activePvPTiersMode) && config.activePvPTiersMode.toString().contains("PVPTIERS"))
+            TiersClient.activePvPTiersMode = config.activePvPTiersMode;
 
-        if (Arrays.stream(TiersClient.DisplayStatus.values()).toList().contains(config.subtiersNETPosition))
-            TiersClient.subtiersNETPosition = config.subtiersNETPosition;
-        if (Arrays.stream(Modes.values()).toList().contains(config.activeSubtiersNETMode) && config.activeSubtiersNETMode.toString().contains("SUBTIERSNET"))
-            TiersClient.activeSubtiersNETMode = config.activeSubtiersNETMode;
+        if (Arrays.stream(TiersClient.DisplayStatus.values()).toList().contains(config.positionSubtiers))
+            TiersClient.positionSubtiers = config.positionSubtiers;
+        if (Arrays.stream(Modes.values()).toList().contains(config.activeSubtiersMode) && config.activeSubtiersMode.toString().contains("SUBTIERS"))
+            TiersClient.activeSubtiersMode = config.activeSubtiersMode;
 
         TiersClient.anonymousUserAgent = config.anonymousUserAgent;
 
@@ -80,14 +80,14 @@ public class ConfigManager {
         config.isSeparatorAdaptive = TiersClient.isSeparatorAdaptive;
         config.displayMode = TiersClient.displayMode;
 
-        config.mcTiersCOMPosition = TiersClient.mcTiersCOMPosition;
-        config.activeMCTiersCOMMode = TiersClient.activeMCTiersCOMMode;
+        config.positionMCTiers = TiersClient.positionMCTiers;
+        config.activeMCTiersMode = TiersClient.activeMCTiersMode;
 
-        config.mcTiersIOPosition = TiersClient.mcTiersIOPosition;
-        config.activeMCTiersIOMode = TiersClient.activeMCTiersIOMode;
+        config.positionPvPTiers = TiersClient.positionPvPTiers;
+        config.activePvPTiersMode = TiersClient.activePvPTiersMode;
 
-        config.subtiersNETPosition = TiersClient.subtiersNETPosition;
-        config.activeSubtiersNETMode = TiersClient.activeSubtiersNETMode;
+        config.positionSubtiers = TiersClient.positionSubtiers;
+        config.activeSubtiersMode = TiersClient.activeSubtiersMode;
 
         config.anonymousUserAgent = TiersClient.anonymousUserAgent;
 
@@ -104,14 +104,14 @@ public class ConfigManager {
         currentConfig.isSeparatorAdaptive = TiersClient.isSeparatorAdaptive;
         currentConfig.displayMode = TiersClient.displayMode;
 
-        currentConfig.mcTiersCOMPosition = TiersClient.mcTiersCOMPosition;
-        currentConfig.activeMCTiersCOMMode = TiersClient.activeMCTiersCOMMode;
+        currentConfig.positionMCTiers = TiersClient.positionMCTiers;
+        currentConfig.activeMCTiersMode = TiersClient.activeMCTiersMode;
 
-        currentConfig.mcTiersIOPosition = TiersClient.mcTiersIOPosition;
-        currentConfig.activeMCTiersIOMode = TiersClient.activeMCTiersIOMode;
+        currentConfig.positionPvPTiers = TiersClient.positionPvPTiers;
+        currentConfig.activePvPTiersMode = TiersClient.activePvPTiersMode;
 
-        currentConfig.subtiersNETPosition = TiersClient.subtiersNETPosition;
-        currentConfig.activeSubtiersNETMode = TiersClient.activeSubtiersNETMode;
+        currentConfig.positionSubtiers = TiersClient.positionSubtiers;
+        currentConfig.activeSubtiersMode = TiersClient.activeSubtiersMode;
 
         currentConfig.anonymousUserAgent = TiersClient.anonymousUserAgent;
 

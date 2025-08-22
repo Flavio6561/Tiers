@@ -6,7 +6,6 @@ import com.tiers.textures.ColorControl;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.*;
-import net.minecraft.item.ItemStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
@@ -21,110 +20,110 @@ public class InventoryChecker {
         PlayerInventory inventory = client.player.getInventory();
 
         if (checkVanilla(inventory)) {
-            TiersClient.activeMCTiersCOMMode = Modes.MCTIERSCOM_VANILLA;
-            TiersClient.activeMCTiersIOMode = Modes.MCTIERSIO_CRYSTAL;
-            detected = Modes.MCTIERSCOM_VANILLA;
+            TiersClient.activeMCTiersMode = Modes.MCTIERS_VANILLA;
+            TiersClient.activePvPTiersMode = Modes.PVPTIERS_CRYSTAL;
+            detected = Modes.MCTIERS_VANILLA;
         }
 
         if (checkSword(inventory)) {
-            TiersClient.activeMCTiersCOMMode = Modes.MCTIERSCOM_SWORD;
-            TiersClient.activeMCTiersIOMode = Modes.MCTIERSIO_SWORD;
-            detected = Modes.MCTIERSCOM_SWORD;
+            TiersClient.activeMCTiersMode = Modes.MCTIERS_SWORD;
+            TiersClient.activePvPTiersMode = Modes.PVPTIERS_SWORD;
+            detected = Modes.MCTIERS_SWORD;
         }
 
         if (checkUhc(inventory)) {
-            TiersClient.activeMCTiersCOMMode = Modes.MCTIERSCOM_UHC;
-            TiersClient.activeMCTiersIOMode = Modes.MCTIERSIO_UHC;
-            detected = Modes.MCTIERSCOM_UHC;
+            TiersClient.activeMCTiersMode = Modes.MCTIERS_UHC;
+            TiersClient.activePvPTiersMode = Modes.PVPTIERS_UHC;
+            detected = Modes.MCTIERS_UHC;
         }
 
         if (checkPot(inventory)) {
-            TiersClient.activeMCTiersCOMMode = Modes.MCTIERSCOM_POT;
-            TiersClient.activeMCTiersIOMode = Modes.MCTIERSIO_POT;
-            detected = Modes.MCTIERSCOM_POT;
+            TiersClient.activeMCTiersMode = Modes.MCTIERS_POT;
+            TiersClient.activePvPTiersMode = Modes.PVPTIERS_POT;
+            detected = Modes.MCTIERS_POT;
         }
 
         if (checkNethPot(inventory)) {
-            TiersClient.activeMCTiersCOMMode = Modes.MCTIERSCOM_NETHERITE_OP;
-            TiersClient.activeMCTiersIOMode = Modes.MCTIERSIO_NETHERITE_POT;
-            detected = Modes.MCTIERSCOM_NETHERITE_OP;
+            TiersClient.activeMCTiersMode = Modes.MCTIERS_NETH_OP;
+            TiersClient.activePvPTiersMode = Modes.PVPTIERS_NETH_POT;
+            detected = Modes.MCTIERS_NETH_OP;
         }
 
         if (checkSmp(inventory)) {
-            TiersClient.activeMCTiersCOMMode = Modes.MCTIERSCOM_SMP;
-            TiersClient.activeMCTiersIOMode = Modes.MCTIERSIO_SMP;
-            detected = Modes.MCTIERSCOM_SMP;
+            TiersClient.activeMCTiersMode = Modes.MCTIERS_SMP;
+            TiersClient.activePvPTiersMode = Modes.PVPTIERS_SMP;
+            detected = Modes.MCTIERS_SMP;
         }
 
         if (checkAxe(inventory)) {
-            TiersClient.activeMCTiersCOMMode = Modes.MCTIERSCOM_AXE;
-            TiersClient.activeMCTiersIOMode = Modes.MCTIERSIO_AXE;
-            detected = Modes.MCTIERSCOM_AXE;
+            TiersClient.activeMCTiersMode = Modes.MCTIERS_AXE;
+            TiersClient.activePvPTiersMode = Modes.PVPTIERS_AXE;
+            detected = Modes.MCTIERS_AXE;
         }
 
         if (checkMace(inventory)) {
-            TiersClient.activeMCTiersCOMMode = Modes.MCTIERSCOM_MACE;
-            detected = Modes.MCTIERSCOM_MACE;
+            TiersClient.activeMCTiersMode = Modes.MCTIERS_MACE;
+            detected = Modes.MCTIERS_MACE;
         }
 
         if (checkMinecart(inventory)) {
-            TiersClient.activeSubtiersNETMode = Modes.SUBTIERSNET_MINECART;
-            detected = Modes.SUBTIERSNET_MINECART;
+            TiersClient.activeSubtiersMode = Modes.SUBTIERS_MINECART;
+            detected = Modes.SUBTIERS_MINECART;
         }
 
-        if (checkDiamondVanilla(inventory)) {
-            TiersClient.activeSubtiersNETMode = Modes.SUBTIERSNET_DIAMOND_CRYSTAL;
-            detected = Modes.SUBTIERSNET_DIAMOND_CRYSTAL;
+        if (checkDiamondSurvival(inventory)) {
+            TiersClient.activeSubtiersMode = Modes.SUBTIERS_DIAMOND_SURVIVAL;
+            detected = Modes.SUBTIERS_DIAMOND_SURVIVAL;
         }
 
         if (checkDeBuff(inventory)) {
-            TiersClient.activeSubtiersNETMode = Modes.SUBTIERSNET_DEBUFF;
-            detected = Modes.SUBTIERSNET_DEBUFF;
+            TiersClient.activeSubtiersMode = Modes.SUBTIERS_DEBUFF;
+            detected = Modes.SUBTIERS_DEBUFF;
         }
 
         if (checkSubtiersElytra(inventory)) {
-            TiersClient.activeSubtiersNETMode = Modes.SUBTIERSNET_ELYTRA;
-            detected = Modes.SUBTIERSNET_ELYTRA;
+            TiersClient.activeSubtiersMode = Modes.SUBTIERS_ELYTRA;
+            detected = Modes.SUBTIERS_ELYTRA;
         }
 
         if (checkSpeed(inventory)) {
-            TiersClient.activeSubtiersNETMode = Modes.SUBTIERSNET_SPEED;
-            detected = Modes.SUBTIERSNET_SPEED;
+            TiersClient.activeSubtiersMode = Modes.SUBTIERS_SPEED;
+            detected = Modes.SUBTIERS_SPEED;
         }
 
         if (checkCreeper(inventory)) {
-            TiersClient.activeSubtiersNETMode = Modes.SUBTIERSNET_CREEPER;
-            detected = Modes.SUBTIERSNET_CREEPER;
+            TiersClient.activeSubtiersMode = Modes.SUBTIERS_CREEPER;
+            detected = Modes.SUBTIERS_CREEPER;
         }
 
         if (checkManhunt(inventory)) {
-            TiersClient.activeSubtiersNETMode = Modes.SUBTIERSNET_MANHUNT;
-            detected = Modes.SUBTIERSNET_MANHUNT;
+            TiersClient.activeSubtiersMode = Modes.SUBTIERS_MANHUNT;
+            detected = Modes.SUBTIERS_MANHUNT;
         }
 
         if (checkDiamondSmp(inventory)) {
-            TiersClient.activeSubtiersNETMode = Modes.SUBTIERSNET_DIAMOND_SMP;
-            detected = Modes.SUBTIERSNET_DIAMOND_SMP;
+            TiersClient.activeSubtiersMode = Modes.SUBTIERS_DIAMOND_SMP;
+            detected = Modes.SUBTIERS_DIAMOND_SMP;
         }
 
         if (checkBow(inventory)) {
-            TiersClient.activeSubtiersNETMode = Modes.SUBTIERSNET_BOW;
-            detected = Modes.SUBTIERSNET_BOW;
+            TiersClient.activeSubtiersMode = Modes.SUBTIERS_BOW;
+            detected = Modes.SUBTIERS_BOW;
         }
 
         if (checkBed(inventory)) {
-            TiersClient.activeSubtiersNETMode = Modes.SUBTIERSNET_BED;
-            detected = Modes.SUBTIERSNET_BED;
+            TiersClient.activeSubtiersMode = Modes.SUBTIERS_BED;
+            detected = Modes.SUBTIERS_BED;
         }
 
         if (checkOgVanilla(inventory)) {
-            TiersClient.activeSubtiersNETMode = Modes.SUBTIERSNET_OG_VANILLA;
-            detected = Modes.SUBTIERSNET_OG_VANILLA;
+            TiersClient.activeSubtiersMode = Modes.SUBTIERS_OG_VANILLA;
+            detected = Modes.SUBTIERS_OG_VANILLA;
         }
 
         if (checkTrident(inventory)) {
-            TiersClient.activeSubtiersNETMode = Modes.SUBTIERSNET_TRIDENT;
-            detected = Modes.SUBTIERSNET_TRIDENT;
+            TiersClient.activeSubtiersMode = Modes.SUBTIERS_TRIDENT;
+            detected = Modes.SUBTIERS_TRIDENT;
         }
 
         if (detected != null)
@@ -423,7 +422,7 @@ public class InventoryChecker {
                 hasEnchantedChestplate && hasEnchantedLeggings && hasEnchantedBoots;
     }
 
-    private static boolean checkDiamondVanilla(PlayerInventory inventory) {
+    private static boolean checkDiamondSurvival(PlayerInventory inventory) {
         boolean hasObsidian = false;
         boolean hasCrystal = false;
         boolean hasAnchor = false;
@@ -447,7 +446,7 @@ public class InventoryChecker {
             hasLeggings |= hasItem(stack, Items.DIAMOND_LEGGINGS, true);
             hasBoots |= hasItem(stack, Items.DIAMOND_BOOTS, true);
 
-            if (DIAMOND_VANILLA_NON_ALLOWED.contains(stack.getItem())) return false;
+            if (DIAMOND_SURVIVAL_NON_ALLOWED.contains(stack.getItem())) return false;
         }
 
         return hasObsidian && hasCrystal && hasAnchor && hasGlowstone && hasSword && hasHelmet && hasChestplate && hasLeggings && hasBoots;
@@ -963,7 +962,7 @@ public class InventoryChecker {
             Items.GLOWSTONE
     );
 
-    private static final Set<Item> DIAMOND_VANILLA_NON_ALLOWED = Set.of(
+    private static final Set<Item> DIAMOND_SURVIVAL_NON_ALLOWED = Set.of(
             Items.NETHERITE_SWORD,
             Items.NETHERITE_PICKAXE,
             Items.NETHERITE_HELMET,
