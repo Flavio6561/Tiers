@@ -352,10 +352,8 @@ public class InventoryChecker {
         boolean hasPotions = false;
         boolean hasTotem = false;
         boolean hasPearls = false;
-        boolean hasWindCharge = false;
         boolean hasElytra = false;
         boolean hasShield = false;
-        boolean hasEnchantedMace = false;
         boolean hasEnchantedSword = false;
         boolean hasEnchantedAxe = false;
         boolean hasEnchantedHelmet = false;
@@ -370,10 +368,8 @@ public class InventoryChecker {
             hasPotions |= hasItem(stack, Items.SPLASH_POTION);
             hasTotem |= hasItem(stack, Items.TOTEM_OF_UNDYING);
             hasPearls |= hasItem(stack, Items.ENDER_PEARL);
-            hasWindCharge |= hasItem(stack, Items.WIND_CHARGE);
             hasElytra |= hasItem(stack, Items.ELYTRA);
             hasShield |= hasItem(stack, Items.SHIELD);
-            hasEnchantedMace |= hasItem(stack, Items.MACE, true);
             hasEnchantedSword |= hasItem(stack, Items.NETHERITE_SWORD, true);
             hasEnchantedAxe |= hasItem(stack, Items.NETHERITE_AXE, true);
             hasEnchantedHelmet |= hasItem(stack, Items.NETHERITE_HELMET, true);
@@ -384,7 +380,7 @@ public class InventoryChecker {
             if (MACE_NON_ALLOWED.contains(stack.getItem())) return false;
         }
 
-        return hasGaps && hasPotions && hasTotem && hasPearls && hasWindCharge && hasElytra && hasShield && hasEnchantedMace &&
+        return hasGaps && hasPotions && hasTotem && hasPearls && hasElytra && hasShield &&
                 hasEnchantedSword && hasEnchantedAxe && hasEnchantedHelmet && hasEnchantedChestplate && hasEnchantedLeggings && hasEnchantedBoots;
     }
 
@@ -487,12 +483,10 @@ public class InventoryChecker {
         boolean hasPots = false;
         boolean hasGaps = false;
         boolean hasTotem = false;
-        boolean hasWindcharge = false;
         boolean hasPearls = false;
         boolean hasCrossbow = false;
         boolean hasBow = false;
         boolean hasElytra = false;
-        boolean hasMace = false;
         boolean hasSword = false;
         boolean hasAxe = false;
         boolean hasChestplate = false;
@@ -504,12 +498,10 @@ public class InventoryChecker {
             hasPots |= hasItem(stack, Items.SPLASH_POTION);
             hasGaps |= hasItem(stack, Items.GOLDEN_APPLE);
             hasTotem |= hasItem(stack, Items.TOTEM_OF_UNDYING);
-            hasWindcharge |= hasItem(stack, Items.WIND_CHARGE);
             hasPearls |= hasItem(stack, Items.ENDER_PEARL);
             hasCrossbow |= hasItem(stack, Items.CROSSBOW, true);
             hasBow |= hasItem(stack, Items.BOW, true);
             hasElytra |= hasItem(stack, Items.ELYTRA);
-            hasMace |= hasItem(stack, Items.MACE);
             hasSword |= hasItem(stack, Items.NETHERITE_SWORD, true);
             hasAxe |= hasItem(stack, Items.NETHERITE_AXE, true);
             hasChestplate |= hasItem(stack, Items.LEATHER_CHESTPLATE);
@@ -517,8 +509,8 @@ public class InventoryChecker {
             if (SUBTIERS_ELYTRA_NON_ALLOWED.contains(stack.getItem())) return false;
         }
 
-        return hasCobweb && hasPots && hasGaps && hasTotem && hasWindcharge && hasPearls && hasCrossbow &&
-                hasBow && hasElytra && hasMace && hasSword && hasAxe && hasChestplate;
+        return hasCobweb && hasPots && hasGaps && hasTotem && hasPearls && hasCrossbow &&
+                hasBow && hasElytra && hasSword && hasAxe && hasChestplate;
     }
 
     private static boolean checkSpeed(PlayerInventory inventory) {
@@ -954,7 +946,6 @@ public class InventoryChecker {
 
     private static final Set<Item> MINECART_NON_ALLOWED = Set.of(
             Items.SHIELD,
-            Items.MACE,
 
             Items.END_CRYSTAL,
             Items.OBSIDIAN,
@@ -1041,7 +1032,6 @@ public class InventoryChecker {
 
     private static final Set<Item> CREEPER_NON_ALLOWED = Set.of(
             Items.ELYTRA,
-            Items.WIND_CHARGE,
             Items.EXPERIENCE_BOTTLE,
             Items.SPLASH_POTION,
 
@@ -1069,7 +1059,6 @@ public class InventoryChecker {
 
     private static final Set<Item> MANHUNT_NON_ALLOWED = Set.of(
             Items.TOTEM_OF_UNDYING,
-            Items.WIND_CHARGE,
             Items.EXPERIENCE_BOTTLE,
             Items.SPLASH_POTION,
 
@@ -1093,8 +1082,6 @@ public class InventoryChecker {
     );
 
     private static final Set<Item> DIAMOND_SMP_NON_ALLOWED = Set.of(
-            Items.WIND_CHARGE,
-
             Items.NETHERITE_SWORD,
             Items.NETHERITE_AXE,
             Items.NETHERITE_HELMET,
@@ -1110,7 +1097,6 @@ public class InventoryChecker {
 
     private static final Set<Item> BOW_NON_ALLOWED = Set.of(
             Items.ELYTRA,
-            Items.WIND_CHARGE,
             Items.EXPERIENCE_BOTTLE,
             Items.SPLASH_POTION,
             Items.ENDER_PEARL,
@@ -1139,8 +1125,6 @@ public class InventoryChecker {
     );
 
     private static final Set<Item> BED_NON_ALLOWED = Set.of(
-            Items.WIND_CHARGE,
-            Items.MACE,
             Items.SHIELD,
 
             Items.END_CRYSTAL,
@@ -1150,7 +1134,6 @@ public class InventoryChecker {
 
     private static final Set<Item> OG_VANILLA_NON_ALLOWED = Set.of(
             Items.ELYTRA,
-            Items.WIND_CHARGE,
             Items.CROSSBOW,
             Items.COBWEB,
             Items.WATER_BUCKET,
@@ -1175,7 +1158,6 @@ public class InventoryChecker {
 
     private static final Set<Item> TRIDENT_NON_ALLOWED = Set.of(
             Items.ELYTRA,
-            Items.WIND_CHARGE,
             Items.CROSSBOW,
             Items.LAVA_BUCKET,
             Items.SHIELD,
