@@ -7,11 +7,11 @@ import com.tiers.textures.ColorControl;
 import com.tiers.textures.Icons;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.text.Style;
@@ -80,11 +80,11 @@ public class ConfigScreen extends Screen {
 
     private void drawCategoryList(DrawContext context, Identifier image, int x, int y) {
         if (image == MCTIERS_IMAGE)
-            context.drawTexture(RenderPipelines.GUI_TEXTURED, image, x - 64, y + 4, 0, 0, 128, 24, 128, 24);
+            context.drawTexture(RenderLayer::getGuiTextured, image, x - 64, y + 4, 0, 0, 128, 24, 128, 24);
         else if (image == PVPTIERS_IMAGE)
-            context.drawTexture(RenderPipelines.GUI_TEXTURED, image, x - 12, y + 4, 0, 0, 24, 24, 24, 24);
+            context.drawTexture(RenderLayer::getGuiTextured, image, x - 12, y + 4, 0, 0, 24, 24, 24, 24);
         else
-            context.drawTexture(RenderPipelines.GUI_TEXTURED, image, (int) (x - 15.5), y, 0, 0, 31, 31, 31, 31);
+            context.drawTexture(RenderLayer::getGuiTextured, image, (int) (x - 15.5), y, 0, 0, 31, 31, 31, 31);
     }
 
     private void checkUpdates() {
@@ -246,7 +246,7 @@ public class ConfigScreen extends Screen {
 
     private void drawPlayerAvatar(DrawContext context, int x, int y) {
         if (playerAvatarTexture != null && imageReady)
-            context.drawTexture(RenderPipelines.GUI_TEXTURED, playerAvatarTexture, x - width / 32, y, 0, 0, width / 16, (int) (width / 6.666), width / 16, (int) (width / 6.666));
+            context.drawTexture(RenderLayer::getGuiTextured, playerAvatarTexture, x - width / 32, y, 0, 0, width / 16, (int) (width / 6.666), width / 16, (int) (width / 6.666));
         else if (ownProfile.numberOfImageRequests > 4)
             context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(ownProfile.name + "'s skin failed to load. Clear cache and retry"), x, y + 40, ColorControl.getColorMinecraftStandard("red"));
         else
@@ -260,7 +260,7 @@ public class ConfigScreen extends Screen {
 
         try (FileInputStream stream = new FileInputStream(avatarFile)) {
             playerAvatarTexture = Identifier.of("tiers", (useOwnProfile ? ownProfile.uuid : defaultProfile.uuid));
-            MinecraftClient.getInstance().getTextureManager().registerTexture(playerAvatarTexture, new NativeImageBackedTexture(null, NativeImage.read(stream)));
+            MinecraftClient.getInstance().getTextureManager().registerTexture(playerAvatarTexture, new NativeImageBackedTexture(NativeImage.read(stream)));
             imageReady = true;
         } catch (IOException ignored) {
         }
