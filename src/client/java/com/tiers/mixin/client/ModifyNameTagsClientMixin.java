@@ -11,12 +11,12 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(PlayerEntity.class)
 public abstract class ModifyNameTagsClientMixin {
     @Shadow
-    public abstract String getNameForScoreboard();
+    public abstract String getEntityName();
 
     @ModifyReturnValue(at = @At("RETURN"), method = "getDisplayName")
     private Text getDisplayName(Text originalNameText) {
         if (TiersClient.toggleMod)
-            return TiersClient.getModifiedNametag(this.getNameForScoreboard(), originalNameText);
+            return TiersClient.getModifiedNametag(this.getEntityName(), originalNameText);
         return originalNameText;
     }
 }

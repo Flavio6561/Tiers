@@ -71,8 +71,8 @@ public class ConfigScreen extends Screen {
         drawCategoryList(context, PVPTIERS_IMAGE, centerX, distance + 110);
         drawCategoryList(context, SUBTIERS_IMAGE, centerX + 100, distance + 110);
 
-        context.drawTextWithShadow(this.textRenderer, Text.of(TiersClient.getRightIcon()), centerX + 90 + 33, distance + 75 + 8, ColorControl.getColorMinecraftStandard("text"));
-        context.drawTextWithShadow(this.textRenderer, Text.of(TiersClient.getLeftIcon()), centerX - 90 - 33 - 12, distance + 75 + 8, ColorControl.getColorMinecraftStandard("text"));
+        context.drawTextWithShadow(this.textRenderer, TiersClient.getRightIcon(), centerX + 90 + 33, distance + 75 + 8, ColorControl.getColorMinecraftStandard("text"));
+        context.drawTextWithShadow(this.textRenderer, TiersClient.getLeftIcon(), centerX - 90 - 33 - 12, distance + 75 + 8, ColorControl.getColorMinecraftStandard("text"));
 
         checkUpdates();
     }
@@ -181,7 +181,7 @@ public class ConfigScreen extends Screen {
         } else {
             enableOwnProfile = ButtonWidget.builder(Text.literal("Cannot switch profiles").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))), (buttonWidget) -> {
             }).dimensions(width / 2 - 90, distance + 75, 180, 20).build();
-            enableOwnProfile.setTooltip(Tooltip.of(Text.of("Can't switch profiles: " + ownProfile.name + " is not found or fetched yet")));
+            enableOwnProfile.setTooltip(Tooltip.of(Text.of("Can't switch profiles: Tiers version not supported. Update to 1.20.4+ versions")));
         }
 
         clearPlayerCache = ButtonWidget.builder(Text.literal("Clear cache").setStyle(Style.EMPTY.withColor(ColorControl.getColor("text"))), (buttonWidget) -> TiersClient.clearCache(false)).dimensions(width - 88 - 10, height - 20 - 10, 88, 20).build();
