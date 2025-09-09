@@ -12,11 +12,11 @@ public class PlayerProfileQueue {
     private static PlayerProfile currentProfile = null;
 
     static {
-        scheduler.scheduleAtFixedRate(PlayerProfileQueue::processNext, 0, 70, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(PlayerProfileQueue::processNext, 0, 50, TimeUnit.MILLISECONDS);
     }
 
-    public static void enqueue(PlayerProfile profile) {
-        queue.add(profile);
+    public static void enqueue(PlayerProfile playerProfile) {
+        queue.add(playerProfile);
     }
 
     private static void processNext() {
@@ -25,29 +25,36 @@ public class PlayerProfileQueue {
 
         currentProfile = queue.poll();
         if (currentProfile != null)
-            currentProfile.buildRequest(currentProfile.name);
+            currentProfile.buildRequest();
     }
 
-    public static void putFirstInQueue(PlayerProfile profile) {
-        if (currentProfile == profile)
+    public static void putFirstInQueue(PlayerProfile playerProfile) {
+        if (currentProfile == playerProfile)
             return;
 
-        queue.remove(profile);
-        queue.addFirst(profile);
+        queue.remove(playerProfile);
+        queue.addFirst(playerProfile);
     }
 
-    public static void changeToFirstInQueue(PlayerProfile profile) {
-        if (currentProfile == profile)
+    public static void changeToFirstInQueue(PlayerProfile playerProfile) {
+        if (currentProfile == playerProfile)
             return;
 
-        if (queue.contains(profile)) {
-            queue.remove(profile);
-            queue.addFirst(profile);
+        if (queue.contains(playerProfile)) {
+            queue.remove(playerProfile);
+            queue.addFirst(playerProfile);
         }
     }
 
     public static void clearQueue() {
         queue.clear();
         currentProfile = null;
+    }
+
+    public static void removeFromQueue(PlayerProfile playerProfile) {
+        if (currentProfile == playerProfile)
+            currentProfile = null;
+
+        queue.remove(playerProfile);
     }
 }
