@@ -1,50 +1,50 @@
 {
-	"schemaVersion": 1,
-	"id": "tiers",
-	"version": "${version}",
-	"name": "Tiers",
-	"description": "Display tiers from MCTiers, PvPTiers and Subtiers",
-	"authors": [
-		"Flavio6561"
-	],
-	"license": "GPL-3.0",
-	"contact": {
-		"issues": "https://github.com/Flavio6561/Tiers/issues",
-		"homepage": "https://github.com/Flavio6561/Tiers"
-	},
-	"custom" : {
-		"modmenu" : {
-			"links" : {
-				"GitHub": "https://github.com/Flavio6561/Tiers",
-				"Modrinth page": "https://modrinth.com/mod/tiers",
-				"Changelogs" : "https://github.com/Flavio6561/Tiers/wiki/Version-changelogs",
-				"GitHub Issues": "https://github.com/Flavio6561/Tiers/issues"
-			}
-		}
-	},
-	"icon": "assets/tiers/icon.png",
-	"entrypoints": {
-		"client": [
-			"com.tiers.TiersClient"
-		],
-		"modmenu": [
-			"com.tiers.misc.ModMenuIntegration"
-		]
-	},
-	"mixins": [
-		{
-			"config": "tiers.client.mixins.json",
-			"environment": "client"
-		}
-	],
-	"depends": {
-		"fabricloader": ">=0.16.14",
-		"minecraft": [
-			"1.21.6",
-			"1.21.7",
-			"1.21.8"
-		],
-		"java": ">=21",
-		"fabric-api": "*"
-	}
+  "schemaVersion": 1,
+  "id": "tiers",
+  "version": "${version}",
+  "name": "Tiers",
+  "description": "Official Tier Tagger of PvPTiers. Supports other Tierlists: MCTiers, Subtiers",
+  "authors": [
+    "Flavio6561"
+  ],
+  "license": "GPL-3.0",
+  "contact": {
+    "issues": "https://github.com/Flavio6561/Tiers/issues",
+    "homepage": "https://github.com/Flavio6561/Tiers"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "GitHub": "https://github.com/Flavio6561/Tiers",
+        "Modrinth page": "https://modrinth.com/mod/tiers",
+        "Changelogs": "https://github.com/Flavio6561/Tiers/wiki/Version-changelogs",
+        "GitHub Issues": "https://github.com/Flavio6561/Tiers/issues"
+      }
+    }
+  },
+  "icon": "assets/tiers/icon.png",
+  "entrypoints": {
+    "client": [
+      "com.tiers.TiersClient"
+    ],
+    "modmenu": [
+      "com.tiers.misc.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    {
+      "config": "tiers.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.14",
+    "minecraft": [
+      "1.21.6",
+      "1.21.7",
+      "1.21.8"
+    ],
+    "java": ">=21",
+    "fabric-api": "*"
+  }
 }
