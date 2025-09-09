@@ -15,36 +15,35 @@ import net.minecraft.command.CommandSource;
 import java.util.concurrent.CompletableFuture;
 
 public class CommandRegister {
-    private static final SuggestionProvider<FabricClientCommandSource> PLAYERS =
-            (context, builder) -> suggestPlayers(builder);
+    private static final SuggestionProvider<FabricClientCommandSource> PLAYERS = (commandContext, suggestionsBuilder) -> suggestPlayers(suggestionsBuilder);
 
-    private static CompletableFuture<Suggestions> suggestPlayers(SuggestionsBuilder builder) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.world == null || client.getNetworkHandler() == null)
-            return builder.buildFuture();
+    private static CompletableFuture<Suggestions> suggestPlayers(SuggestionsBuilder suggestionsBuilder) {
+        MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        if (minecraftClient.world == null || minecraftClient.getNetworkHandler() == null)
+            return suggestionsBuilder.buildFuture();
 
-        for (PlayerListEntry entry : client.getNetworkHandler().getPlayerList())
-            if (CommandSource.shouldSuggest(builder.getRemaining().toLowerCase(), entry.getProfile().getName().toLowerCase()) &&
-                    entry.getProfile().getName().length() > 2)
-                builder.suggest(entry.getProfile().getName(), () -> "Search tiers for " + entry.getProfile().getName());
+        for (PlayerListEntry playerListEntry : minecraftClient.getNetworkHandler().getPlayerList())
+            if (CommandSource.shouldSuggest(suggestionsBuilder.getRemaining().toLowerCase(), playerListEntry.getProfile().getName().toLowerCase()) &&
+                    playerListEntry.getProfile().getName().length() > 2)
+                suggestionsBuilder.suggest(playerListEntry.getProfile().getName(), () -> "Search tiers for " + playerListEntry.getProfile().getName());
 
-        if (CommandSource.shouldSuggest(builder.getRemaining().toLowerCase(), "config"))
-            builder.suggest("config", () -> "Open the config screen");
-        if (CommandSource.shouldSuggest(builder.getRemaining().toLowerCase(), "toggle"))
-            builder.suggest("toggle", () -> "Toggle " + (TiersClient.toggleMod ? "off" : "on") + " Tiers");
+        if (CommandSource.shouldSuggest(suggestionsBuilder.getRemaining().toLowerCase(), "config"))
+            suggestionsBuilder.suggest("config", () -> "Open the config screen");
+        if (CommandSource.shouldSuggest(suggestionsBuilder.getRemaining().toLowerCase(), "toggle"))
+            suggestionsBuilder.suggest("toggle", () -> "Toggle " + (TiersClient.toggleMod ? "off" : "on") + " Tiers");
 
-        return builder.buildFuture();
+        return suggestionsBuilder.buildFuture();
     }
 
     public static void registerCommands() {
-        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcher.register(
-                ClientCommandManager.literal("tiers")
-                        .executes(TiersClient::toggleMod)
-                        .then(ClientCommandManager.argument("Name", StringArgumentType.string())
-                                .suggests(PLAYERS)
-                                .executes(context -> {
-                                    String name = StringArgumentType.getString(context, "Name");
-                                    return TiersClient.searchPlayer(name);
+        ClientCommandRegistrationCallback.EVENT.register((commandDispatcher, commandRegistryAccess) -> commandDispatcher.register(
+                ClientCommandManager.literal("tiers").executes(ignored -> {
+                            TiersClient.toggleMod();
+                            return 1;
+                        })
+                        .then(ClientCommandManager.argument("Name", StringArgumentType.string()).suggests(PLAYERS).executes(context -> {
+                                    TiersClient.searchPlayer(StringArgumentType.getString(context, "Name"));
+                                    return 1;
                                 })
                         )
         ));

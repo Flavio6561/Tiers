@@ -3,6 +3,7 @@ package com.tiers.misc;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.tiers.TiersClient;
+import com.tiers.textures.Icons;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.*;
@@ -14,32 +15,33 @@ public class ConfigManager {
     private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("Tiers.json");
 
     private static class Config {
-        boolean toggleMod = true;
-        boolean showIcons = true;
-        boolean isSeparatorAdaptive = true;
+        boolean toggleMod;
+        boolean showIcons;
+        boolean isSeparatorAdaptive;
         TiersClient.ModesTierDisplay displayMode;
+        Icons.Type activeIcons;
 
         TiersClient.DisplayStatus positionMCTiers;
-        Modes activeMCTiersMode;
+        Mode activeMCTiersMode;
 
         TiersClient.DisplayStatus positionPvPTiers;
-        Modes activePvPTiersMode;
+        Mode activePvPTiersMode;
 
         TiersClient.DisplayStatus positionSubtiers;
-        Modes activeSubtiersMode;
+        Mode activeSubtiersMode;
 
         boolean anonymousUserAgent;
     }
 
     public static void loadConfig() {
         Gson gson = new Gson();
-        File configFile = CONFIG_PATH.toFile();
-        if (configFile.exists()) {
-            try (FileReader reader = new FileReader(configFile)) {
-                config = gson.fromJson(reader, Config.class);
+        File file = CONFIG_PATH.toFile();
+        if (file.exists()) {
+            try (FileReader fileReader = new FileReader(file)) {
+                config = gson.fromJson(fileReader, Config.class);
                 if (config == null)
                     restoreFromClient();
-            } catch (JsonSyntaxException | IOException exception) {
+            } catch (JsonSyntaxException | IOException ignored) {
                 restoreFromClient();
             }
         } else
@@ -52,19 +54,22 @@ public class ConfigManager {
         if (Arrays.stream(TiersClient.ModesTierDisplay.values()).toList().contains(config.displayMode))
             TiersClient.displayMode = config.displayMode;
 
+        if (Arrays.stream(Icons.Type.values()).toList().contains(config.activeIcons))
+            TiersClient.activeIcons = config.activeIcons;
+
         if (Arrays.stream(TiersClient.DisplayStatus.values()).toList().contains(config.positionMCTiers))
             TiersClient.positionMCTiers = config.positionMCTiers;
-        if (Arrays.stream(Modes.values()).toList().contains(config.activeMCTiersMode) && config.activeMCTiersMode.toString().contains("MCTIERS"))
+        if (Arrays.stream(Mode.values()).toList().contains(config.activeMCTiersMode) && config.activeMCTiersMode.toString().contains("MCTIERS"))
             TiersClient.activeMCTiersMode = config.activeMCTiersMode;
 
         if (Arrays.stream(TiersClient.DisplayStatus.values()).toList().contains(config.positionPvPTiers))
             TiersClient.positionPvPTiers = config.positionPvPTiers;
-        if (Arrays.stream(Modes.values()).toList().contains(config.activePvPTiersMode) && config.activePvPTiersMode.toString().contains("PVPTIERS"))
+        if (Arrays.stream(Mode.values()).toList().contains(config.activePvPTiersMode) && config.activePvPTiersMode.toString().contains("PVPTIERS"))
             TiersClient.activePvPTiersMode = config.activePvPTiersMode;
 
         if (Arrays.stream(TiersClient.DisplayStatus.values()).toList().contains(config.positionSubtiers))
             TiersClient.positionSubtiers = config.positionSubtiers;
-        if (Arrays.stream(Modes.values()).toList().contains(config.activeSubtiersMode) && config.activeSubtiersMode.toString().contains("SUBTIERS"))
+        if (Arrays.stream(Mode.values()).toList().contains(config.activeSubtiersMode) && config.activeSubtiersMode.toString().contains("SUBTIERS"))
             TiersClient.activeSubtiersMode = config.activeSubtiersMode;
 
         TiersClient.anonymousUserAgent = config.anonymousUserAgent;
@@ -79,6 +84,7 @@ public class ConfigManager {
         config.showIcons = TiersClient.showIcons;
         config.isSeparatorAdaptive = TiersClient.isSeparatorAdaptive;
         config.displayMode = TiersClient.displayMode;
+        config.activeIcons = TiersClient.activeIcons;
 
         config.positionMCTiers = TiersClient.positionMCTiers;
         config.activeMCTiersMode = TiersClient.activeMCTiersMode;
@@ -96,28 +102,29 @@ public class ConfigManager {
 
     public static void saveConfig() {
         Gson gson = new Gson();
-        File configFile = CONFIG_PATH.toFile();
-        Config currentConfig = new Config();
+        File file = CONFIG_PATH.toFile();
+        Config config = new Config();
 
-        currentConfig.toggleMod = TiersClient.toggleMod;
-        currentConfig.showIcons = TiersClient.showIcons;
-        currentConfig.isSeparatorAdaptive = TiersClient.isSeparatorAdaptive;
-        currentConfig.displayMode = TiersClient.displayMode;
+        config.toggleMod = TiersClient.toggleMod;
+        config.showIcons = TiersClient.showIcons;
+        config.isSeparatorAdaptive = TiersClient.isSeparatorAdaptive;
+        config.displayMode = TiersClient.displayMode;
+        config.activeIcons = TiersClient.activeIcons;
 
-        currentConfig.positionMCTiers = TiersClient.positionMCTiers;
-        currentConfig.activeMCTiersMode = TiersClient.activeMCTiersMode;
+        config.positionMCTiers = TiersClient.positionMCTiers;
+        config.activeMCTiersMode = TiersClient.activeMCTiersMode;
 
-        currentConfig.positionPvPTiers = TiersClient.positionPvPTiers;
-        currentConfig.activePvPTiersMode = TiersClient.activePvPTiersMode;
+        config.positionPvPTiers = TiersClient.positionPvPTiers;
+        config.activePvPTiersMode = TiersClient.activePvPTiersMode;
 
-        currentConfig.positionSubtiers = TiersClient.positionSubtiers;
-        currentConfig.activeSubtiersMode = TiersClient.activeSubtiersMode;
+        config.positionSubtiers = TiersClient.positionSubtiers;
+        config.activeSubtiersMode = TiersClient.activeSubtiersMode;
 
-        currentConfig.anonymousUserAgent = TiersClient.anonymousUserAgent;
+        config.anonymousUserAgent = TiersClient.anonymousUserAgent;
 
-        try (FileWriter writer = new FileWriter(configFile)) {
-            gson.toJson(currentConfig, writer);
-        } catch (IOException exception) {
+        try (FileWriter fileWriter = new FileWriter(file)) {
+            gson.toJson(config, fileWriter);
+        } catch (IOException ignored) {
             restoreFromClient();
         }
     }

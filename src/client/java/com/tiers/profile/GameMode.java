@@ -1,7 +1,7 @@
 package com.tiers.profile;
 
 import com.google.gson.JsonObject;
-import com.tiers.misc.Modes;
+import com.tiers.misc.Mode;
 import com.tiers.textures.ColorControl;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -24,13 +24,13 @@ public class GameMode {
     public Text tierTooltip;
     public Text peakTierTooltip;
 
-    public final Modes name;
+    public final Mode gamemode;
     public final String parsingName;
-    public boolean hasPeak = false;
-    public boolean drawn = false;
+    public boolean hasPeak;
+    public boolean drawn;
 
-    public GameMode(Modes name, String parsingName) {
-        this.name = name;
+    public GameMode(Mode gamemode, String parsingName) {
+        this.gamemode = gamemode;
         this.parsingName = parsingName;
     }
 
@@ -120,17 +120,17 @@ public class GameMode {
 
         if (tier.equalsIgnoreCase("HT1")) return 60;
         else if (tier.equalsIgnoreCase("LT1")) {
-            if (name.toString().contains("PVPTIERS"))
+            if (gamemode.toString().contains("PVPTIERS"))
                 return 44;
             else
                 return 45;
         } else if (tier.equalsIgnoreCase("HT2")) {
-            if (name.toString().contains("PVPTIERS"))
+            if (gamemode.toString().contains("PVPTIERS"))
                 return 28;
             else
                 return 30;
         } else if (tier.equalsIgnoreCase("LT2")) {
-            if (name.toString().contains("PVPTIERS"))
+            if (gamemode.toString().contains("PVPTIERS"))
                 return 16;
             else
                 return 20;
@@ -145,16 +145,6 @@ public class GameMode {
 
     private int getTierColor(String tier) {
         if (tier.contains("R")) return ColorControl.getColor("retired");
-        else if (tier.equalsIgnoreCase("HT1")) return ColorControl.getColor("ht1");
-        else if (tier.equalsIgnoreCase("LT1")) return ColorControl.getColor("lt1");
-        else if (tier.equalsIgnoreCase("HT2")) return ColorControl.getColor("ht2");
-        else if (tier.equalsIgnoreCase("LT2")) return ColorControl.getColor("lt2");
-        else if (tier.equalsIgnoreCase("HT3")) return ColorControl.getColor("ht3");
-        else if (tier.equalsIgnoreCase("LT3")) return ColorControl.getColor("lt3");
-        else if (tier.equalsIgnoreCase("HT4")) return ColorControl.getColor("ht4");
-        else if (tier.equalsIgnoreCase("LT4")) return ColorControl.getColor("lt4");
-        else if (tier.equalsIgnoreCase("HT5")) return ColorControl.getColor("ht5");
-        else if (tier.equalsIgnoreCase("LT5")) return ColorControl.getColor("lt5");
-        return ColorControl.getColor("unknown");
+        return ColorControl.getColor(tier.toLowerCase());
     }
 }

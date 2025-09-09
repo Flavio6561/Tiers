@@ -1,0 +1,88 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/subtiers/minecart.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF000"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/subtiers/diamond_survival.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF001"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/subtiers/debuff.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF002"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/subtiers/elytra.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF003"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/subtiers/speed.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF004"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/subtiers/creeper.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF005"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/subtiers/manhunt.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF006"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/subtiers/diamond_smp.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF007"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/subtiers/bow.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF008"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/subtiers/bed.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF009"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/subtiers/og_vanilla.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF00A"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/subtiers/trident.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF00B"]
+    }
+  ]
+}
