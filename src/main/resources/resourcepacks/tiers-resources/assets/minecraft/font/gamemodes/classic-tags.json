@@ -1,0 +1,60 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/classic/crystal.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF000"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/classic/uhc.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF001"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/classic/pot.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF002"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/classic/neth_pot.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF003"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/classic/smp.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF004"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/classic/sword.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF005"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/classic/axe.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF006"]
+    },
+    {
+      "type": "bitmap",
+      "file": "font/gamemodes/classic/mace.png",
+      "height": 7,
+      "ascent": 7,
+      "chars": ["\uF007"]
+    }
+  ]
+}
