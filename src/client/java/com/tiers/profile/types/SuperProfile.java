@@ -2,11 +2,10 @@ package com.tiers.profile.types;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.tiers.misc.Modes;
+import com.tiers.misc.Mode;
 import com.tiers.profile.GameMode;
-import com.tiers.textures.ColorControl;
 import com.tiers.profile.Status;
-import net.minecraft.text.Style;
+import com.tiers.textures.Icons;
 import net.minecraft.text.Text;
 
 import java.net.URI;
@@ -21,10 +20,11 @@ import static com.tiers.TiersClient.userAgent;
 
 public class SuperProfile {
     public Status status = Status.SEARCHING;
+    private int numberOfRequests;
 
-    public String region;
-    public int points;
-    public int overallPosition;
+    private String region;
+    private int points;
+    private int overallPosition;
 
     public Text displayedRegion;
     public Text displayedOverall;
@@ -32,21 +32,15 @@ public class SuperProfile {
     public Text regionTooltip;
 
     public final ArrayList<GameMode> gameModes = new ArrayList<>();
-
     public GameMode highest;
+
     public String originalJson;
-    public boolean drawn = false;
-    private int numberOfRequests = 0;
+    public boolean drawn;
 
-    protected SuperProfile(String uuid, String apiUrl) {
-        CompletableFuture.delayedExecutor(20, TimeUnit.MILLISECONDS).execute(() -> buildRequest(uuid, apiUrl));
+    protected SuperProfile() {
     }
 
-    protected SuperProfile(String json) {
-        CompletableFuture.delayedExecutor(20, TimeUnit.MILLISECONDS).execute(() -> parseJson(json));
-    }
-
-    private void buildRequest(String uuid, String apiUrl) {
+    protected void buildRequest(String uuid, String apiUrl) {
         if (numberOfRequests == 5 || status != Status.SEARCHING) {
             status = Status.TIMEOUTED;
             return;
@@ -54,29 +48,27 @@ public class SuperProfile {
 
         numberOfRequests++;
 
-        HttpRequest request = HttpRequest.newBuilder()
+        HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl + uuid))
                 .header("User-Agent", userAgent)
                 .GET()
                 .build();
 
-        HttpClient.newHttpClient()
-                .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenAccept(response -> {
-                    if (response.statusCode() == 404) {
-                        status = Status.NOT_EXISTING;
-                        return;
-                    } else if (response.statusCode() != 200) {
-                        status = Status.API_ISSUE;
-                        return;
-                    }
+        HttpClient httpClient = HttpClient.newHttpClient();
+        httpClient.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
+            if (response.statusCode() == 404) {
+                status = Status.NOT_EXISTING;
+                return;
+            } else if (response.statusCode() != 200) {
+                status = Status.API_ISSUE;
+                return;
+            }
 
-                    parseJson(response.body());
-                })
-                .exceptionally(exception -> {
-                    CompletableFuture.delayedExecutor(100, TimeUnit.MILLISECONDS).execute(() -> buildRequest(uuid, apiUrl));
-                    return null;
-                });
+            parseJson(response.body());
+        }).exceptionally(ignored -> {
+            CompletableFuture.delayedExecutor(100, TimeUnit.MILLISECONDS).execute(() -> buildRequest(uuid, apiUrl));
+            return null;
+        });
     }
 
     public void parseJson(String json) {
@@ -116,9 +108,9 @@ public class SuperProfile {
         highest = getHighestMode();
     }
 
-    public GameMode getGameMode(Modes gamemode) {
+    public GameMode getGameMode(Mode gamemode) {
         for (GameMode gameMode : gameModes)
-            if (gameMode.name.toString().equalsIgnoreCase(gamemode.toString()))
+            if (gameMode.gamemode.toString().equalsIgnoreCase(gamemode.toString()))
                 return gameMode;
 
         status = Status.NOT_EXISTING;
@@ -139,53 +131,54 @@ public class SuperProfile {
 
     private Text getRegionText() {
         if (region.equalsIgnoreCase("EU"))
-            return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("eu")));
+            return Icons.colorText(region, "eu");
         else if (region.equalsIgnoreCase("NA"))
-            return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("na")));
+            return Icons.colorText(region, "na");
         else if (region.equalsIgnoreCase("AS"))
-            return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("as")));
+            return Icons.colorText(region, "as");
         else if (region.equalsIgnoreCase("AU"))
-            return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("au")));
+            return Icons.colorText(region, "au");
         else if (region.equalsIgnoreCase("SA"))
-            return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("sa")));
+            return Icons.colorText(region, "sa");
         else if (region.equalsIgnoreCase("ME"))
-            return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("me")));
+            return Icons.colorText(region, "me");
         else if (region.equalsIgnoreCase("AF"))
-            return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("af")));
+            return Icons.colorText(region, "af");
         else if (region.equalsIgnoreCase("OC"))
-            return Text.literal(region).setStyle(Style.EMPTY.withColor(ColorControl.getColor("oc")));
-        return Text.literal("Unknown").setStyle(Style.EMPTY.withColor(ColorControl.getColor("unknown")));
+            return Icons.colorText(region, "oc");
+        return Icons.colorText("Unknown", "unknown");
     }
 
     private Text getRegionTooltip() {
         if (region.equalsIgnoreCase("EU"))
-            return Text.literal("Europe").setStyle(Style.EMPTY.withColor(ColorControl.getColor("eu")));
+            return Icons.colorText("Europe", "eu");
         else if (region.equalsIgnoreCase("NA"))
-            return Text.literal("North America").setStyle(Style.EMPTY.withColor(ColorControl.getColor("na")));
+            return Icons.colorText("North America", "na");
         else if (region.equalsIgnoreCase("AS"))
-            return Text.literal("Asia").setStyle(Style.EMPTY.withColor(ColorControl.getColor("as")));
+            return Icons.colorText("Asia", "as");
         else if (region.equalsIgnoreCase("AU"))
-            return Text.literal("Australia").setStyle(Style.EMPTY.withColor(ColorControl.getColor("au")));
+            return Icons.colorText("Australia", "au");
         else if (region.equalsIgnoreCase("SA"))
-            return Text.literal("South America").setStyle(Style.EMPTY.withColor(ColorControl.getColor("sa")));
+            return Icons.colorText("South America", "sa");
         else if (region.equalsIgnoreCase("ME"))
-            return Text.literal("Middle East").setStyle(Style.EMPTY.withColor(ColorControl.getColor("me")));
+            return Icons.colorText("Middle East", "me");
         else if (region.equalsIgnoreCase("AF"))
-            return Text.literal("Africa").setStyle(Style.EMPTY.withColor(ColorControl.getColor("af")));
+            return Icons.colorText("Africa", "af");
         else if (region.equalsIgnoreCase("OC"))
-            return Text.literal("Oceania").setStyle(Style.EMPTY.withColor(ColorControl.getColor("oc")));
-        return Text.literal("Unknown").setStyle(Style.EMPTY.withColor(ColorControl.getColor("unknown")));
+            return Icons.colorText("Oceania", "oc");
+        return Icons.colorText("Unknown", "unknown");
     }
 
     private Text getOverallText() {
-        if (!(this instanceof PvPTiersProfile) && points >= 250) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("master")));
-        else if (this instanceof PvPTiersProfile && points >= 200) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("master")));
-        else if (points >= 100) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("ace")));
-        else if (points >= 50) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("specialist")));
-        else if (points >= 20) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("cadet")));
-        else if (points >= 10) return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("novice")));
+        String positionString = "#" + overallPosition;
+        if (!(this instanceof PvPTiersProfile) && points >= 250) return Icons.colorText(positionString, "master");
+        else if (this instanceof PvPTiersProfile && points >= 200) return Icons.colorText(positionString, "master");
+        else if (points >= 100) return Icons.colorText(positionString, "ace");
+        else if (points >= 50) return Icons.colorText(positionString, "specialist");
+        else if (points >= 20) return Icons.colorText(positionString, "cadet");
+        else if (points >= 10) return Icons.colorText(positionString, "novice");
 
-        return Text.literal("#" + overallPosition).setStyle(Style.EMPTY.withColor(ColorControl.getColor("rookie")));
+        return Icons.colorText(positionString, "rookie");
     }
 
     private Text getOverallTooltip() {
