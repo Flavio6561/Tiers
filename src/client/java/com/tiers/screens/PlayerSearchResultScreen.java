@@ -32,7 +32,7 @@ import static com.tiers.TiersClient.LOGGER;
 
 public class PlayerSearchResultScreen extends Screen {
     private final PlayerProfile playerProfile;
-    private Identifier playerAvatarTexture;
+    private final Identifier playerAvatarTexture = Identifier.of("");
 
     ButtonWidget dimensionsWarning;
 
@@ -232,10 +232,10 @@ public class PlayerSearchResultScreen extends Screen {
     }
 
     private void loadPlayerAvatar() {
-        if (playerAvatarTexture != null) return;
+        if (imageReady)
+            return;
 
         try (FileInputStream fileInputStream = new FileInputStream(FabricLoader.getInstance().getGameDir().resolve("cache/tiers/players/" + playerProfile.uuid + ".png").toFile())) {
-            playerAvatarTexture = Identifier.of("players", playerProfile.uuid);
             MinecraftClient.getInstance().getTextureManager().registerTexture(playerAvatarTexture, new NativeImageBackedTexture(NativeImage.read(fileInputStream)));
             imageReady = true;
         } catch (IOException ignored) {

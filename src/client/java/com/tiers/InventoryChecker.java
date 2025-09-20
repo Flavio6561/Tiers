@@ -11,8 +11,14 @@ import net.minecraft.text.Text;
 import java.util.Set;
 
 public class InventoryChecker {
-    public static void checkInventory(MinecraftClient minecraftClient) {
-        if (minecraftClient.player == null) return;
+    public static void checkInventory(MinecraftClient minecraftClient, boolean showMessage) {
+        if (minecraftClient.player == null)
+            return;
+
+        if (showMessage && TiersClient.autoKitDetect) {
+            TiersClient.sendMessageToPlayer(Icons.colorText("Auto kit detect is enabled. Pressing the keybind won't make a difference", "green"), true);
+            return;
+        }
 
         Mode detected = null;
 
@@ -126,10 +132,14 @@ public class InventoryChecker {
             detected = Mode.SUBTIERS_TRIDENT;
         }
 
-        if (detected != null)
-            minecraftClient.player.sendMessage(Text.empty().append(detected.getTextLabel()).append(Text.of(" was detected")), true);
-        else
-            minecraftClient.player.sendMessage(Icons.colorText("No gamemode detected", "red"), true);
+        if (detected != null) {
+            if (showMessage)
+                TiersClient.sendMessageToPlayer(Text.empty().append(detected.getTextLabel()).append(Text.of(" was detected")), true);
+            TiersClient.updateAllTags();
+        } else {
+            if (showMessage)
+                TiersClient.sendMessageToPlayer(Icons.colorText("No gamemode detected", "red"), true);
+        }
 
         ConfigManager.saveConfig();
     }

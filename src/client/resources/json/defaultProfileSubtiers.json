@@ -1,0 +1,105 @@
+{
+  "uuid": "06ec3577329945fabbdf613b1f86c8ab",
+  "name": "ItzRealMe",
+  "region": "NA",
+  "points": 246,
+  "overall": 1,
+  "rankings": {
+    "creeper": {
+      "tier": 3,
+      "pos": 0,
+      "peak_tier": 3,
+      "peak_pos": 0,
+      "attained": 1755574337,
+      "retired": false
+    },
+    "manhunt": {
+      "tier": 2,
+      "pos": 0,
+      "peak_tier": 2,
+      "peak_pos": 0,
+      "attained": 1739745345,
+      "retired": true
+    },
+    "minecart": {
+      "tier": 2,
+      "pos": 1,
+      "peak_tier": 2,
+      "peak_pos": 1,
+      "attained": 1756077535,
+      "retired": false
+    },
+    "debuff": {
+      "tier": 1,
+      "pos": 1,
+      "peak_tier": 1,
+      "peak_pos": 1,
+      "attained": 1755743487,
+      "retired": false
+    },
+    "trident": {
+      "tier": 2,
+      "pos": 0,
+      "peak_tier": 2,
+      "peak_pos": 0,
+      "attained": 1756149108,
+      "retired": false
+    },
+    "bow": {
+      "tier": 4,
+      "pos": 0,
+      "peak_tier": 4,
+      "peak_pos": 0,
+      "attained": 1744035315,
+      "retired": false
+    },
+    "bed": {
+      "tier": 3,
+      "pos": 0,
+      "peak_tier": 3,
+      "peak_pos": 0,
+      "attained": 1755573638,
+      "retired": false
+    },
+    "speed": {
+      "tier": 3,
+      "pos": 1,
+      "peak_tier": 3,
+      "peak_pos": 0,
+      "attained": 1756948269,
+      "retired": false
+    },
+    "og_vanilla": {
+      "tier": 1,
+      "pos": 0,
+      "peak_tier": 1,
+      "peak_pos": 0,
+      "attained": 1756613359,
+      "retired": false
+    },
+    "dia_smp": {
+      "tier": 2,
+      "pos": 0,
+      "peak_tier": 2,
+      "peak_pos": 0,
+      "attained": 1751323336,
+      "retired": true
+    },
+    "elytra": {
+      "tier": 3,
+      "pos": 1,
+      "peak_tier": 3,
+      "peak_pos": 1,
+      "attained": 1755403899,
+      "retired": false
+    },
+    "dia_crystal": {
+      "tier": 3,
+      "pos": 1,
+      "peak_tier": 3,
+      "peak_pos": 1,
+      "attained": 1755545530,
+      "retired": false
+    }
+  }
+}
