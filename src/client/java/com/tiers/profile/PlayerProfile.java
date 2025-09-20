@@ -66,6 +66,12 @@ public class PlayerProfile {
 
     public PlayerProfile(String mojangJson, String jsonMCTiers, String jsonPvPTiers, String jsonSubtiers) {
         regular = false;
+
+        if (JsonParser.parseString(mojangJson).isJsonNull()) {
+            status = Status.API_ISSUE;
+            return;
+        }
+
         JsonObject jsonObject = JsonParser.parseString(mojangJson).getAsJsonObject();
 
         if (jsonObject.has("name") && jsonObject.has("id")) {
@@ -76,7 +82,7 @@ public class PlayerProfile {
             return;
         }
 
-        Path path = FabricLoader.getInstance().getGameDir().resolve("cache/tiers/3b653c04f2d9422a87e7ccf8b146c350.png");
+        Path path = FabricLoader.getInstance().getGameDir().resolve("cache/tiers/06ec3577329945fabbdf613b1f86c8ab.png");
 
         try (InputStream inputStream = MinecraftClient.getInstance().getResourceManager().getResource(Identifier.of("minecraft", "textures/default.png")).orElseThrow().getInputStream()) {
             if (inputStream == null) throw new IOException();
@@ -216,6 +222,11 @@ public class PlayerProfile {
     }
 
     private void parseJson(String json) {
+        if (JsonParser.parseString(json).isJsonNull()) {
+            status = Status.API_ISSUE;
+            return;
+        }
+
         JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
 
         if (jsonObject.has("code") && jsonObject.has("data") && jsonObject.has("success")) {

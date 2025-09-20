@@ -144,7 +144,8 @@ public class GameMode {
     }
 
     private int getTierColor(String tier) {
-        if (tier.contains("R")) return ColorControl.getColor("retired");
+        if (tier.contains("R"))
+            return ColorControl.getColor("retired");
         return ColorControl.getColor(tier.toLowerCase());
     }
 }

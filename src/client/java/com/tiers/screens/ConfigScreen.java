@@ -33,8 +33,9 @@ public class ConfigScreen extends Screen {
     public static PlayerProfile defaultProfile;
 
     private boolean useOwnProfile;
+    private String autoDetectKitBoundKey;
 
-    private Identifier playerAvatarTexture;
+    private final Identifier playerAvatarTexture = Identifier.of("");
     private boolean imageReady;
 
     private ButtonWidget toggleMod;
@@ -42,7 +43,7 @@ public class ConfigScreen extends Screen {
     private ButtonWidget toggleSeparatorMode;
     private ButtonWidget cycleDisplayMode;
     private ButtonWidget clearPlayerCache;
-    private ButtonWidget enableOwnProfile;
+    private ButtonWidget autoKitDetect;
     private ButtonWidget leftMCTiers;
     private ButtonWidget centerMCTiers;
     private ButtonWidget rightMCTiers;
@@ -54,12 +55,18 @@ public class ConfigScreen extends Screen {
     private ButtonWidget rightSubtiers;
     private ButtonWidget activeRightMode;
     private ButtonWidget activeLeftMode;
+    private ButtonWidget enableOwnProfile;
 
     private int centerX;
     private int distance;
 
     private ConfigScreen() {
         super(Text.of("Tiers config"));
+
+        autoDetectKitBoundKey = String.valueOf(TiersClient.autoDetectKey.getBoundKeyLocalizedText()).replace("literal{", "\"").replace("}", "\"");
+        if (autoDetectKitBoundKey.length() != 3)
+            autoDetectKitBoundKey = "the assigned keybind";
+
         loadPlayerAvatar();
     }
 
@@ -104,7 +111,7 @@ public class ConfigScreen extends Screen {
         toggleShowIcons.setPosition(width / 2 + 2, distance);
         toggleSeparatorMode.setPosition(width / 2 - 90, distance + 25);
         cycleDisplayMode.setPosition(width / 2 - 90, distance + 50);
-        enableOwnProfile.setPosition(width / 2 - 90, distance + 75);
+        autoKitDetect.setPosition(width / 2 - 90, distance + 75);
         clearPlayerCache.setPosition(width - 88 - 5, height - 20 - 5);
         leftMCTiers.setPosition(centerX - 120 - 10 - 24, distance + 145);
         centerMCTiers.setPosition(centerX - 120 - 10, distance + 145);
@@ -117,6 +124,7 @@ public class ConfigScreen extends Screen {
         rightSubtiers.setPosition(centerX + 120 - 10 + 24, distance + 145);
         activeRightMode.setPosition(centerX + 90 + 4, distance + 75);
         activeLeftMode.setPosition(centerX - 90 - 20 - 4, distance + 75);
+        enableOwnProfile.setPosition(width - 20 - 5 - 88 - 4, height - 20 - 5);
 
         activeRightMode.visible = TiersClient.positionMCTiers == TiersClient.DisplayStatus.RIGHT || TiersClient.positionPvPTiers == TiersClient.DisplayStatus.RIGHT || TiersClient.positionSubtiers == TiersClient.DisplayStatus.RIGHT;
         activeLeftMode.visible = TiersClient.positionMCTiers == TiersClient.DisplayStatus.LEFT || TiersClient.positionPvPTiers == TiersClient.DisplayStatus.LEFT || TiersClient.positionSubtiers == TiersClient.DisplayStatus.LEFT;
@@ -127,8 +135,8 @@ public class ConfigScreen extends Screen {
         toggleMod = ButtonWidget.builder(Text.of(TiersClient.toggleMod ? "Disable Tiers" : "Enable Tiers"), (buttonWidget) -> {
             TiersClient.toggleMod();
             buttonWidget.setMessage(Text.of(TiersClient.toggleMod ? "Disable Tiers" : "Enable Tiers"));
-            buttonWidget.setTooltip(Tooltip.of(Text.of(TiersClient.toggleMod ? "Disable Tiers" : "Enable Tiers")));
-        }).dimensions(width / 2 - 88 - 2, distance, 88, 20).tooltip(Tooltip.of(Text.of(TiersClient.toggleMod ? "Disable the mod" : "Enable the mod"))).build();
+            buttonWidget.setTooltip(Tooltip.of(Text.of(TiersClient.toggleMod ? "Disable Tiers on nametags" : "Enable Tiers on nametags")));
+        }).dimensions(width / 2 - 88 - 2, distance, 88, 20).tooltip(Tooltip.of(Text.of(TiersClient.toggleMod ? "Disable Tiers on nametags" : "Enable Tiers on nametags"))).build();
 
         toggleShowIcons = ButtonWidget.builder(Text.of(TiersClient.showIcons ? "Disable Icons" : "Enable Icons"), (buttonWidget) -> {
             TiersClient.toggleShowIcons();
@@ -152,19 +160,27 @@ public class ConfigScreen extends Screen {
                 
                 Adaptive Highest: the highest tier will be displayed if selected does not exist""")))).build();
 
+        autoKitDetect = ButtonWidget.builder(Text.of(TiersClient.autoKitDetect ? "Disable auto kit detect" : "Enable auto kit detect"), (buttonWidget) -> {
+            TiersClient.toggleAutoKitDetect();
+            buttonWidget.setMessage(Text.of(TiersClient.autoKitDetect ? "Disable auto kit detect" : "Enable auto kit detect"));
+            buttonWidget.setTooltip(Tooltip.of(Text.of((TiersClient.autoKitDetect ?
+                    "Disable auto kit detect: you will need to press " + autoDetectKitBoundKey + " to auto-detect the current gamemode" :
+                    "Enable auto kit detect: Tiers will always scan your inventory to display the right gamemode (instead of pressing " + autoDetectKitBoundKey + ")"))));
+        }).dimensions(width / 2 - 90, distance + 75, 180, 20).tooltip(Tooltip.of(Text.of((TiersClient.autoKitDetect ?
+                "Disable auto kit detect: you will need to press " + autoDetectKitBoundKey + " to auto-detect the current gamemode" :
+                "Enable auto kit detect: Tiers will always scan your inventory to display the right gamemode (instead of pressing " + autoDetectKitBoundKey + ")")))).build();
+
         if (ownProfile.status == Status.READY) {
-            enableOwnProfile = ButtonWidget.builder(Text.of(useOwnProfile ? "Preview default" : "Preview " + ownProfile.name), (buttonWidget) -> {
+            enableOwnProfile = ButtonWidget.builder(Icons.CYCLE, (buttonWidget) -> {
                 useOwnProfile = !useOwnProfile;
 
                 imageReady = false;
-                playerAvatarTexture = null;
                 loadPlayerAvatar();
 
-                buttonWidget.setMessage(Text.of(useOwnProfile ? "Preview default" : "Preview " + ownProfile.name));
                 buttonWidget.setTooltip(Tooltip.of(Text.of(useOwnProfile ? "Preview the default profile (" + defaultProfile.name + ")" : "Preview your player profile (" + ownProfile.name + ")")));
-            }).dimensions(width / 2 - 90, distance + 75, 180, 20).tooltip(Tooltip.of(Text.of(useOwnProfile ? "Preview the default profile (" + defaultProfile.name + ")" : "Preview your player profile (" + ownProfile.name + ")"))).build();
+            }).dimensions(width - 20 - 5 - 88 - 4, height - 20 - 5, 20, 20).tooltip(Tooltip.of(Text.of(useOwnProfile ? "Preview the default profile (" + defaultProfile.name + ")" : "Preview your player profile (" + ownProfile.name + ")"))).build();
         } else
-            enableOwnProfile = ButtonWidget.builder(Text.of("Cannot switch profiles"), (buttonWidget) -> {}).dimensions(width / 2 - 90, distance + 75, 180, 20).tooltip(Tooltip.of(Text.of("Can't switch profiles: " + ownProfile.name + " is not found or fetched yet. Restart game to retry"))).build();
+            enableOwnProfile = ButtonWidget.builder(Text.of("⚠"), (buttonWidget) -> {}).dimensions(width - 20 - 5 - 88 - 4, height - 20 - 5, 20, 20).tooltip(Tooltip.of(Text.of("Can't switch profiles: " + ownProfile.name + " is not found or fetched yet. Restart game to retry"))).build();
 
         clearPlayerCache = ButtonWidget.builder(Text.of("Clear cache"), (buttonWidget) -> TiersClient.clearCache(false)).dimensions(width - 88 - 5, height - 20 - 5, 88, 20).tooltip(Tooltip.of(Text.of("Clear all player cache"))).build();
 
@@ -327,9 +343,21 @@ public class ConfigScreen extends Screen {
             case LEFT -> leftSubtiers.active = false;
         }
 
-        activeRightMode = ButtonWidget.builder(Icons.CYCLE, (buttonWidget) -> TiersClient.cycleRightMode()).dimensions(centerX + 90 + 4, distance + 75, 20, 20).tooltip(Tooltip.of(Text.of("Cycle active right gamemode"))).build();
+        activeRightMode = ButtonWidget.builder(Icons.CYCLE, (buttonWidget) -> {
+            TiersClient.cycleRightMode();
+            autoKitDetect.setMessage(Text.of(TiersClient.autoKitDetect ? "Disable auto kit detect" : "Enable auto kit detect"));
+            autoKitDetect.setTooltip(Tooltip.of(Text.of((TiersClient.autoKitDetect ?
+                    "Disable auto kit detect: you will need to press " + autoDetectKitBoundKey + " to auto-detect the current gamemode" :
+                    "Enable auto kit detect: Tiers will always scan your inventory to display the right gamemode (instead of pressing " + autoDetectKitBoundKey + ")"))));
+        }).dimensions(centerX + 90 + 4, distance + 75, 20, 20).tooltip(Tooltip.of(Text.of("Cycle active right gamemode"))).build();
 
-        activeLeftMode = ButtonWidget.builder(Icons.CYCLE, (buttonWidget) -> TiersClient.cycleLeftMode()).dimensions(centerX - 90 - 20 - 4, distance + 75, 20, 20).tooltip(Tooltip.of(Text.of("Cycle active left gamemode"))).build();
+        activeLeftMode = ButtonWidget.builder(Icons.CYCLE, (buttonWidget) -> {
+            TiersClient.cycleLeftMode();
+            autoKitDetect.setMessage(Text.of(TiersClient.autoKitDetect ? "Disable auto kit detect" : "Enable auto kit detect"));
+            autoKitDetect.setTooltip(Tooltip.of(Text.of((TiersClient.autoKitDetect ?
+                    "Disable auto kit detect: you will need to press " + autoDetectKitBoundKey + " to auto-detect the current gamemode" :
+                    "Enable auto kit detect: Tiers will always scan your inventory to display the right gamemode (instead of pressing " + autoDetectKitBoundKey + ")"))));
+        }).dimensions(centerX - 90 - 20 - 4, distance + 75, 20, 20).tooltip(Tooltip.of(Text.of("Cycle active left gamemode"))).build();
 
         ButtonWidget useClassicIcons = ButtonWidget.builder(TiersClient.activeIcons == Icons.Type.CLASSIC ? Text.of("●") : Text.empty(), (buttonWidget) -> {
             buttonWidget.setMessage(TiersClient.activeIcons == Icons.Type.CLASSIC ? Text.of("●") : Text.empty());
@@ -359,7 +387,7 @@ public class ConfigScreen extends Screen {
         this.addDrawableChild(toggleShowIcons);
         this.addDrawableChild(toggleSeparatorMode);
         this.addDrawableChild(cycleDisplayMode);
-        this.addDrawableChild(enableOwnProfile);
+        this.addDrawableChild(autoKitDetect);
         this.addDrawableChild(clearPlayerCache);
         this.addDrawableChild(leftMCTiers);
         this.addDrawableChild(centerMCTiers);
@@ -372,6 +400,7 @@ public class ConfigScreen extends Screen {
         this.addDrawableChild(rightSubtiers);
         this.addDrawableChild(activeRightMode);
         this.addDrawableChild(activeLeftMode);
+        this.addDrawableChild(enableOwnProfile);
         this.addDrawableChild(useClassicIcons);
         this.addDrawableChild(usePvPTiersIcons);
         this.addDrawableChild(useMCTiersIcons);
@@ -390,10 +419,10 @@ public class ConfigScreen extends Screen {
     }
 
     private void loadPlayerAvatar() {
-        if (playerAvatarTexture != null) return;
+        if (imageReady)
+            return;
 
         try (FileInputStream fileInputStream = new FileInputStream(FabricLoader.getInstance().getGameDir().resolve("cache/tiers/" + (useOwnProfile ? ownProfile.uuid : defaultProfile.uuid) + ".png").toFile())) {
-            playerAvatarTexture = Identifier.of("tiers", (useOwnProfile ? ownProfile.uuid : defaultProfile.uuid));
             MinecraftClient.getInstance().getTextureManager().registerTexture(playerAvatarTexture, new NativeImageBackedTexture(null, NativeImage.read(fileInputStream)));
             imageReady = true;
         } catch (IOException ignored) {

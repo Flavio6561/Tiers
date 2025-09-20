@@ -45,8 +45,6 @@ Official Display mod for [PvPTiers](https://pvptiers.com). Also Supports other T
 
 ### Other:
 
-> Want to have an anonymous user agent? Modify **anonymousUserAgent** from **false** to **true** in your **.minecraft/config/Tiers.json**
-
 > Settings will be saved in your config folder and updated at runtime
 
 > The mod is client side (works on multiplayer)
