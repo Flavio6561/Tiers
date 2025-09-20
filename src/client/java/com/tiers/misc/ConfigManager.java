@@ -1,7 +1,6 @@
 package com.tiers.misc;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.tiers.TiersClient;
 import com.tiers.textures.Icons;
 import net.fabricmc.loader.api.FabricLoader;
@@ -18,6 +17,7 @@ public class ConfigManager {
         boolean toggleMod;
         boolean showIcons;
         boolean isSeparatorAdaptive;
+        boolean autoKitDetect;
         TiersClient.ModesTierDisplay displayMode;
         Icons.Type activeIcons;
 
@@ -29,8 +29,6 @@ public class ConfigManager {
 
         TiersClient.DisplayStatus positionSubtiers;
         Mode activeSubtiersMode;
-
-        boolean anonymousUserAgent;
     }
 
     public static void loadConfig() {
@@ -41,7 +39,7 @@ public class ConfigManager {
                 config = gson.fromJson(fileReader, Config.class);
                 if (config == null)
                     restoreFromClient();
-            } catch (JsonSyntaxException | IOException ignored) {
+            } catch (IOException ignored) {
                 restoreFromClient();
             }
         } else
@@ -50,6 +48,7 @@ public class ConfigManager {
         TiersClient.toggleMod = config.toggleMod;
         TiersClient.showIcons = config.showIcons;
         TiersClient.isSeparatorAdaptive = config.isSeparatorAdaptive;
+        TiersClient.autoKitDetect = config.autoKitDetect;
 
         if (Arrays.stream(TiersClient.ModesTierDisplay.values()).toList().contains(config.displayMode))
             TiersClient.displayMode = config.displayMode;
@@ -72,8 +71,6 @@ public class ConfigManager {
         if (Arrays.stream(Mode.values()).toList().contains(config.activeSubtiersMode) && config.activeSubtiersMode.toString().contains("SUBTIERS"))
             TiersClient.activeSubtiersMode = config.activeSubtiersMode;
 
-        TiersClient.anonymousUserAgent = config.anonymousUserAgent;
-
         saveConfig();
     }
 
@@ -83,6 +80,7 @@ public class ConfigManager {
         config.toggleMod = TiersClient.toggleMod;
         config.showIcons = TiersClient.showIcons;
         config.isSeparatorAdaptive = TiersClient.isSeparatorAdaptive;
+        config.autoKitDetect = TiersClient.autoKitDetect;
         config.displayMode = TiersClient.displayMode;
         config.activeIcons = TiersClient.activeIcons;
 
@@ -94,8 +92,6 @@ public class ConfigManager {
 
         config.positionSubtiers = TiersClient.positionSubtiers;
         config.activeSubtiersMode = TiersClient.activeSubtiersMode;
-
-        config.anonymousUserAgent = TiersClient.anonymousUserAgent;
 
         saveConfig();
     }
@@ -108,6 +104,7 @@ public class ConfigManager {
         config.toggleMod = TiersClient.toggleMod;
         config.showIcons = TiersClient.showIcons;
         config.isSeparatorAdaptive = TiersClient.isSeparatorAdaptive;
+        config.autoKitDetect = TiersClient.autoKitDetect;
         config.displayMode = TiersClient.displayMode;
         config.activeIcons = TiersClient.activeIcons;
 
@@ -119,8 +116,6 @@ public class ConfigManager {
 
         config.positionSubtiers = TiersClient.positionSubtiers;
         config.activeSubtiersMode = TiersClient.activeSubtiersMode;
-
-        config.anonymousUserAgent = TiersClient.anonymousUserAgent;
 
         try (FileWriter fileWriter = new FileWriter(file)) {
             gson.toJson(config, fileWriter);
