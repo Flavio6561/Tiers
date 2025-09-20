@@ -16,6 +16,7 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
@@ -40,12 +41,12 @@ import java.util.concurrent.TimeUnit;
 public class TiersClient implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(TiersClient.class);
     public static String userAgent = "Tiers (modrinth.com/mod/tiers)";
-    public static boolean anonymousUserAgent;
     public static final ArrayList<PlayerProfile> playerProfiles = new ArrayList<>();
 
     public static boolean toggleMod = true;
     public static boolean showIcons = true;
     public static boolean isSeparatorAdaptive = true;
+    public static boolean autoKitDetect = false;
     public static ModesTierDisplay displayMode = ModesTierDisplay.ADAPTIVE_HIGHEST;
     public static Icons.Type activeIcons = Icons.Type.PVPTIERS;
 
@@ -58,10 +59,12 @@ public class TiersClient implements ClientModInitializer {
     public static DisplayStatus positionSubtiers = DisplayStatus.RIGHT;
     public static Mode activeSubtiersMode = Mode.SUBTIERS_MINECART;
 
-    private static KeyBinding autoDetectKey;
+    public static KeyBinding autoDetectKey;
     private static KeyBinding openClosestPlayerProfile;
     private static KeyBinding cycleRightKey;
     private static KeyBinding cycleLeftKey;
+
+    public static boolean isOnLunar;
 
     @Override
     public void onInitializeClient() {
@@ -70,12 +73,13 @@ public class TiersClient implements ClientModInitializer {
         clearCache(true);
         CommandRegister.registerCommands();
 
+        isOnLunar = ClientBrandRetriever.getClientModName().contains("lunarclient");
+
         Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer("tiers");
 
         modContainer.ifPresent(tiers -> {
-            ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("tiers", "tiers-resources"), tiers, Text.of("Resources for Tiers"), ResourcePackActivationType.ALWAYS_ENABLED);
-            if (!anonymousUserAgent)
-                userAgent += " " + modContainer.get().getMetadata().getVersion().getFriendlyString() + " on " + MinecraftClient.getInstance().getGameVersion();
+            ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("resourcepacks", "tiers-resources"), tiers, Text.of("Resources for Tiers"), ResourcePackActivationType.ALWAYS_ENABLED);
+            userAgent += " v" + tiers.getMetadata().getVersion().getFriendlyString();
         });
 
         autoDetectKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Auto Detect Kit", GLFW.GLFW_KEY_Y, "Tiers"));
@@ -85,6 +89,7 @@ public class TiersClient implements ClientModInitializer {
 
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new ColorLoader());
         ClientTickEvents.END_CLIENT_TICK.register(TiersClient::checkKeys);
+        ClientTickEvents.END_CLIENT_TICK.register(TiersClient::autoKitDetect);
 
         LOGGER.info("Tiers initialized | User agent: {}", userAgent);
     }
@@ -134,7 +139,8 @@ public class TiersClient implements ClientModInitializer {
     public static String getNearestPlayerName() {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         PlayerEntity self = minecraftClient.player;
-        if (self == null || self.getWorld() == null) return null;
+        if (self == null || self.getWorld() == null)
+            return null;
 
         PlayerEntity playerEntity = self.getWorld().getPlayers().stream()
                 .filter(player -> player != self)
@@ -149,7 +155,7 @@ public class TiersClient implements ClientModInitializer {
 
     private static void checkKeys(MinecraftClient minecraftClient) {
         if (autoDetectKey.wasPressed())
-            InventoryChecker.checkInventory(minecraftClient);
+            InventoryChecker.checkInventory(minecraftClient, true);
 
         if (openClosestPlayerProfile.wasPressed()) {
             String nearestPlayerName = getNearestPlayerName();
@@ -178,7 +184,17 @@ public class TiersClient implements ClientModInitializer {
         }
     }
 
+    private static void autoKitDetect(MinecraftClient minecraftClient) {
+        if (autoKitDetect)
+            InventoryChecker.checkInventory(minecraftClient, false);
+    }
+
     public static Text cycleRightMode() {
+        if (autoKitDetect) {
+            autoKitDetect = false;
+            sendMessageToPlayer(Icons.colorText("Auto kit detect has been disabled due to manual gamemode changes", "red"), false);
+        }
+
         if (positionMCTiers.toString().equalsIgnoreCase("RIGHT"))
             return Text.literal("Right (MCTiers) is now displaying ").setStyle(Style.EMPTY.withColor(Colors.WHITE)).append(cycleMCTiersMode());
 
@@ -192,6 +208,11 @@ public class TiersClient implements ClientModInitializer {
     }
 
     public static Text cycleLeftMode() {
+        if (autoKitDetect) {
+            autoKitDetect = false;
+            sendMessageToPlayer(Icons.colorText("Auto kit detect has been disabled due to manual gamemode changes", "red"), false);
+        }
+
         if (positionMCTiers.toString().equalsIgnoreCase("LEFT"))
             return Text.literal("Left (MCTiers) is now displaying ").setStyle(Style.EMPTY.withColor(Colors.WHITE)).append(cycleMCTiersMode());
 
@@ -247,16 +268,19 @@ public class TiersClient implements ClientModInitializer {
         ConfigManager.saveConfig();
     }
 
+    public static void toggleAutoKitDetect() {
+        autoKitDetect = !autoKitDetect;
+        ConfigManager.saveConfig();
+    }
+
     public static void searchPlayer(String playerName) {
         if (playerName.equalsIgnoreCase("toggle"))
             toggleMod(null);
         else if (playerName.equalsIgnoreCase("config"))
-            CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS).execute(() -> MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().setScreen(ConfigScreen.getConfigScreen(null))));
-        else {
+            CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS).execute(() -> MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().setScreen(ConfigScreen.getConfigScreen(null))));        else {
             PlayerProfile playerProfile = addGetPlayer(playerName, true);
             if (playerProfile.isPlayerValid())
-                CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS).execute(() -> MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().setScreen(new PlayerSearchResultScreen(playerProfile))));
-        }
+                CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS).execute(() -> MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().setScreen(new PlayerSearchResultScreen(playerProfile))));        }
     }
 
     public static void changeIcons(Icons.Type iconType, boolean reload) {
