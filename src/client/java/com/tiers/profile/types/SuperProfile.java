@@ -72,10 +72,15 @@ public class SuperProfile {
     }
 
     public void parseJson(String json) {
+        if (JsonParser.parseString(json).isJsonNull()) {
+            status = Status.API_ISSUE;
+            return;
+        }
+
         JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
 
         if (jsonObject.has("name") && jsonObject.has("region") &&
-                jsonObject.has("points") && jsonObject.has("overall")) {
+                jsonObject.has("points") && jsonObject.has("overall") && jsonObject.has("rankings")) {
             if (!jsonObject.get("region").isJsonNull())
                 region = jsonObject.get("region").getAsString();
             else

@@ -1,0 +1,73 @@
+{
+  "uuid": "06ec3577329945fabbdf613b1f86c8ab",
+  "name": "ItzRealMe",
+  "region": "NA",
+  "points": 330,
+  "overall": 1,
+  "rankings": {
+    "vanilla": {
+      "tier": 1,
+      "pos": 1,
+      "peak_tier": 1,
+      "peak_pos": 1,
+      "attained": 1729201725,
+      "retired": false
+    },
+    "nethop": {
+      "tier": 1,
+      "pos": 1,
+      "peak_tier": 1,
+      "peak_pos": 1,
+      "attained": 1687836740,
+      "retired": true
+    },
+    "axe": {
+      "tier": 3,
+      "pos": 0,
+      "peak_tier": 3,
+      "peak_pos": 0,
+      "attained": 1739130550,
+      "retired": false
+    },
+    "smp": {
+      "tier": 1,
+      "pos": 0,
+      "peak_tier": 1,
+      "peak_pos": 0,
+      "attained": 1688283890,
+      "retired": true
+    },
+    "pot": {
+      "tier": 3,
+      "pos": 1,
+      "peak_tier": 3,
+      "peak_pos": 1,
+      "attained": 1697426792,
+      "retired": false
+    },
+    "mace": {
+      "tier": 2,
+      "pos": 1,
+      "peak_tier": 2,
+      "peak_pos": 1,
+      "attained": 1750652866,
+      "retired": true
+    },
+    "sword": {
+      "tier": 2,
+      "pos": 0,
+      "peak_tier": 2,
+      "peak_pos": 0,
+      "attained": 1750652917,
+      "retired": true
+    },
+    "uhc": {
+      "tier": 2,
+      "pos": 1,
+      "peak_tier": 2,
+      "peak_pos": 1,
+      "attained": 1708212359,
+      "retired": false
+    }
+  }
+}
