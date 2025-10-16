@@ -38,7 +38,7 @@ public class CommandRegister {
     public static void registerCommands() {
         ClientCommandRegistrationCallback.EVENT.register((commandDispatcher, commandRegistryAccess) -> commandDispatcher.register(
                 ClientCommandManager.literal("tiers").executes(ignored -> {
-                            TiersClient.toggleMod();
+                            TiersClient.toggleMod(null);
                             return 1;
                         })
                         .then(ClientCommandManager.argument("Name", StringArgumentType.string()).suggests(PLAYERS).executes(context -> {
