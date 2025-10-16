@@ -6,8 +6,8 @@ Official Display mod for [PvPTiers](https://pvptiers.com). Also Supports other T
 > `Switchable MCTiers, PvPTiers and Subtiers icons and colors`  
 > `Auto detect kit: press 'Y' to autodetect the current gamemode`
 
->![SearchResultScreen](https://raw.githubusercontent.com/Flavio6561/Gallery/refs/heads/main/Tiers/SearchResultScreen.png)  
-> `The profile search result screen with PvPTiers icons`
+>![SearchResultScreen](https://raw.githubusercontent.com/Flavio6561/Gallery/refs/heads/main/Tiers/SearchResultScreen.gif)  
+> `The profile search result screen with PvPTiers icons on different GUI scales`
 
 > Tiers is still in beta. [Report an issue](https://github.com/Flavio6561/Tiers/issues)
 
@@ -32,8 +32,8 @@ Official Display mod for [PvPTiers](https://pvptiers.com). Also Supports other T
 - **`Position Settings`** decides if the specific provider gamemodes are displayer on the right, left or neither
 - **`Icon and color presets:`** you can switch between classic, PvPTiers and MCTiers styled icons
 
->![ConfigScreen](https://raw.githubusercontent.com/Flavio6561/Gallery/refs/heads/main/Tiers/ConfigScreen.gif)  
-> `The config screen`
+>![ConfigScreen](https://raw.githubusercontent.com/Flavio6561/Gallery/refs/heads/main/Tiers/ConfigScreen.png)  
+> `The config screen on 3 GUI scale`
 
 ### Why Tiers?
 
