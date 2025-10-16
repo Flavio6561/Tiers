@@ -23,9 +23,9 @@ public class CommandRegister {
             return suggestionsBuilder.buildFuture();
 
         for (PlayerListEntry playerListEntry : minecraftClient.getNetworkHandler().getPlayerList())
-            if (CommandSource.shouldSuggest(suggestionsBuilder.getRemaining().toLowerCase(), playerListEntry.getProfile().getName().toLowerCase()) &&
-                    playerListEntry.getProfile().getName().length() > 2)
-                suggestionsBuilder.suggest(playerListEntry.getProfile().getName(), () -> "Search tiers for " + playerListEntry.getProfile().getName());
+            if (CommandSource.shouldSuggest(suggestionsBuilder.getRemaining().toLowerCase(), playerListEntry.getProfile().name().toLowerCase()) &&
+                    playerListEntry.getProfile().name().length() > 2)
+                suggestionsBuilder.suggest(playerListEntry.getProfile().name(), () -> "Search tiers for " + playerListEntry.getProfile().name());
 
         if (CommandSource.shouldSuggest(suggestionsBuilder.getRemaining().toLowerCase(), "config"))
             suggestionsBuilder.suggest("config", () -> "Open the config screen");
@@ -38,7 +38,7 @@ public class CommandRegister {
     public static void registerCommands() {
         ClientCommandRegistrationCallback.EVENT.register((commandDispatcher, commandRegistryAccess) -> commandDispatcher.register(
                 ClientCommandManager.literal("tiers").executes(ignored -> {
-                            TiersClient.toggleMod();
+                            TiersClient.toggleMod(null);
                             return 1;
                         })
                         .then(ClientCommandManager.argument("Name", StringArgumentType.string()).suggests(PLAYERS).executes(context -> {
