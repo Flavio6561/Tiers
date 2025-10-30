@@ -283,6 +283,8 @@ public class PlayerProfile {
             toAppendRight = updateProfileNameRight(profileSubtiers, activeSubtiersMode);
         else if (positionSubtiers == DisplayStatus.LEFT)
             toAppendLeft = updateProfileNameLeft(profileSubtiers, activeSubtiersMode);
+
+        updateTextDisplayEntities();
     }
 
     public Text getFullName() {

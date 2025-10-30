@@ -1,7 +1,10 @@
 package com.tiers;
 
 import com.mojang.brigadier.context.CommandContext;
-import com.tiers.misc.*;
+import com.tiers.misc.CommandRegister;
+import com.tiers.misc.ConfigManager;
+import com.tiers.misc.Mode;
+import com.tiers.mixin.client.TextDisplayEntityInvokerClientMixin;
 import com.tiers.profile.PlayerProfile;
 import com.tiers.profile.Status;
 import com.tiers.screens.ConfigScreen;
@@ -19,6 +22,8 @@ import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.text.Style;
@@ -316,6 +321,25 @@ public class TiersClient implements ClientModInitializer {
             FileUtils.deleteDirectory(new File(FabricLoader.getInstance().getGameDir() + (start ? "/cache/tiers" : "/cache/tiers/players")));
         } catch (IOException ignored) {
             LOGGER.warn("Error deleting cache folder");
+        }
+
+        if (toggleMod && MinecraftClient.getInstance().world != null)
+            for (PlayerEntity playerEntity : MinecraftClient.getInstance().world.getPlayers())
+                TiersClient.addGetPlayer(playerEntity.getNameForScoreboard(), false);
+    }
+
+    public static void updateTextDisplayEntities() {
+        MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        if (minecraftClient.world == null)
+            return;
+
+        for (Entity entity : minecraftClient.world.getEntities()) {
+            if (entity instanceof DisplayEntity.TextDisplayEntity) {
+                TextDisplayEntityInvokerClientMixin inv = (TextDisplayEntityInvokerClientMixin) entity;
+                Text text = inv.invokeGetText();
+                inv.invokeSetText(Text.literal(" ").append(text));
+                inv.invokeSetText(text);
+            }
         }
     }
 
