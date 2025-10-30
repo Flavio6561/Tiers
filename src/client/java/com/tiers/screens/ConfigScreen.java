@@ -18,10 +18,12 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -86,7 +88,7 @@ public class ConfigScreen extends Screen {
         else
             drawPlayerAvatar(context, centerX, height - (int) (height / 4.166) - height / 54);
 
-        context.drawCenteredTextWithShadow(this.textRenderer, useOwnProfile ? ownProfile.getFullNametag() : defaultProfile.getFullNametag() , centerX, height - (int) (height / 4.166) - height / 54 - 12, Colors.WHITE);
+        context.drawCenteredTextWithShadow(this.textRenderer, useOwnProfile ? ownProfile.getFullName() : defaultProfile.getFullName() , centerX, height - (int) (height / 4.166) - height / 54 - 12, Colors.WHITE);
 
         context.drawTexture(RenderPipelines.GUI_TEXTURED, MCTiersProfile.MCTIERS_IMAGE, centerX - 120 - 64, distance + 110 + 4, 0, 0, 128, 24, 128, 24);
         context.drawTexture(RenderPipelines.GUI_TEXTURED, PvPTiersProfile.PVPTIERS_IMAGE, centerX - 12, distance + 110 + 4, 0, 0, 24, 24, 24, 24);
@@ -133,10 +135,13 @@ public class ConfigScreen extends Screen {
     @Override
     protected void init() {
         toggleMod = ButtonWidget.builder(Text.of(TiersClient.toggleMod ? "Disable Tiers" : "Enable Tiers"), (buttonWidget) -> {
-            TiersClient.toggleMod();
+            if (TiersClient.toggleMod && InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT))
+                TiersClient.toggleTab();
+            else
+                TiersClient.toggleMod();
             buttonWidget.setMessage(Text.of(TiersClient.toggleMod ? "Disable Tiers" : "Enable Tiers"));
-            buttonWidget.setTooltip(Tooltip.of(Text.of(TiersClient.toggleMod ? "Disable Tiers on nametags" : "Enable Tiers on nametags")));
-        }).dimensions(width / 2 - 88 - 2, distance, 88, 20).tooltip(Tooltip.of(Text.of(TiersClient.toggleMod ? "Disable Tiers on nametags" : "Enable Tiers on nametags"))).build();
+            buttonWidget.setTooltip(Tooltip.of(Text.of((TiersClient.toggleMod ? "Disable Tiers on nametags" : "Enable Tiers on nametags") + (TiersClient.toggleMod ? (TiersClient.toggleTab ? "\n\nShift click to disable Tiers on tab" : "\n\nShift click to enable Tiers on tab") : ""))));
+        }).dimensions(width / 2 - 88 - 2, distance, 88, 20).tooltip(Tooltip.of(Text.of((TiersClient.toggleMod ? "Disable Tiers on nametags" : "Enable Tiers on nametags") + (TiersClient.toggleMod ? (TiersClient.toggleTab ? "\n\nShift click to disable Tiers on tab" : "\n\nShift click to enable Tiers on tab") : "")))).build();
 
         toggleShowIcons = ButtonWidget.builder(Text.of(TiersClient.showIcons ? "Disable Icons" : "Enable Icons"), (buttonWidget) -> {
             TiersClient.toggleShowIcons();
