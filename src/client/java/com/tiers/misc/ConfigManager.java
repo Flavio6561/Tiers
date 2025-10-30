@@ -15,6 +15,7 @@ public class ConfigManager {
 
     private static class Config {
         boolean toggleMod;
+        boolean toggleTab;
         boolean showIcons;
         boolean isSeparatorAdaptive;
         boolean autoKitDetect;
@@ -46,6 +47,7 @@ public class ConfigManager {
             restoreFromClient();
 
         TiersClient.toggleMod = config.toggleMod;
+        TiersClient.toggleTab = config.toggleTab;
         TiersClient.showIcons = config.showIcons;
         TiersClient.isSeparatorAdaptive = config.isSeparatorAdaptive;
         TiersClient.autoKitDetect = config.autoKitDetect;
@@ -78,6 +80,7 @@ public class ConfigManager {
         config = new Config();
 
         config.toggleMod = TiersClient.toggleMod;
+        config.toggleTab = TiersClient.toggleTab;
         config.showIcons = TiersClient.showIcons;
         config.isSeparatorAdaptive = TiersClient.isSeparatorAdaptive;
         config.autoKitDetect = TiersClient.autoKitDetect;
@@ -102,6 +105,7 @@ public class ConfigManager {
         Config config = new Config();
 
         config.toggleMod = TiersClient.toggleMod;
+        config.toggleTab = TiersClient.toggleTab;
         config.showIcons = TiersClient.showIcons;
         config.isSeparatorAdaptive = TiersClient.isSeparatorAdaptive;
         config.autoKitDetect = TiersClient.autoKitDetect;
