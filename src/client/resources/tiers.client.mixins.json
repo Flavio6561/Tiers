@@ -6,7 +6,8 @@
     "AddRenderedPlayersClientMixin",
     "ModifyNametagsClientMixin",
     "ModifyTextDisplaysClientMixin",
-    "ModifyTabClientMixin"
+    "ModifyTabClientMixin",
+    "TextDisplayEntityInvokerClientMixin"
   ],
   "injectors": {
     "defaultRequire": 1
