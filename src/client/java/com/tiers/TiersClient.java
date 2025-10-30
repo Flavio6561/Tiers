@@ -19,6 +19,8 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.text.Style;
@@ -42,6 +44,7 @@ public class TiersClient implements ClientModInitializer {
     public static final ArrayList<PlayerProfile> playerProfiles = new ArrayList<>();
 
     public static boolean toggleMod = true;
+    public static boolean toggleTab = false;
     public static boolean showIcons = true;
     public static boolean isSeparatorAdaptive = true;
     public static boolean autoKitDetect = false;
@@ -84,7 +87,10 @@ public class TiersClient implements ClientModInitializer {
 
         ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(Identifier.of("tiers"), new ColorLoader());
         ClientTickEvents.END_CLIENT_TICK.register(TiersClient::checkKeys);
-        ClientTickEvents.END_CLIENT_TICK.register(TiersClient::autoKitDetect);
+        ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
+            if (autoKitDetect)
+                InventoryChecker.checkInventory(minecraftClient, false);
+        });
 
         LOGGER.info("Tiers initialized | User agent: {}", userAgent);
     }
@@ -179,11 +185,6 @@ public class TiersClient implements ClientModInitializer {
         }
     }
 
-    private static void autoKitDetect(MinecraftClient minecraftClient) {
-        if (autoKitDetect)
-            InventoryChecker.checkInventory(minecraftClient, false);
-    }
-
     public static Text cycleRightMode() {
         if (autoKitDetect) {
             autoKitDetect = false;
@@ -263,6 +264,11 @@ public class TiersClient implements ClientModInitializer {
         ConfigManager.saveConfig();
     }
 
+    public static void toggleTab() {
+        toggleTab = !toggleTab;
+        ConfigManager.saveConfig();
+    }
+
     public static void toggleAutoKitDetect() {
         autoKitDetect = !autoKitDetect;
         ConfigManager.saveConfig();
@@ -309,6 +315,24 @@ public class TiersClient implements ClientModInitializer {
             FileUtils.deleteDirectory(new File(FabricLoader.getInstance().getGameDir() + (start ? "/cache/tiers" : "/cache/tiers/players")));
         } catch (IOException ignored) {
             LOGGER.warn("Error deleting cache folder");
+        }
+
+        if (toggleMod && MinecraftClient.getInstance().world != null)
+            for (PlayerEntity playerEntity : MinecraftClient.getInstance().world.getPlayers())
+                TiersClient.addGetPlayer(playerEntity.getNameForScoreboard(), false);
+    }
+
+    public static void updateTextDisplayEntities() {
+        MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        if (minecraftClient.world == null)
+            return;
+
+        for (Entity entity : minecraftClient.world.getEntities()) {
+            if (entity instanceof DisplayEntity.TextDisplayEntity textDisplay) {
+                Text text = textDisplay.getText();
+                textDisplay.setText(Text.literal(" ").append(text));
+                textDisplay.setText(text);
+            }
         }
     }
 

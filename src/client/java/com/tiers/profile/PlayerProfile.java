@@ -272,22 +272,24 @@ public class PlayerProfile {
         toAppendLeft = Text.empty();
 
         if (positionMCTiers == DisplayStatus.RIGHT)
-            toAppendRight = updateProfileNametagRight(profileMCTiers, activeMCTiersMode);
+            toAppendRight = updateProfileNameRight(profileMCTiers, activeMCTiersMode);
         else if (positionMCTiers == DisplayStatus.LEFT)
-            toAppendLeft = updateProfileNametagLeft(profileMCTiers, activeMCTiersMode);
+            toAppendLeft = updateProfileNameLeft(profileMCTiers, activeMCTiersMode);
 
         if (positionPvPTiers == DisplayStatus.RIGHT)
-            toAppendRight = updateProfileNametagRight(profilePvPTiers, activePvPTiersMode);
+            toAppendRight = updateProfileNameRight(profilePvPTiers, activePvPTiersMode);
         else if (positionPvPTiers == DisplayStatus.LEFT)
-            toAppendLeft = updateProfileNametagLeft(profilePvPTiers, activePvPTiersMode);
+            toAppendLeft = updateProfileNameLeft(profilePvPTiers, activePvPTiersMode);
 
         if (positionSubtiers == DisplayStatus.RIGHT)
-            toAppendRight = updateProfileNametagRight(profileSubtiers, activeSubtiersMode);
+            toAppendRight = updateProfileNameRight(profileSubtiers, activeSubtiersMode);
         else if (positionSubtiers == DisplayStatus.LEFT)
-            toAppendLeft = updateProfileNametagLeft(profileSubtiers, activeSubtiersMode);
+            toAppendLeft = updateProfileNameLeft(profileSubtiers, activeSubtiersMode);
+
+        updateTextDisplayEntities();
     }
 
-    public Text getFullNametag() {
+    public Text getFullName() {
         Text playerText = nameChanged ? Text.of(originalName + " (AKA " + name + ")") : Text.of(name);
 
         if (!toggleMod)
@@ -300,7 +302,7 @@ public class PlayerProfile {
                 .append(toAppendRight);
     }
 
-    public Text getFullNametag(Text original) {
+    public Text getFullName(Text original) {
         if (status != Status.READY)
             return original;
 
@@ -310,7 +312,7 @@ public class PlayerProfile {
                 .append(toAppendRight);
     }
 
-    private Text updateProfileNametagRight(SuperProfile superProfile, Mode activeMode) {
+    private Text updateProfileNameRight(SuperProfile superProfile, Mode activeMode) {
         MutableText returnValue = Text.empty();
 
         if (superProfile != null && superProfile.status == Status.READY) {
@@ -337,7 +339,7 @@ public class PlayerProfile {
         return returnValue;
     }
 
-    private Text updateProfileNametagLeft(SuperProfile superProfile, Mode activeMode) {
+    private Text updateProfileNameLeft(SuperProfile superProfile, Mode activeMode) {
         MutableText returnValue = Text.empty();
 
         if (superProfile != null && superProfile.status == Status.READY) {
