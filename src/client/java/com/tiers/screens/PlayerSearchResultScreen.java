@@ -87,7 +87,7 @@ public class PlayerSearchResultScreen extends Screen {
         if (!imageReady)
             context.drawCenteredTextWithShadow(this.textRenderer, Text.of("Loading " + playerProfile.name + "'s skin"), centerX, avatarY + 50, ColorControl.getColorMinecraftStandard("green"));
 
-        context.drawCenteredTextWithShadow(this.textRenderer, playerProfile.getFullNametag(), centerX, height / 55, Colors.WHITE);
+        context.drawCenteredTextWithShadow(this.textRenderer, playerProfile.getFullName(), centerX, height / 55, Colors.WHITE);
 
         drawCategoryList(context, MCTiersProfile.MCTIERS_IMAGE, playerProfile.profileMCTiers, firstListX, listY);
         drawCategoryList(context, PvPTiersProfile.PVPTIERS_IMAGE, playerProfile.profilePvPTiers, centerX, listY);
