@@ -14,8 +14,8 @@ public class Icons {
     public static Identifier identifierPvPTiersTags = Identifier.of("minecraft", "gamemodes/pvptiers-tags");
     public static final Identifier identifierSubtiersTags = Identifier.of("minecraft", "gamemodes/subtiers-tags");
 
-    public static final Text GLOBE = Text.literal("\uF000").setStyle(Style.EMPTY.withFont(new StyleSpriteSource.Font(Identifier.of("minecraft", "misc"))));
-    public static final Text OVERALL = Text.literal("\uF001").setStyle(Style.EMPTY.withFont(new StyleSpriteSource.Font(Identifier.of("minecraft", "misc"))));
+    public static Text GLOBE = Text.literal("\uF000").setStyle(Style.EMPTY.withColor(ColorControl.getColorMinecraftStandard("region")).withFont(new StyleSpriteSource.Font(Identifier.of("minecraft", "misc"))));
+    public static Text OVERALL = Text.literal("\uF001").setStyle(Style.EMPTY.withColor(ColorControl.getColorMinecraftStandard("overall")).withFont(new StyleSpriteSource.Font(Identifier.of("minecraft", "misc"))));
     public static final Text CYCLE = Text.literal("\uF002").setStyle(Style.EMPTY.withFont(new StyleSpriteSource.Font(Identifier.of("minecraft", "misc"))));
 
     public enum Type {
@@ -26,5 +26,9 @@ public class Icons {
 
     public static Text colorText(String string, String color) {
         return Text.literal(string).setStyle(Style.EMPTY.withColor(ColorControl.getColor(color)));
+    }
+
+    public static Text colorText(String string, int color) {
+        return Text.literal(string).setStyle(Style.EMPTY.withColor(color));
     }
 }

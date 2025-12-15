@@ -27,10 +27,10 @@ public class CommandRegister {
                     playerListEntry.getProfile().name().length() > 2)
                 suggestionsBuilder.suggest(playerListEntry.getProfile().name(), () -> "Search tiers for " + playerListEntry.getProfile().name());
 
-        if (CommandSource.shouldSuggest(suggestionsBuilder.getRemaining().toLowerCase(), "config"))
-            suggestionsBuilder.suggest("config", () -> "Open the config screen");
-        if (CommandSource.shouldSuggest(suggestionsBuilder.getRemaining().toLowerCase(), "toggle"))
-            suggestionsBuilder.suggest("toggle", () -> "Toggle " + (TiersClient.toggleMod ? "off" : "on") + " Tiers");
+        if (CommandSource.shouldSuggest(suggestionsBuilder.getRemaining().toLowerCase(), "-config"))
+            suggestionsBuilder.suggest("-config", () -> "Open Tiers config screen");
+        if (CommandSource.shouldSuggest(suggestionsBuilder.getRemaining().toLowerCase(), "-toggle"))
+            suggestionsBuilder.suggest("-toggle", () -> "Toggle " + (TiersClient.toggleMod ? "off" : "on") + " Tiers");
 
         return suggestionsBuilder.buildFuture();
     }

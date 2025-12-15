@@ -2,6 +2,7 @@ package com.tiers.textures;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.tiers.PlayerProfileQueue;
 import com.tiers.TiersClient;
 import com.tiers.profile.PlayerProfile;
 import com.tiers.screens.ConfigScreen;
@@ -35,7 +36,7 @@ public class ColorLoader implements ResourceReloader {
 
         if (ConfigScreen.ownProfile == null) {
             ConfigScreen.ownProfile = new PlayerProfile(MinecraftClient.getInstance().getGameProfile().name(), false);
-            ConfigScreen.ownProfile.buildRequest();
+            PlayerProfileQueue.putFirstInQueue(ConfigScreen.ownProfile);
 
             String defaultProfileMojang = loadStringFromResources("json/defaultProfileMojang.json");
             String defaultProfileMCTiers = loadStringFromResources("json/defaultProfileMCTiers.json");

@@ -1,5 +1,7 @@
 ## Tiers,
+
 Official Display mod for [PvPTiers](https://pvptiers.com). Also Supports other Tierlists: [MCTiers](https://mctiers.com) and [Subtiers](https://subtiers.net)
+
 ### Mod showcase:
 
 >![NameTags](https://raw.githubusercontent.com/Flavio6561/Gallery/refs/heads/main/Tiers/NameTags.gif)  
