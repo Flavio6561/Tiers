@@ -1,6 +1,9 @@
 package com.tiers.textures;
 
 import com.google.gson.JsonObject;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
 
@@ -11,6 +14,9 @@ public class ColorControl {
         colors.clear();
         for (String key : jsonObject.keySet())
             colors.put(key, Integer.parseUnsignedInt(jsonObject.get(key).getAsString().replace("#", ""), 16));
+
+        Icons.GLOBE = Text.literal("\uF000").setStyle(Style.EMPTY.withColor(ColorControl.getColorMinecraftStandard("region")).withFont(Identifier.of("minecraft", "misc")));
+        Icons.OVERALL = Text.literal("\uF001").setStyle(Style.EMPTY.withColor(ColorControl.getColorMinecraftStandard("overall")).withFont(Identifier.of("minecraft", "misc")));
     }
 
     public static int getColor(String colorName) {

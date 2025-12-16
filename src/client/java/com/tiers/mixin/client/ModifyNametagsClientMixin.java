@@ -15,11 +15,11 @@ public abstract class ModifyNametagsClientMixin {
 
     @ModifyReturnValue(at = @At("RETURN"), method = "getDisplayName")
     private Text getDisplayName(Text original) {
-        return TiersClient.toggleMod && !TiersClient.isOnLunar ? TiersClient.addGetPlayer(this.getNameForScoreboard(), false).getFullName(original) : original;
+        return TiersClient.toggleMod && !TiersClient.isOnLunar ? TiersClient.addGetPlayer(getNameForScoreboard(), false).getFullName(original) : original;
     }
 
     @ModifyReturnValue(at = @At("RETURN"), method = "getName")
     private Text getName(Text original) {
-        return TiersClient.toggleMod && TiersClient.isOnLunar ? TiersClient.addGetPlayer(this.getNameForScoreboard(), false).getFullName(original) : original;
+        return TiersClient.toggleMod && TiersClient.isOnLunar ? TiersClient.addGetPlayer(getNameForScoreboard(), false).getFullName(original) : original;
     }
 }
