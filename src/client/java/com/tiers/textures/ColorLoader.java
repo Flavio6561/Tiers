@@ -2,6 +2,7 @@ package com.tiers.textures;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.tiers.PlayerProfileQueue;
 import com.tiers.TiersClient;
 import com.tiers.profile.PlayerProfile;
 import com.tiers.screens.ConfigScreen;
@@ -20,7 +21,6 @@ import static com.tiers.TiersClient.LOGGER;
 public class ColorLoader implements SimpleSynchronousResourceReloadListener {
     public static Identifier identifier = Identifier.of("minecraft", "colors/pvptiers.json");
 
-    @Override
     public Identifier getFabricId() {
         return Identifier.of("tiers", "color_loader");
     }
@@ -39,7 +39,7 @@ public class ColorLoader implements SimpleSynchronousResourceReloadListener {
 
         if (ConfigScreen.ownProfile == null) {
             ConfigScreen.ownProfile = new PlayerProfile(MinecraftClient.getInstance().getGameProfile().getName(), false);
-            ConfigScreen.ownProfile.buildRequest();
+            PlayerProfileQueue.putFirstInQueue(ConfigScreen.ownProfile);
 
             String defaultProfileMojang = loadStringFromResources("json/defaultProfileMojang.json");
             String defaultProfileMCTiers = loadStringFromResources("json/defaultProfileMCTiers.json");
