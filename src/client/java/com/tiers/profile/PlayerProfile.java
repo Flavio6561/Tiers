@@ -75,7 +75,7 @@ public class PlayerProfile {
         JsonObject jsonObject = JsonParser.parseString(mojangJson).getAsJsonObject();
 
         if (jsonObject.has("name") && jsonObject.has("id")) {
-            this.name = jsonObject.get("name").getAsString();
+            name = jsonObject.get("name").getAsString();
             uuid = jsonObject.get("id").getAsString();
         } else {
             status = Status.NOT_EXISTING;

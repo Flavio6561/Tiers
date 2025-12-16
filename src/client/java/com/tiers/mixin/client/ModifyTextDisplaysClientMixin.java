@@ -17,9 +17,16 @@ public abstract class ModifyTextDisplaysClientMixin {
         if (!TiersClient.toggleMod)
             return original;
 
-        for (PlayerProfile playerProfile : TiersClient.playerProfiles)
-            if (playerProfile.status == Status.READY && (original.getString().contains(playerProfile.name) || original.getString().contains(playerProfile.originalName)))
-                return playerProfile.getFullName((Text) original);
+        int numberOfMatches = 0;
+        PlayerProfile detectedPlayerProfile = null;
+        for (PlayerProfile playerProfile : TiersClient.playerProfiles) {
+            if (playerProfile.status == Status.READY && (original.getString().contains(playerProfile.name) || original.getString().contains(playerProfile.originalName))) {
+                numberOfMatches++;
+                detectedPlayerProfile = playerProfile;
+            }
+        }
+        if (numberOfMatches == 1)
+            return detectedPlayerProfile.getFullName((Text) original);
 
         return original;
     }

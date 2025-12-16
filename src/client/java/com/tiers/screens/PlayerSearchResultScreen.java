@@ -50,12 +50,12 @@ public class PlayerSearchResultScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         if (!playerProfile.isPlayerValid()) {
-            this.close();
+            close();
             return;
         }
 
         if (playerProfile.nameChanged && !toastShown) {
-            MinecraftClient.getInstance().getToastManager().add(SystemToast.create(this.client, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Possible name change (" + playerProfile.name + " to " + playerProfile.originalName + ")"), Text.of("The data shown should be accurate")));
+            MinecraftClient.getInstance().getToastManager().add(SystemToast.create(client, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Recent name change"), Text.of("(" + playerProfile.name + " to " + playerProfile.originalName + ") The data should be accurate")));
             toastShown = true;
         }
 
@@ -77,7 +77,7 @@ public class PlayerSearchResultScreen extends Screen {
         }
 
         if (playerProfile.status == Status.SEARCHING) {
-            context.drawCenteredTextWithShadow(this.textRenderer, Text.of("Searching for " + playerProfile.name + "..."), centerX, listY, ColorControl.getColorMinecraftStandard("green"));
+            context.drawCenteredTextWithShadow(textRenderer, Text.of("Searching for " + playerProfile.name + "..."), centerX, listY, ColorControl.getColorMinecraftStandard("green"));
             return;
         }
 
@@ -86,9 +86,9 @@ public class PlayerSearchResultScreen extends Screen {
 
         drawPlayerAvatar(context, centerX, avatarY);
         if (!imageReady)
-            context.drawCenteredTextWithShadow(this.textRenderer, Text.of("Loading " + playerProfile.name + "'s skin"), centerX, avatarY + 50, ColorControl.getColorMinecraftStandard("green"));
+            context.drawCenteredTextWithShadow(textRenderer, Text.of("Loading " + playerProfile.name + "'s skin"), centerX, avatarY + 50, ColorControl.getColorMinecraftStandard("green"));
 
-        context.drawCenteredTextWithShadow(this.textRenderer, playerProfile.getFullName(), centerX, height / 55, Colors.WHITE);
+        context.drawCenteredTextWithShadow(textRenderer, playerProfile.getFullName(), centerX, height / 55, Colors.WHITE);
 
         drawCategoryList(context, MCTiersProfile.MCTIERS_IMAGE, playerProfile.profileMCTiers, firstListX, listY);
         drawCategoryList(context, PvPTiersProfile.PVPTIERS_IMAGE, playerProfile.profilePvPTiers, centerX, listY);
@@ -97,7 +97,7 @@ public class PlayerSearchResultScreen extends Screen {
 
     private void drawCategoryList(DrawContext context, Identifier image, SuperProfile superProfile, int x, int y) {
         if (superProfile == null) {
-            context.drawCenteredTextWithShadow(this.textRenderer, "Loading from API...", x, (int) (y + 2.8 * separator), ColorControl.getColorMinecraftStandard("green"));
+            context.drawCenteredTextWithShadow(textRenderer, "Loading from API...", x, (int) (y + 2.8 * separator), ColorControl.getColorMinecraftStandard("green"));
             return;
         }
 
@@ -109,50 +109,48 @@ public class PlayerSearchResultScreen extends Screen {
             context.drawTexture(RenderLayer::getGuiTextured, image, (int) (x - 15.5), (int) (y + 2.4 * separator) - 38, 0, 0, 31, 31, 31, 31);
 
         if (superProfile.status == Status.SEARCHING) {
-            context.drawCenteredTextWithShadow(this.textRenderer, "Searching...", x, (int) (y + 2.8 * separator), ColorControl.getColorMinecraftStandard("green"));
+            context.drawCenteredTextWithShadow(textRenderer, "Searching...", x, (int) (y + 2.8 * separator), ColorControl.getColorMinecraftStandard("green"));
             return;
         } else if (superProfile.status == Status.NOT_EXISTING) {
-            context.drawCenteredTextWithShadow(this.textRenderer, "Unranked", x, (int) (y + 2.8 * separator), ColorControl.getColorMinecraftStandard("red"));
+            context.drawCenteredTextWithShadow(textRenderer, "Unranked", x, (int) (y + 2.8 * separator), ColorControl.getColorMinecraftStandard("red"));
             return;
         } else if (superProfile.status == Status.TIMEOUTED) {
-            context.drawCenteredTextWithShadow(this.textRenderer, "Search timeouted. Clear cache and retry", x, (int) (y + 2.8 * separator), ColorControl.getColorMinecraftStandard("red"));
+            context.drawCenteredTextWithShadow(textRenderer, "Search timeouted. Clear cache and retry", x, (int) (y + 2.8 * separator), ColorControl.getColorMinecraftStandard("red"));
             return;
         } else if (superProfile.status == Status.API_ISSUE) {
-            context.drawCenteredTextWithShadow(this.textRenderer, "Search failed: API issue", x, (int) (y + 2.8 * separator), ColorControl.getColorMinecraftStandard("red"));
-            context.drawCenteredTextWithShadow(this.textRenderer, "Update Tiers or retry in a while", x, (int) (y + 2.8 * separator + 15), ColorControl.getColorMinecraftStandard("red"));
+            context.drawCenteredTextWithShadow(textRenderer, "Search failed: API issue", x, (int) (y + 2.8 * separator), ColorControl.getColorMinecraftStandard("red"));
+            context.drawCenteredTextWithShadow(textRenderer, "Update Tiers or retry in a while", x, (int) (y + 2.8 * separator + 15), ColorControl.getColorMinecraftStandard("red"));
             return;
         }
 
         if (!superProfile.drawn) {
-            TextWidget regionLabel = new TextWidget(Icons.colorText("Region", "region"), this.textRenderer);
+            TextWidget regionLabel = new TextWidget(Icons.colorText("Region", "region"), textRenderer);
             regionLabel.setPosition(x - 44, (int) (y + 2.4 * separator));
-            this.addDrawableChild(regionLabel);
+            addDrawableChild(regionLabel);
 
-            TextWidget overallLabel = new TextWidget(Icons.colorText("Overall", "overall"), this.textRenderer);
+            TextWidget overallLabel = new TextWidget(Icons.colorText("Overall", "overall"), textRenderer);
             overallLabel.setPosition(x - 44, (int) (y + 2.4 * separator) + 16);
-            this.addDrawableChild(overallLabel);
+            addDrawableChild(overallLabel);
 
-            TextWidget regionIcon = new TextWidget(Icons.GLOBE, this.textRenderer);
+            TextWidget regionIcon = new TextWidget(Icons.GLOBE, textRenderer);
             regionIcon.setPosition(x - 64, (int) (y + 2.4 * separator + 2));
-            regionIcon.setTextColor(ColorControl.getColor("region"));
             regionIcon.setTooltip(Tooltip.of(regionLabel.getMessage()));
-            this.addDrawableChild(regionIcon);
+            addDrawableChild(regionIcon);
 
-            TextWidget overallIcon = new TextWidget(Icons.OVERALL, this.textRenderer);
+            TextWidget overallIcon = new TextWidget(Icons.OVERALL, textRenderer);
             overallIcon.setPosition(x - 64, (int) (y + 2.4 * separator + 2) + 16);
-            overallIcon.setTextColor(ColorControl.getColor("overall"));
             overallIcon.setTooltip(Tooltip.of(overallLabel.getMessage()));
-            this.addDrawableChild(overallIcon);
+            addDrawableChild(overallIcon);
 
-            TextWidget region = new TextWidget(superProfile.displayedRegion, this.textRenderer);
+            TextWidget region = new TextWidget(superProfile.displayedRegion, textRenderer);
             region.setPosition(x + 52 - (superProfile.displayedRegion.getString().length() - 2) * 3, (int) (y + 2.4 * separator));
             region.setTooltip(Tooltip.of(superProfile.regionTooltip));
-            this.addDrawableChild(region);
+            addDrawableChild(region);
 
-            TextWidget overall = new TextWidget(superProfile.displayedOverall, this.textRenderer);
+            TextWidget overall = new TextWidget(superProfile.displayedOverall, textRenderer);
             overall.setPosition(x + 52 - (superProfile.displayedOverall.getString().length() - 2) * 3, (int) (y + 2.4 * separator) + 16);
             overall.setTooltip(Tooltip.of(superProfile.overallTooltip));
-            this.addDrawableChild(overall);
+            addDrawableChild(overall);
 
             drawTierList(superProfile, x - 64, (int) (y + 2.4 * separator) + 40);
 
@@ -186,32 +184,32 @@ public class PlayerSearchResultScreen extends Screen {
         if (mode.drawn || mode.status != Status.READY)
             return false;
 
-        TextWidget icon = new TextWidget(mode.gamemode.getIcon(), this.textRenderer);
+        TextWidget icon = new TextWidget(mode.gamemode.getIcon(), textRenderer);
         icon.setPosition(x, y + 3);
         if (small)
             icon.setPosition(x, y + 3);
         icon.setTooltip(Tooltip.of(mode.gamemode.getTextLabel()));
-        this.addDrawableChild(icon);
+        addDrawableChild(icon);
 
-        TextWidget label = new TextWidget(mode.gamemode.getTextLabel(), this.textRenderer);
+        TextWidget label = new TextWidget(mode.gamemode.getTextLabel(), textRenderer);
         label.setPosition(x + 20, y);
         if (!small)
-            this.addDrawableChild(label);
+            addDrawableChild(label);
 
-        TextWidget tier = new TextWidget(mode.displayedTier, this.textRenderer);
+        TextWidget tier = new TextWidget(mode.displayedTier, textRenderer);
         tier.setPosition(x + 114 - (mode.displayedTier.getString().length() - 3) * 3, y);
         if (small)
             tier.setPosition(x - 2 - (mode.displayedTier.getString().length() - 3) * 2, y + 14);
         tier.setTooltip(Tooltip.of(mode.tierTooltip));
-        this.addDrawableChild(tier);
+        addDrawableChild(tier);
 
         if (mode.hasPeak && mode.peakTierTooltip.getStyle().getColor() != null) {
-            TextWidget peakTier = new TextWidget(mode.displayedPeakTier, this.textRenderer);
+            TextWidget peakTier = new TextWidget(mode.displayedPeakTier, textRenderer);
             peakTier.setPosition(x + 136, y);
             if (small)
                 peakTier.setPosition(x - 6, y + 24);
             peakTier.setTooltip(Tooltip.of(mode.peakTierTooltip));
-            this.addDrawableChild(peakTier);
+            addDrawableChild(peakTier);
         }
 
         mode.drawn = true;
@@ -228,7 +226,7 @@ public class PlayerSearchResultScreen extends Screen {
         } else if (playerProfile.imageSaved != 0) {
             loadPlayerAvatar();
         } else if (playerProfile.numberOfImageRequests == 6)
-            context.drawCenteredTextWithShadow(this.textRenderer, Text.of(playerProfile.name + "'s skin failed to load. Clear cache and retry"), x, y + 50, ColorControl.getColorMinecraftStandard("red"));
+            context.drawCenteredTextWithShadow(textRenderer, Text.of(playerProfile.name + "'s skin failed to load. Clear cache and retry"), x, y + 50, ColorControl.getColorMinecraftStandard("red"));
     }
 
     private void loadPlayerAvatar() {
@@ -255,8 +253,8 @@ public class PlayerSearchResultScreen extends Screen {
             dimensionsWarning.setTooltip(Tooltip.of(Text.of("Your window dimensions (" + width + "x" + height + ") are too small\nLower the GUI scale or make the window bigger! (min: 430x262)")));
         }
 
-        this.addDrawableChild(dimensionsWarning);
+        addDrawableChild(dimensionsWarning);
 
-        this.addDrawableChild(ButtonWidget.builder(Text.of("Update"), (buttonWidget) -> TiersClient.updatePlayerProfile(playerProfile)).dimensions(5, height - 20 - 5, 50, 20).tooltip(Tooltip.of(Text.of("Update the player profile"))).build());
+        addDrawableChild(ButtonWidget.builder(Text.of("Update"), (buttonWidget) -> TiersClient.updatePlayerProfile(playerProfile)).dimensions(5, height - 20 - 5, 50, 20).tooltip(Tooltip.of(Text.of("Update the player profile"))).build());
     }
 }

@@ -1,5 +1,6 @@
 package com.tiers.screens;
 
+import com.tiers.PlayerProfileQueue;
 import com.tiers.TiersClient;
 import com.tiers.misc.ConfigManager;
 import com.tiers.profile.PlayerProfile;
@@ -36,7 +37,8 @@ public class ConfigScreen extends Screen {
 
     private boolean useOwnProfile;
     private String autoDetectKitBoundKey;
-
+    private String cycleRightBoundKey;
+    private String cycleLeftBoundKey;
     private final Identifier playerAvatarTexture = Identifier.of("");
     private boolean imageReady;
 
@@ -69,6 +71,14 @@ public class ConfigScreen extends Screen {
         if (autoDetectKitBoundKey.length() != 3)
             autoDetectKitBoundKey = "the assigned keybind";
 
+        cycleRightBoundKey = String.valueOf(TiersClient.cycleRightKey.getBoundKeyLocalizedText()).replace("literal{", "\"").replace("}", "\"");
+        if (cycleRightBoundKey.length() != 3)
+            cycleRightBoundKey = "the assigned keybind";
+
+        cycleLeftBoundKey = String.valueOf(TiersClient.cycleLeftKey.getBoundKeyLocalizedText()).replace("literal{", "\"").replace("}", "\"");
+        if (cycleLeftBoundKey.length() != 3)
+            cycleLeftBoundKey = "the assigned keybind";
+
         loadPlayerAvatar();
     }
 
@@ -79,7 +89,7 @@ public class ConfigScreen extends Screen {
 
         super.render(context, mouseX, mouseY, delta);
 
-        context.drawCenteredTextWithShadow(this.textRenderer, Text.of("Tiers config"), centerX, height / 50, Colors.WHITE);
+        context.drawCenteredTextWithShadow(textRenderer, Text.of("Tiers config"), centerX, height / 50, Colors.WHITE);
 
         drawIconShowcase(context);
 
@@ -88,23 +98,23 @@ public class ConfigScreen extends Screen {
         else
             drawPlayerAvatar(context, centerX, height - (int) (height / 4.166) - height / 54);
 
-        context.drawCenteredTextWithShadow(this.textRenderer, useOwnProfile ? ownProfile.getFullName() : defaultProfile.getFullName() , centerX, height - (int) (height / 4.166) - height / 54 - 12, Colors.WHITE);
+        context.drawCenteredTextWithShadow(textRenderer, useOwnProfile ? ownProfile.getFullName() : defaultProfile.getFullName(), centerX, height - (int) (height / 4.166) - height / 54 - 12, Colors.WHITE);
 
         context.drawTexture(RenderLayer::getGuiTextured, MCTiersProfile.MCTIERS_IMAGE, centerX - 120 - 64, distance + 110 + 4, 0, 0, 128, 24, 128, 24);
         context.drawTexture(RenderLayer::getGuiTextured, PvPTiersProfile.PVPTIERS_IMAGE, centerX - 12, distance + 110 + 4, 0, 0, 24, 24, 24, 24);
         context.drawTexture(RenderLayer::getGuiTextured, SubtiersProfile.SUBTIERS_IMAGE, centerX + 120 - 15, distance + 110, 0, 0, 30, 30, 30, 30);
 
-        context.drawTextWithShadow(this.textRenderer, TiersClient.getRightIcon(), centerX + 90 + 32, distance + 75 + 8, Colors.WHITE);
-        context.drawTextWithShadow(this.textRenderer, TiersClient.getLeftIcon(), centerX - 90 - 32 - 12, distance + 75 + 8, Colors.WHITE);
+        context.drawTextWithShadow(textRenderer, TiersClient.getRightIcon(), centerX + 90 + 32, distance + 75 + 8, Colors.WHITE);
+        context.drawTextWithShadow(textRenderer, TiersClient.getLeftIcon(), centerX - 90 - 32 - 12, distance + 75 + 8, Colors.WHITE);
 
         checkUpdates();
     }
 
     private void drawIconShowcase(DrawContext context) {
         for (int i = 0; i < 8; i++) {
-            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(String.valueOf((char) (0xF000 + i))).setStyle(Style.EMPTY.withFont(Identifier.of("minecraft", "gamemodes/classic-medium"))), 34 + 14 * i, 13, Colors.WHITE);
-            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(String.valueOf((char) (0xF000 + i))).setStyle(Style.EMPTY.withFont(Identifier.of("minecraft", "gamemodes/pvptiers-medium"))), 34 + 14 * i, 38, Colors.WHITE);
-            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(String.valueOf((char) (0xF000 + i))).setStyle(Style.EMPTY.withFont(Identifier.of("minecraft", "gamemodes/mctiers-medium"))), 34 + 14 * i, 63, Colors.WHITE);
+            context.drawCenteredTextWithShadow(textRenderer, Text.literal(String.valueOf((char) (0xF000 + i))).setStyle(Style.EMPTY.withFont(Identifier.of("minecraft", "gamemodes/classic-medium"))), 34 + 14 * i, 13, Colors.WHITE);
+            context.drawCenteredTextWithShadow(textRenderer, Text.literal(String.valueOf((char) (0xF000 + i))).setStyle(Style.EMPTY.withFont(Identifier.of("minecraft", "gamemodes/pvptiers-medium"))), 34 + 14 * i, 38, Colors.WHITE);
+            context.drawCenteredTextWithShadow(textRenderer, Text.literal(String.valueOf((char) (0xF000 + i))).setStyle(Style.EMPTY.withFont(Identifier.of("minecraft", "gamemodes/mctiers-medium"))), 34 + 14 * i, 63, Colors.WHITE);
         }
     }
 
@@ -140,8 +150,8 @@ public class ConfigScreen extends Screen {
             else
                 TiersClient.toggleMod();
             buttonWidget.setMessage(Text.of(TiersClient.toggleMod ? "Disable Tiers" : "Enable Tiers"));
-            buttonWidget.setTooltip(Tooltip.of(Text.of((TiersClient.toggleMod ? "Disable Tiers on nametags" : "Enable Tiers on nametags") + (TiersClient.toggleMod ? (TiersClient.toggleTab ? "\n\nShift click to disable Tiers on tab" : "\n\nShift click to enable Tiers on tab") : ""))));
-        }).dimensions(width / 2 - 88 - 2, distance, 88, 20).tooltip(Tooltip.of(Text.of((TiersClient.toggleMod ? "Disable Tiers on nametags" : "Enable Tiers on nametags") + (TiersClient.toggleMod ? (TiersClient.toggleTab ? "\n\nShift click to disable Tiers on tab" : "\n\nShift click to enable Tiers on tab") : "")))).build();
+            buttonWidget.setTooltip(Tooltip.of(Text.of((TiersClient.toggleMod ? "Disable Tiers on nametags" : "Enable Tiers on nametags") + (TiersClient.toggleMod ? (TiersClient.toggleTab ? "\n\nShift click to disable Tiers on tablist" : "\n\nShift click to enable Tiers on tablist") : ""))));
+        }).dimensions(width / 2 - 88 - 2, distance, 88, 20).tooltip(Tooltip.of(Text.of((TiersClient.toggleMod ? "Disable Tiers on nametags" : "Enable Tiers on nametags") + (TiersClient.toggleMod ? (TiersClient.toggleTab ? "\n\nShift click to disable Tiers on tablist" : "\n\nShift click to enable Tiers on tablist") : "")))).build();
 
         toggleShowIcons = ButtonWidget.builder(Text.of(TiersClient.showIcons ? "Disable Icons" : "Enable Icons"), (buttonWidget) -> {
             TiersClient.toggleShowIcons();
@@ -184,8 +194,14 @@ public class ConfigScreen extends Screen {
 
                 buttonWidget.setTooltip(Tooltip.of(Text.of(useOwnProfile ? "Preview the default profile (" + defaultProfile.name + ")" : "Preview your player profile (" + ownProfile.name + ")")));
             }).dimensions(width - 20 - 5 - 88 - 4, height - 20 - 5, 20, 20).tooltip(Tooltip.of(Text.of(useOwnProfile ? "Preview the default profile (" + defaultProfile.name + ")" : "Preview your player profile (" + ownProfile.name + ")"))).build();
-        } else
-            enableOwnProfile = ButtonWidget.builder(Text.of("⚠"), (buttonWidget) -> {}).dimensions(width - 20 - 5 - 88 - 4, height - 20 - 5, 20, 20).tooltip(Tooltip.of(Text.of("Can't switch profiles: " + ownProfile.name + " is not found or fetched yet. Restart game to retry"))).build();
+        } else {
+            enableOwnProfile = ButtonWidget.builder(Text.of("⚠"), (buttonWidget) -> {
+                ConfigScreen.ownProfile = new PlayerProfile(MinecraftClient.getInstance().getGameProfile().getName(), false);
+                PlayerProfileQueue.putFirstInQueue(ConfigScreen.ownProfile);
+
+                close();
+            }).dimensions(width - 20 - 5 - 88 - 4, height - 20 - 5, 20, 20).tooltip(Tooltip.of(Text.of("Can't switch profiles: " + ownProfile.name + " is not found or fetched yet. Click to close screen and retry"))).build();
+        }
 
         clearPlayerCache = ButtonWidget.builder(Text.of("Clear cache"), (buttonWidget) -> TiersClient.clearCache(false)).dimensions(width - 88 - 5, height - 20 - 5, 88, 20).tooltip(Tooltip.of(Text.of("Clear all player cache"))).build();
 
@@ -354,7 +370,7 @@ public class ConfigScreen extends Screen {
             autoKitDetect.setTooltip(Tooltip.of(Text.of((TiersClient.autoKitDetect ?
                     "Disable auto kit detect: you will need to press " + autoDetectKitBoundKey + " to auto-detect the current gamemode" :
                     "Enable auto kit detect: Tiers will always scan your inventory to display the right gamemode (instead of pressing " + autoDetectKitBoundKey + ")"))));
-        }).dimensions(centerX + 90 + 4, distance + 75, 20, 20).tooltip(Tooltip.of(Text.of("Cycle active right gamemode"))).build();
+        }).dimensions(centerX + 90 + 4, distance + 75, 20, 20).tooltip(Tooltip.of(Text.of("Cycle active right gamemode (press " + cycleRightBoundKey + " in game)"))).build();
 
         activeLeftMode = ButtonWidget.builder(Icons.CYCLE, (buttonWidget) -> {
             TiersClient.cycleLeftMode();
@@ -362,7 +378,7 @@ public class ConfigScreen extends Screen {
             autoKitDetect.setTooltip(Tooltip.of(Text.of((TiersClient.autoKitDetect ?
                     "Disable auto kit detect: you will need to press " + autoDetectKitBoundKey + " to auto-detect the current gamemode" :
                     "Enable auto kit detect: Tiers will always scan your inventory to display the right gamemode (instead of pressing " + autoDetectKitBoundKey + ")"))));
-        }).dimensions(centerX - 90 - 20 - 4, distance + 75, 20, 20).tooltip(Tooltip.of(Text.of("Cycle active left gamemode"))).build();
+        }).dimensions(centerX - 90 - 20 - 4, distance + 75, 20, 20).tooltip(Tooltip.of(Text.of("Cycle active left gamemode (press " + cycleLeftBoundKey + " in game)"))).build();
 
         ButtonWidget useClassicIcons = ButtonWidget.builder(TiersClient.activeIcons == Icons.Type.CLASSIC ? Text.of("●") : Text.empty(), (buttonWidget) -> {
             buttonWidget.setMessage(TiersClient.activeIcons == Icons.Type.CLASSIC ? Text.of("●") : Text.empty());
@@ -388,27 +404,27 @@ public class ConfigScreen extends Screen {
         activeRightMode.visible = TiersClient.positionMCTiers == TiersClient.DisplayStatus.RIGHT || TiersClient.positionPvPTiers == TiersClient.DisplayStatus.RIGHT || TiersClient.positionSubtiers == TiersClient.DisplayStatus.RIGHT;
         activeLeftMode.visible = TiersClient.positionMCTiers == TiersClient.DisplayStatus.LEFT || TiersClient.positionPvPTiers == TiersClient.DisplayStatus.LEFT || TiersClient.positionSubtiers == TiersClient.DisplayStatus.LEFT;
 
-        this.addDrawableChild(toggleMod);
-        this.addDrawableChild(toggleShowIcons);
-        this.addDrawableChild(toggleSeparatorMode);
-        this.addDrawableChild(cycleDisplayMode);
-        this.addDrawableChild(autoKitDetect);
-        this.addDrawableChild(clearPlayerCache);
-        this.addDrawableChild(leftMCTiers);
-        this.addDrawableChild(centerMCTiers);
-        this.addDrawableChild(rightMCTiers);
-        this.addDrawableChild(leftPvPTiers);
-        this.addDrawableChild(centerPvPTiers);
-        this.addDrawableChild(rightPvPTiers);
-        this.addDrawableChild(leftSubtiers);
-        this.addDrawableChild(centerSubtiers);
-        this.addDrawableChild(rightSubtiers);
-        this.addDrawableChild(activeRightMode);
-        this.addDrawableChild(activeLeftMode);
-        this.addDrawableChild(enableOwnProfile);
-        this.addDrawableChild(useClassicIcons);
-        this.addDrawableChild(usePvPTiersIcons);
-        this.addDrawableChild(useMCTiersIcons);
+        addDrawableChild(toggleMod);
+        addDrawableChild(toggleShowIcons);
+        addDrawableChild(toggleSeparatorMode);
+        addDrawableChild(cycleDisplayMode);
+        addDrawableChild(autoKitDetect);
+        addDrawableChild(clearPlayerCache);
+        addDrawableChild(leftMCTiers);
+        addDrawableChild(centerMCTiers);
+        addDrawableChild(rightMCTiers);
+        addDrawableChild(leftPvPTiers);
+        addDrawableChild(centerPvPTiers);
+        addDrawableChild(rightPvPTiers);
+        addDrawableChild(leftSubtiers);
+        addDrawableChild(centerSubtiers);
+        addDrawableChild(rightSubtiers);
+        addDrawableChild(activeRightMode);
+        addDrawableChild(activeLeftMode);
+        addDrawableChild(enableOwnProfile);
+        addDrawableChild(useClassicIcons);
+        addDrawableChild(usePvPTiersIcons);
+        addDrawableChild(useMCTiersIcons);
     }
 
     private void drawPlayerAvatar(DrawContext context, int x, int y) {
@@ -420,7 +436,7 @@ public class ConfigScreen extends Screen {
         } else if (ownProfile.imageSaved != 0) {
             loadPlayerAvatar();
         } else if (ownProfile.numberOfImageRequests == 6)
-            context.drawCenteredTextWithShadow(this.textRenderer, Text.of(ownProfile.name + "'s skin failed to load. Restart game to retry"), x, y + 50, ColorControl.getColorMinecraftStandard("red"));
+            context.drawCenteredTextWithShadow(textRenderer, Text.of(ownProfile.name + "'s skin failed to load. Restart game to retry"), x, y + 50, ColorControl.getColorMinecraftStandard("red"));
     }
 
     private void loadPlayerAvatar() {
