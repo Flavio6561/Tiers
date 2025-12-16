@@ -1,5 +1,8 @@
 package com.tiers;
 
+import com.mojang.blaze3d.platform.GLX;
+import com.mojang.blaze3d.systems.GpuDevice;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.brigadier.context.CommandContext;
 import com.tiers.misc.*;
 import com.tiers.profile.PlayerProfile;
@@ -17,11 +20,14 @@ import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -33,9 +39,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Optional;
+import java.net.URI;
+import java.util.*;
 
 public class TiersClient implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(TiersClient.class);
@@ -43,7 +48,7 @@ public class TiersClient implements ClientModInitializer {
     public static final ArrayList<PlayerProfile> playerProfiles = new ArrayList<>();
 
     public static boolean toggleMod = true;
-    public static boolean toggleTab = false;
+    public static boolean toggleTab = true;
     public static boolean showIcons = true;
     public static boolean isSeparatorAdaptive = true;
     public static boolean autoKitDetect = false;
@@ -167,19 +172,13 @@ public class TiersClient implements ClientModInitializer {
         if (cycleRightKey.wasPressed()) {
             Text message = cycleRightMode();
 
-            if (message != null)
-                sendMessageToPlayer(message, true);
-            else
-                sendMessageToPlayer(Icons.colorText("There's nothing on the right display", "red"), true);
+            sendMessageToPlayer(message != null ? message : Icons.colorText("There's nothing on the right display", "red"), true);
         }
 
         if (cycleLeftKey.wasPressed()) {
             Text message = cycleLeftMode();
 
-            if (message != null)
-                sendMessageToPlayer(message, true);
-            else
-                sendMessageToPlayer(Icons.colorText("There's nothing on the left display", "red"), true);
+            sendMessageToPlayer(message != null ? message : Icons.colorText("There's nothing on the left display", "red"), true);
         }
     }
 
@@ -273,15 +272,66 @@ public class TiersClient implements ClientModInitializer {
     }
 
     public static void searchPlayer(String playerName) {
-        if (playerName.equalsIgnoreCase("toggle"))
+        if (playerName.equalsIgnoreCase("-toggle"))
             toggleMod(null);
-        else if (playerName.equalsIgnoreCase("config"))
-            MinecraftClient.getInstance().executeAsync(ignored -> MinecraftClient.getInstance().setScreen(ConfigScreen.getConfigScreen(null)));
-        else {
+        else if (playerName.equalsIgnoreCase("-config"))
+            setScreen(ConfigScreen.getConfigScreen(null));
+        else if (playerName.equalsIgnoreCase("-help")) {
+            sendMessageToPlayer(Icons.colorText("--- Tiers help ---", Colors.YELLOW), false);
+            sendMessageToPlayer(Text.literal("- General contact: ").append(Text.literal("flavio6561 on Discord").styled(style -> style.withUnderline(true).withClickEvent(new ClickEvent.OpenUrl(URI.create("https://discordapp.com/users/715189608085716992"))))), false);
+            sendMessageToPlayer(Text.literal("- Report a bug: ").append(Text.literal("Tiers GitHub issues").styled(style -> style.withUnderline(true).withClickEvent(new ClickEvent.OpenUrl(URI.create("https://github.com/Flavio6561/Tiers/issues"))))), false);
+            sendMessageToPlayer(Text.literal("- It's not advisable to create tickets in PvPTiers support"), false);
+            sendMessageToPlayer(Text.literal("- ").append(Text.literal("Changelogs").styled(style -> style.withUnderline(true).withClickEvent(new ClickEvent.OpenUrl(URI.create("https://github.com/Flavio6561/Tiers/wiki/Version-changelogs"))))), false);
+            sendMessageToPlayer(Text.literal("- ").append(Text.literal("Modrinth page").styled(style -> style.withUnderline(true).withClickEvent(new ClickEvent.OpenUrl(URI.create("https://modrinth.com/mod/tiers"))))), false);
+
+            String[] debugInfo = getDebugInfo();
+            sendMessageToPlayer(Icons.colorText("\n" + debugInfo[0], Colors.LIGHT_YELLOW), false);
+            MinecraftClient.getInstance().keyboard.setClipboard(debugInfo[1]);
+            sendMessageToPlayer(Icons.colorText("A complete debug log has been copied to the clipboard", "green"), false);
+        } else if (playerName.equalsIgnoreCase("-clear")) {
+            clearCache(false);
+            sendMessageToPlayer(Icons.colorText("Cleared player cache", "green"), true);
+        } else if (playerName.startsWith("-")) {
+            sendMessageToPlayer(Icons.colorText("Not a valid command. Here's a list of valid commands:", "red"), false);
+            sendMessageToPlayer(Icons.colorText("/tiers -toggle", Colors.YELLOW), false);
+            sendMessageToPlayer(Icons.colorText("/tiers -config", Colors.YELLOW), false);
+            sendMessageToPlayer(Icons.colorText("/tiers -help", Colors.YELLOW), false);
+            sendMessageToPlayer(Icons.colorText("/tiers -clear", Colors.YELLOW), false);
+        } else {
             PlayerProfile playerProfile = addGetPlayer(playerName, true);
             if (playerProfile.isPlayerValid())
-                MinecraftClient.getInstance().executeAsync(ignored -> MinecraftClient.getInstance().setScreen(new PlayerSearchResultScreen(playerProfile)));
+                setScreen(new PlayerSearchResultScreen(playerProfile));
         }
+    }
+
+    public static void setScreen(Screen screen) {
+        MinecraftClient.getInstance().executeAsync(ignored -> MinecraftClient.getInstance().setScreen(screen));
+    }
+
+    public static String[] getDebugInfo() {
+        String[] debugInfo = new String[2];
+
+        final String[] version = new String[1];
+        FabricLoader.getInstance().getModContainer("tiers").ifPresent(tiers -> version[0] = "Tiers version: " + tiers.getMetadata().getVersion().getFriendlyString());
+        debugInfo[0] = version[0] + "\n";
+        debugInfo[1] = debugInfo[0];
+        debugInfo[1] += "Launcher brand: " + MinecraftClient.getLauncherBrand() + "\n";
+        debugInfo[1] += "Game version: " + MinecraftClient.getInstance().getGameVersion() + " | " + FabricLoader.getInstance().getRawGameVersion() + "\n";
+        debugInfo[1] += "Version type: " + MinecraftClient.getInstance().getVersionType() + "\n";
+        debugInfo[1] += "Instance name: " + MinecraftClient.getInstance().getName() + "\n";
+        debugInfo[1] += "Game profile name: " + MinecraftClient.getInstance().getGameProfile().getName() + "\n";
+        debugInfo[1] += "OS info:\n\t" + System.getProperty("os.name") + "\n\t" + System.getProperty("os.version") + "\n\t" + System.getProperty("os.arch") + "\n";
+        debugInfo[1] += "CPU info: " + GLX._getCpuInfo() + "\n";
+        Runtime runtime = Runtime.getRuntime();
+        debugInfo[1] += "RAM info (MB):\n\tMax: " + runtime.maxMemory() / (1024 * 1024) + "\n\tTotal: " + runtime.totalMemory() / (1024 * 1024) + "\n\tFree: " + runtime.freeMemory() / (1024 * 1024) + "\n\tIn use: " + (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024) + "\n";
+        GpuDevice gpuDevice = RenderSystem.getDevice();
+        debugInfo[1] += "GPU info:\n\t" + gpuDevice.getBackendName() + "\n\t" + gpuDevice.getImplementationInformation() + "\n\t" + gpuDevice.getRenderer() + "\n\t" + gpuDevice.getVersion() + "\n";
+        debugInfo[1] += "Java version: " + System.getProperty("java.version") + "\n";
+        debugInfo[1] += "Launch args: " + Arrays.toString(FabricLoader.getInstance().getLaunchArguments(false)) + "\n";
+        debugInfo[1] += "All Fabric mods: " + FabricLoader.getInstance().getAllMods() + "\n";
+        debugInfo[1] += "Resource packs: " + ResourcePackManager.listPacks(MinecraftClient.getInstance().getResourcePackManager().getEnabledProfiles()) + "\n";
+
+        return debugInfo;
     }
 
     public static void changeIcons(Icons.Type iconType, boolean reload) {
@@ -383,9 +433,9 @@ public class TiersClient implements ClientModInitializer {
         ADAPTIVE_HIGHEST;
 
         public String getCurrentMode() {
-            if (this.toString().equalsIgnoreCase("HIGHEST"))
+            if (toString().equalsIgnoreCase("HIGHEST"))
                 return "Displayed Tiers: Highest";
-            else if (this.toString().equalsIgnoreCase("SELECTED"))
+            else if (toString().equalsIgnoreCase("SELECTED"))
                 return "Displayed Tiers: Selected";
             return "Displayed Tiers: Adaptive Highest";
         }
