@@ -40,6 +40,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class TiersClient implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(TiersClient.class);
@@ -320,7 +322,7 @@ public class TiersClient implements ClientModInitializer {
     }
 
     public static void setScreen(Screen screen) {
-        MinecraftClient.getInstance().executeAsync(ignored -> MinecraftClient.getInstance().setScreen(screen));
+        CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS).execute(() -> MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().setScreen(screen)));
     }
 
     public static String[] getDebugInfo() {
