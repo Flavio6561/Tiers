@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlDebugInfo;
 import com.mojang.brigadier.context.CommandContext;
 import com.tiers.misc.*;
+import com.tiers.mixin.client.TextDisplayEntityInvokerClientMixin;
 import com.tiers.profile.PlayerProfile;
 import com.tiers.profile.Status;
 import com.tiers.screens.ConfigScreen;
@@ -389,10 +390,11 @@ public class TiersClient implements ClientModInitializer {
             return;
 
         for (Entity entity : minecraftClient.world.getEntities()) {
-            if (entity instanceof DisplayEntity.TextDisplayEntity textDisplay) {
-                Text text = textDisplay.getText();
-                textDisplay.setText(Text.literal(" ").append(text));
-                textDisplay.setText(text);
+            if (entity instanceof DisplayEntity.TextDisplayEntity) {
+                TextDisplayEntityInvokerClientMixin inv = (TextDisplayEntityInvokerClientMixin) entity;
+                Text text = inv.invokeGetText();
+                inv.invokeSetText(Text.literal(" ").append(text));
+                inv.invokeSetText(text);
             }
         }
     }

@@ -7,7 +7,8 @@
     "ModifyNametagsClientMixin",
     "ModifyTextDisplaysClientMixin",
     "ModifyTabClientMixin",
-    "ModifyChatClientMixin"
+    "ModifyChatClientMixin",
+    "TextDisplayEntityInvokerClientMixin"
   ],
   "injectors": {
     "defaultRequire": 1
