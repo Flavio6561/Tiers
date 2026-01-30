@@ -23,8 +23,7 @@ public class CommandRegister {
             return suggestionsBuilder.buildFuture();
 
         for (PlayerListEntry playerListEntry : minecraftClient.getNetworkHandler().getPlayerList())
-            if (CommandSource.shouldSuggest(suggestionsBuilder.getRemaining().toLowerCase(), playerListEntry.getProfile().name().toLowerCase()) &&
-                    playerListEntry.getProfile().name().length() > 2)
+            if (CommandSource.shouldSuggest(suggestionsBuilder.getRemaining().toLowerCase(), playerListEntry.getProfile().name().toLowerCase()) && playerListEntry.getProfile().name().length() > 2)
                 suggestionsBuilder.suggest(playerListEntry.getProfile().name(), () -> "Search tiers for " + playerListEntry.getProfile().name());
 
         if (CommandSource.shouldSuggest(suggestionsBuilder.getRemaining().toLowerCase(), "-config"))
@@ -42,7 +41,7 @@ public class CommandRegister {
                             return 1;
                         })
                         .then(ClientCommandManager.argument("Name", StringArgumentType.string()).suggests(PLAYERS).executes(context -> {
-                                    TiersClient.searchPlayer(StringArgumentType.getString(context, "Name"));
+                                    TiersClient.tiersCommand(StringArgumentType.getString(context, "Name"));
                                     return 1;
                                 })
                         )

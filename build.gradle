@@ -1,8 +1,10 @@
 plugins {
 	id 'fabric-loom' version "${loom_version}"
 	id 'maven-publish'
+    id "com.modrinth.minotaur" version "2.8.10"
 }
 
+minecraft_version = project.minecraft_version
 version = project.mod_version
 group = project.maven_group
 
@@ -36,8 +38,9 @@ dependencies {
 
 processResources {
 	inputs.property "version", project.version
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
+    inputs.property "minecraft_version", project.minecraft_version
+    filesMatching("fabric.mod.json") {
+		expand "version": project.version, minecraft_version: project.minecraft_version
 	}
 }
 
@@ -50,3 +53,22 @@ java {
 	sourceCompatibility = JavaVersion.VERSION_21
 	targetCompatibility = JavaVersion.VERSION_21
 }
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = "bubOj4AD"
+    versionNumber = "${project.version}"
+    versionName = "Tiers ${project.version}"
+    changelog = "[Version ${project.version}](https://github.com/Flavio6561/Tiers/wiki/Version-changelogs)"
+    uploadFile = remapJar
+    versionType = "beta"
+    gameVersions = [project.minecraft_version]
+    loaders = ["fabric", "quilt"]
+
+    dependencies {
+        required.project "P7dR8mSH"
+        optional.project "mOgUt4GM"
+    }
+}
+
+tasks.modrinth.dependsOn(tasks.remapJar)

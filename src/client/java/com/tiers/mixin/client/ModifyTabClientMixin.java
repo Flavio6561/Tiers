@@ -17,7 +17,7 @@ public class ModifyTabClientMixin {
             return original;
 
         for (PlayerProfile playerProfile : TiersClient.playerProfiles)
-            if (playerProfile.status == Status.READY && (original.getString().contains(playerProfile.name) || original.getString().contains(playerProfile.originalName)))
+            if (playerProfile.status == Status.READY && (original.getString().contains(playerProfile.name) || original.getString().contains(playerProfile.inGameName)))
                 return playerProfile.getFullName(original);
 
         return original;

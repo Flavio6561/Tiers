@@ -49,10 +49,11 @@ public class TiersClient implements ClientModInitializer {
     public static final ArrayList<PlayerProfile> playerProfiles = new ArrayList<>();
 
     public static boolean toggleMod = true;
+    public static boolean toggleIcons = true;
     public static boolean toggleTab = true;
-    public static boolean showIcons = true;
-    public static boolean isSeparatorAdaptive = true;
-    public static boolean autoKitDetect = false;
+    public static boolean toggleChat = true;
+    public static boolean toggleAdaptiveSeparator = true;
+    public static boolean toggleAutoKitDetect = false;
     public static ModesTierDisplay displayMode = ModesTierDisplay.ADAPTIVE_HIGHEST;
     public static Icons.Type activeIcons = Icons.Type.PVPTIERS;
 
@@ -93,7 +94,7 @@ public class TiersClient implements ClientModInitializer {
         ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(Identifier.of("tiers"), new ColorLoader());
         ClientTickEvents.END_CLIENT_TICK.register(TiersClient::checkKeys);
         ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
-            if (autoKitDetect)
+            if (toggleAutoKitDetect)
                 InventoryChecker.checkInventory(minecraftClient, false);
         });
 
@@ -102,7 +103,7 @@ public class TiersClient implements ClientModInitializer {
 
     public static PlayerProfile addGetPlayer(String playerName, boolean priority) {
         for (PlayerProfile playerProfile : playerProfiles) {
-            if (playerProfile.name.equalsIgnoreCase(playerName) || playerProfile.originalName.equalsIgnoreCase(playerName)) {
+            if (playerProfile.name.equalsIgnoreCase(playerName) || playerProfile.inGameName.equalsIgnoreCase(playerName)) {
                 if (priority)
                     PlayerProfileQueue.changeToFirstInQueue(playerProfile);
                 return playerProfile;
@@ -166,7 +167,7 @@ public class TiersClient implements ClientModInitializer {
         if (openClosestPlayerProfile.wasPressed()) {
             String nearestPlayerName = getNearestPlayerName();
             if (nearestPlayerName != null)
-                searchPlayer(nearestPlayerName);
+                tiersCommand(nearestPlayerName);
             else
                 sendMessageToPlayer(Icons.colorText("No players in render distance", "red"), true);
         }
@@ -185,8 +186,8 @@ public class TiersClient implements ClientModInitializer {
     }
 
     public static Text cycleRightMode() {
-        if (autoKitDetect) {
-            autoKitDetect = false;
+        if (toggleAutoKitDetect) {
+            toggleAutoKitDetect = false;
             sendMessageToPlayer(Icons.colorText("Auto kit detect has been disabled due to manual gamemode changes", "red"), false);
         }
 
@@ -203,8 +204,8 @@ public class TiersClient implements ClientModInitializer {
     }
 
     public static Text cycleLeftMode() {
-        if (autoKitDetect) {
-            autoKitDetect = false;
+        if (toggleAutoKitDetect) {
+            toggleAutoKitDetect = false;
             sendMessageToPlayer(Icons.colorText("Auto kit detect has been disabled due to manual gamemode changes", "red"), false);
         }
 
@@ -263,17 +264,32 @@ public class TiersClient implements ClientModInitializer {
         ConfigManager.saveConfig();
     }
 
+    public static void toggleIcons() {
+        toggleIcons = !toggleIcons;
+        ConfigManager.saveConfig();
+    }
+
     public static void toggleTab() {
         toggleTab = !toggleTab;
         ConfigManager.saveConfig();
     }
 
-    public static void toggleAutoKitDetect() {
-        autoKitDetect = !autoKitDetect;
+    public static void toggleChat() {
+        toggleChat = !toggleChat;
         ConfigManager.saveConfig();
     }
 
-    public static void searchPlayer(String playerName) {
+    public static void toggleAdaptiveSeparator() {
+        toggleAdaptiveSeparator = !toggleAdaptiveSeparator;
+        ConfigManager.saveConfig();
+    }
+
+    public static void toggleAutoKitDetect() {
+        toggleAutoKitDetect = !toggleAutoKitDetect;
+        ConfigManager.saveConfig();
+    }
+
+    public static void tiersCommand(String playerName) {
         if (playerName.equalsIgnoreCase("-toggle"))
             toggleMod(null);
         else if (playerName.equalsIgnoreCase("-config"))
@@ -354,7 +370,7 @@ public class TiersClient implements ClientModInitializer {
         playerProfiles.remove(playerProfile);
         PlayerProfileQueue.removeFromQueue(playerProfile);
 
-        searchPlayer(playerProfile.nameChanged ? playerProfile.originalName : playerProfile.name);
+        tiersCommand(playerProfile.nameChanged ? playerProfile.inGameName : playerProfile.name);
     }
 
     public static void clearCache(boolean start) {
@@ -386,42 +402,26 @@ public class TiersClient implements ClientModInitializer {
         }
     }
 
-    public static void toggleSeparatorAdaptive() {
-        isSeparatorAdaptive = !isSeparatorAdaptive;
-        updateAllTags();
-        ConfigManager.saveConfig();
-    }
-
-    public static void toggleShowIcons() {
-        showIcons = !showIcons;
-        updateAllTags();
-        ConfigManager.saveConfig();
-    }
-
     public static Text cycleMCTiersMode() {
         activeMCTiersMode = cycleEnum(activeMCTiersMode, Mode.getMCTiersValues());
-        updateAllTags();
         ConfigManager.saveConfig();
         return activeMCTiersMode.getTextLabel();
     }
 
     public static Text cyclePvPTiersMode() {
         activePvPTiersMode = cycleEnum(activePvPTiersMode, Mode.getPvPTiersValues());
-        updateAllTags();
         ConfigManager.saveConfig();
         return activePvPTiersMode.getTextLabel();
     }
 
     public static Text cycleSubtiersMode() {
         activeSubtiersMode = cycleEnum(activeSubtiersMode, Mode.getSubtiersValues());
-        updateAllTags();
         ConfigManager.saveConfig();
         return activeSubtiersMode.getTextLabel();
     }
 
     public static void cycleDisplayMode() {
         displayMode = cycleEnum(displayMode, ModesTierDisplay.values());
-        updateAllTags();
         ConfigManager.saveConfig();
     }
 

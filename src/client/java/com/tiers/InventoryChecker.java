@@ -15,7 +15,7 @@ public class InventoryChecker {
         if (minecraftClient.player == null)
             return;
 
-        if (showMessage && TiersClient.autoKitDetect) {
+        if (showMessage && TiersClient.toggleAutoKitDetect) {
             TiersClient.sendMessageToPlayer(Icons.colorText("Auto kit detect is enabled. Pressing the keybind won't make a difference", "green"), true);
             return;
         }
@@ -135,7 +135,6 @@ public class InventoryChecker {
         if (detected != null) {
             if (showMessage)
                 TiersClient.sendMessageToPlayer(Text.empty().append(detected.getTextLabel()).append(Text.of(" was detected")), true);
-            TiersClient.updateAllTags();
         } else {
             if (showMessage)
                 TiersClient.sendMessageToPlayer(Icons.colorText("No gamemode detected", "red"), true);

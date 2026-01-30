@@ -20,12 +20,12 @@ public abstract class ModifyTextDisplaysClientMixin {
         int numberOfMatches = 0;
         PlayerProfile detectedPlayerProfile = null;
         for (PlayerProfile playerProfile : TiersClient.playerProfiles) {
-            if (playerProfile.status == Status.READY && (original.getString().contains(playerProfile.name) || original.getString().contains(playerProfile.originalName))) {
+            if (original.getString().contains(playerProfile.name) || original.getString().contains(playerProfile.inGameName)) {
                 numberOfMatches++;
                 detectedPlayerProfile = playerProfile;
             }
         }
-        if (numberOfMatches == 1)
+        if (numberOfMatches == 1 && detectedPlayerProfile.status == Status.READY)
             return detectedPlayerProfile.getFullName((Text) original);
 
         return original;

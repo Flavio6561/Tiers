@@ -55,7 +55,7 @@ public class PlayerSearchResultScreen extends Screen {
         }
 
         if (playerProfile.nameChanged && !toastShown) {
-            MinecraftClient.getInstance().getToastManager().add(SystemToast.create(client, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Recent name change"), Text.of("(" + playerProfile.name + " to " + playerProfile.originalName + ") The data should be accurate")));
+            MinecraftClient.getInstance().getToastManager().add(SystemToast.create(client, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Recent name change"), Text.of("(" + playerProfile.name + " to " + playerProfile.inGameName + ") Data should be accurate")));
             toastShown = true;
         }
 

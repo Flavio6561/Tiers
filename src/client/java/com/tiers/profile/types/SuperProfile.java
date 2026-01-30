@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import static com.tiers.TiersClient.updateAllTags;
 import static com.tiers.TiersClient.userAgent;
 
 public class SuperProfile {
@@ -102,6 +103,7 @@ public class SuperProfile {
 
         status = Status.READY;
         originalJson = json;
+        updateAllTags();
     }
 
     private void parseRankings(JsonObject jsonObject) {

@@ -3,7 +3,11 @@ package com.tiers.misc;
 import com.google.gson.Gson;
 import com.tiers.TiersClient;
 import com.tiers.textures.Icons;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.toast.SystemToast;
+import net.minecraft.text.Text;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -12,13 +16,21 @@ import java.util.Arrays;
 public class ConfigManager {
     private static Config config;
     private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("Tiers.json");
+    private static String version;
+    private static boolean toastShown;
+    private static int launchTickCounter;
+
+    static {
+        FabricLoader.getInstance().getModContainer("tiers").ifPresent(tiers -> version = tiers.getMetadata().getVersion().getFriendlyString());
+    }
 
     private static class Config {
         boolean toggleMod;
+        boolean toggleIcons;
         boolean toggleTab;
-        boolean showIcons;
-        boolean isSeparatorAdaptive;
-        boolean autoKitDetect;
+        boolean toggleChat;
+        boolean toggleAdaptiveSeparator;
+        boolean toggleAutoKitDetect;
         TiersClient.ModesTierDisplay displayMode;
         Icons.Type activeIcons;
 
@@ -30,6 +42,8 @@ public class ConfigManager {
 
         TiersClient.DisplayStatus positionSubtiers;
         Mode activeSubtiersMode;
+
+        String version;
     }
 
     public static void loadConfig() {
@@ -47,10 +61,11 @@ public class ConfigManager {
             restoreFromClient();
 
         TiersClient.toggleMod = config.toggleMod;
+        TiersClient.toggleIcons = config.toggleIcons;
         TiersClient.toggleTab = config.toggleTab;
-        TiersClient.showIcons = config.showIcons;
-        TiersClient.isSeparatorAdaptive = config.isSeparatorAdaptive;
-        TiersClient.autoKitDetect = config.autoKitDetect;
+        TiersClient.toggleChat = config.toggleChat;
+        TiersClient.toggleAdaptiveSeparator = config.toggleAdaptiveSeparator;
+        TiersClient.toggleAutoKitDetect = config.toggleAutoKitDetect;
 
         if (Arrays.stream(TiersClient.ModesTierDisplay.values()).toList().contains(config.displayMode))
             TiersClient.displayMode = config.displayMode;
@@ -73,6 +88,22 @@ public class ConfigManager {
         if (Arrays.stream(Mode.values()).toList().contains(config.activeSubtiersMode) && config.activeSubtiersMode.toString().contains("SUBTIERS"))
             TiersClient.activeSubtiersMode = config.activeSubtiersMode;
 
+        if (!version.equals(config.version)) {
+            ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
+                if (toastShown)
+                    return;
+
+                if (minecraftClient.currentScreen instanceof TitleScreen) {
+                    launchTickCounter++;
+
+                    if (launchTickCounter >= 20) {
+                        minecraftClient.getToastManager().add(SystemToast.create(minecraftClient, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Thanks for updating Tiers"), Text.of("Some settings may have changed")));
+                        toastShown = true;
+                    }
+                }
+            });
+        }
+
         saveConfig();
     }
 
@@ -80,10 +111,11 @@ public class ConfigManager {
         config = new Config();
 
         config.toggleMod = TiersClient.toggleMod;
+        config.toggleIcons = TiersClient.toggleIcons;
         config.toggleTab = TiersClient.toggleTab;
-        config.showIcons = TiersClient.showIcons;
-        config.isSeparatorAdaptive = TiersClient.isSeparatorAdaptive;
-        config.autoKitDetect = TiersClient.autoKitDetect;
+        config.toggleChat = TiersClient.toggleChat;
+        config.toggleAdaptiveSeparator = TiersClient.toggleAdaptiveSeparator;
+        config.toggleAutoKitDetect = TiersClient.toggleAutoKitDetect;
         config.displayMode = TiersClient.displayMode;
         config.activeIcons = TiersClient.activeIcons;
 
@@ -95,6 +127,8 @@ public class ConfigManager {
 
         config.positionSubtiers = TiersClient.positionSubtiers;
         config.activeSubtiersMode = TiersClient.activeSubtiersMode;
+
+        config.version = version;
 
         saveConfig();
     }
@@ -105,10 +139,11 @@ public class ConfigManager {
         Config config = new Config();
 
         config.toggleMod = TiersClient.toggleMod;
+        config.toggleIcons = TiersClient.toggleIcons;
         config.toggleTab = TiersClient.toggleTab;
-        config.showIcons = TiersClient.showIcons;
-        config.isSeparatorAdaptive = TiersClient.isSeparatorAdaptive;
-        config.autoKitDetect = TiersClient.autoKitDetect;
+        config.toggleChat = TiersClient.toggleChat;
+        config.toggleAdaptiveSeparator = TiersClient.toggleAdaptiveSeparator;
+        config.toggleAutoKitDetect = TiersClient.toggleAutoKitDetect;
         config.displayMode = TiersClient.displayMode;
         config.activeIcons = TiersClient.activeIcons;
 
@@ -121,10 +156,14 @@ public class ConfigManager {
         config.positionSubtiers = TiersClient.positionSubtiers;
         config.activeSubtiersMode = TiersClient.activeSubtiersMode;
 
+        config.version = version;
+
         try (FileWriter fileWriter = new FileWriter(file)) {
             gson.toJson(config, fileWriter);
         } catch (IOException ignored) {
             restoreFromClient();
+        } finally {
+            TiersClient.updateAllTags();
         }
     }
 }

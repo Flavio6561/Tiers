@@ -40,7 +40,7 @@ public class PlayerProfile {
     public Status status;
     public int imageSaved;
     public int numberOfImageRequests;
-    public String originalName;
+    public String inGameName;
     public boolean nameChanged;
 
     public String name = "";
@@ -59,7 +59,7 @@ public class PlayerProfile {
     public PlayerProfile(String name, boolean regular) {
         this.regular = regular;
         this.name = name;
-        originalName = name;
+        inGameName = name;
 
         status = !name.matches("^[a-zA-Z0-9_]{3,16}$") || name.contains(".") || name.length() < 3 || name.length() > 16 ? Status.NOT_PLAYER : Status.SEARCHING;
     }
@@ -261,7 +261,7 @@ public class PlayerProfile {
 
         updateAppendingText();
 
-        if (!originalName.equalsIgnoreCase(name))
+        if (!inGameName.equalsIgnoreCase(name))
             nameChanged = true;
 
         status = Status.READY;
@@ -290,7 +290,7 @@ public class PlayerProfile {
     }
 
     public Text getFullName() {
-        Text playerText = nameChanged ? Text.of(originalName + " (AKA " + name + ")") : Text.of(name);
+        Text playerText = nameChanged ? Text.of(inGameName + " (AKA " + name + ")") : Text.of(name);
 
         if (!toggleMod)
             return playerText;
@@ -330,10 +330,10 @@ public class PlayerProfile {
             if (shown == null || shown.status != Status.READY)
                 return returnValue;
 
-            MutableText separator = Text.literal(" | ").setStyle(isSeparatorAdaptive ? shown.displayedTier.getStyle() : Style.EMPTY.withColor(ColorControl.getColor("static_separator")));
+            MutableText separator = Text.literal(" | ").setStyle(toggleAdaptiveSeparator ? shown.displayedTier.getStyle() : Style.EMPTY.withColor(ColorControl.getColor("static_separator")));
             returnValue.append(Text.empty().append(separator).append(shown.displayedTier));
 
-            if (showIcons)
+            if (toggleIcons)
                 returnValue.append(Text.literal(" ").append(shown.gamemode.getIconTag()));
         }
         return returnValue;
@@ -357,9 +357,9 @@ public class PlayerProfile {
             if (shown == null || shown.status != Status.READY)
                 return returnValue;
 
-            MutableText separator = Text.literal(" | ").setStyle(isSeparatorAdaptive ? shown.displayedTier.getStyle() : Style.EMPTY.withColor(ColorControl.getColor("static_separator")));
+            MutableText separator = Text.literal(" | ").setStyle(toggleAdaptiveSeparator ? shown.displayedTier.getStyle() : Style.EMPTY.withColor(ColorControl.getColor("static_separator")));
 
-            if (showIcons)
+            if (toggleIcons)
                 returnValue = Text.empty().append(shown.gamemode.getIconTag()).append(" ");
             returnValue.append(Text.empty().append(shown.displayedTier).append(separator));
         }
