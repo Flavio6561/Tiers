@@ -17,7 +17,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
-import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.MinecraftClient;
@@ -85,13 +84,12 @@ public class TiersClient implements ClientModInitializer {
             userAgent += " v" + tiers.getMetadata().getVersion().getFriendlyString();
         });
 
-        KeyBinding.Category category = KeyBinding.Category.create(Identifier.of("tiers"));
-        TiersClient.autoDetectKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Auto Detect Kit", GLFW.GLFW_KEY_Y, category));
-        TiersClient.openClosestPlayerProfile = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open Closest Player Profile", GLFW.GLFW_KEY_H, category));
-        TiersClient.cycleRightKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Right Gamemodes", GLFW.GLFW_KEY_I, category));
-        TiersClient.cycleLeftKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Left Gamemodes", GLFW.GLFW_KEY_U, category));
+        autoDetectKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Auto Detect Kit", GLFW.GLFW_KEY_Y, "Tiers"));
+        openClosestPlayerProfile = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open Closest Player Profile", GLFW.GLFW_KEY_H, "Tiers"));
+        cycleRightKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Right Gamemodes", GLFW.GLFW_KEY_I, "Tiers"));
+        cycleLeftKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Left Gamemodes", GLFW.GLFW_KEY_U, "Tiers"));
 
-        ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(Identifier.of("tiers"), new ColorLoader());
+        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new ColorLoader());
         ClientTickEvents.END_CLIENT_TICK.register(TiersClient::checkKeys);
         ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
             if (toggleAutoKitDetect)
@@ -146,10 +144,10 @@ public class TiersClient implements ClientModInitializer {
     public static String getNearestPlayerName() {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         PlayerEntity self = minecraftClient.player;
-        if (self == null || self.getEntityWorld() == null)
+        if (self == null || self.getWorld() == null)
             return null;
 
-        PlayerEntity playerEntity = self.getEntityWorld().getPlayers().stream()
+        PlayerEntity playerEntity = self.getWorld().getPlayers().stream()
                 .filter(player -> player != self)
                 .filter(player -> self.distanceTo(player) < MinecraftClient.getInstance().gameRenderer.getViewDistanceBlocks())
                 .min(Comparator.comparingDouble(self::distanceTo))
@@ -337,7 +335,7 @@ public class TiersClient implements ClientModInitializer {
         debugInfo[1] += "Game version: " + MinecraftClient.getInstance().getGameVersion() + " | " + FabricLoader.getInstance().getRawGameVersion() + "\n";
         debugInfo[1] += "Version type: " + MinecraftClient.getInstance().getVersionType() + "\n";
         debugInfo[1] += "Instance name: " + MinecraftClient.getInstance().getName() + "\n";
-        debugInfo[1] += "Game profile name: " + MinecraftClient.getInstance().getGameProfile().name() + "\n";
+        debugInfo[1] += "Game profile name: " + MinecraftClient.getInstance().getGameProfile().getName() + "\n";
         debugInfo[1] += "OS info:\n\t" + System.getProperty("os.name") + "\n\t" + System.getProperty("os.version") + "\n\t" + System.getProperty("os.arch") + "\n";
         debugInfo[1] += "CPU info: " + GLX._getCpuInfo() + "\n";
         Runtime runtime = Runtime.getRuntime();
