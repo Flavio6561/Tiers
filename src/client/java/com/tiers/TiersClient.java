@@ -383,7 +383,7 @@ public class TiersClient implements ClientModInitializer {
 
         if (toggleMod && MinecraftClient.getInstance().world != null)
             for (PlayerEntity playerEntity : MinecraftClient.getInstance().world.getPlayers())
-                TiersClient.addGetPlayer(playerEntity.getNameForScoreboard(), false);
+                addGetPlayer(playerEntity.getNameForScoreboard(), false);
     }
 
     public static void updateTextDisplayEntities() {
