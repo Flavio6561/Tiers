@@ -1,20 +1,18 @@
 package com.tiers.mixin.client;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.tiers.TiersClient;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.entity.PlayerEntityRenderer;
+import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(PlayerEntity.class)
-public abstract class ModifyNametagsClientMixin {
-    @Shadow
-    public abstract String getNameForScoreboard();
-
-    @ModifyReturnValue(at = @At("RETURN"), method = "getDisplayName")
-    private Text modifyDisplayName(Text original) {
-        return TiersClient.toggleMod ? TiersClient.addGetPlayer(getNameForScoreboard(), false).getFullName(original) : original;
+@Mixin(PlayerEntityRenderer.class)
+public class ModifyNametagsClientMixin {
+    @Inject(at = @At("TAIL"), method = "updateRenderState(Lnet/minecraft/client/network/AbstractClientPlayerEntity;Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;F)V")
+    public void modifyPlayerDisplayNameAtRender(AbstractClientPlayerEntity abstractClientPlayerEntity, PlayerEntityRenderState playerEntityRenderState, float f, CallbackInfo ci) {
+        playerEntityRenderState.displayName = TiersClient.toggleMod ? TiersClient.addGetPlayer(abstractClientPlayerEntity.getNameForScoreboard(), false).getFullName(playerEntityRenderState.displayName) : playerEntityRenderState.displayName;
     }
 }
