@@ -19,6 +19,7 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
@@ -71,12 +72,16 @@ public class TiersClient implements ClientModInitializer {
     public static KeyBinding cycleRightKey;
     public static KeyBinding cycleLeftKey;
 
+    public static boolean isOnLunar;
+
     @Override
     public void onInitializeClient() {
         ConfigManager.loadConfig();
         changeIcons(activeIcons, false);
         clearCache(true);
         CommandRegister.registerCommands();
+
+        isOnLunar = ClientBrandRetriever.getClientModName().contains("lunarclient");
 
         Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer("tiers");
 
@@ -383,7 +388,7 @@ public class TiersClient implements ClientModInitializer {
 
         if (toggleMod && MinecraftClient.getInstance().world != null)
             for (PlayerEntity playerEntity : MinecraftClient.getInstance().world.getPlayers())
-                TiersClient.addGetPlayer(playerEntity.getNameForScoreboard(), false);
+                addGetPlayer(playerEntity.getNameForScoreboard(), false);
     }
 
     public static void updateTextDisplayEntities() {
