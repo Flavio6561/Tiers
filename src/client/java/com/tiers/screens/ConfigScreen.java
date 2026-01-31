@@ -215,8 +215,8 @@ public class ConfigScreen extends Screen {
             }).dimensions(width - 20 - 5 - 88 - 4, height - 20 - 5, 20, 20).tooltip(Tooltip.of(Text.of(useOwnProfile ? "Preview the default profile (" + defaultProfile.name + ")" : "Preview your player profile (" + ownProfile.name + ")"))).build();
         } else {
             enableOwnProfile = ButtonWidget.builder(Text.of("⚠"), (buttonWidget) -> {
-                ConfigScreen.ownProfile = new PlayerProfile(MinecraftClient.getInstance().getGameProfile().getName(), false);
-                PlayerProfileQueue.putFirstInQueue(ConfigScreen.ownProfile);
+                ownProfile = new PlayerProfile(MinecraftClient.getInstance().getGameProfile().getName(), false);
+                PlayerProfileQueue.putFirstInQueue(ownProfile);
 
                 close();
             }).dimensions(width - 20 - 5 - 88 - 4, height - 20 - 5, 20, 20).tooltip(Tooltip.of(Text.of("Can't switch profiles: " + ownProfile.name + " is not found or fetched yet. Click to close screen and retry"))).build();
