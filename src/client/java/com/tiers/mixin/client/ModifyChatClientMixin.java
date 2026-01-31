@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(ChatHud.class)
 public class ModifyChatClientMixin {
     @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V", argsOnly = true)
-    private Text modifyChatMessage(Text original) {
+    private Text addMessage(Text original) {
         if (!TiersClient.toggleMod || !TiersClient.toggleChat)
             return original;
 

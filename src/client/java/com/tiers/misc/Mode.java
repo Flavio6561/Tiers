@@ -81,7 +81,7 @@ public enum Mode {
     public static Mode[] getMCTiersValues() {
         Mode[] modeArray = new Mode[8];
         ArrayList<Mode> modeArrayList = new ArrayList<>();
-        for (Mode mode : Mode.values())
+        for (Mode mode : values())
             if (mode.toString().contains("MCTIERS"))
                 modeArrayList.add(mode);
         return modeArrayList.toArray(modeArray);
@@ -90,7 +90,7 @@ public enum Mode {
     public static Mode[] getPvPTiersValues() {
         Mode[] modeArray = new Mode[7];
         ArrayList<Mode> modeArrayList = new ArrayList<>();
-        for (Mode mode : Mode.values())
+        for (Mode mode : values())
             if (mode.toString().contains("PVPTIERS"))
                 modeArrayList.add(mode);
         return modeArrayList.toArray(modeArray);
@@ -99,7 +99,7 @@ public enum Mode {
     public static Mode[] getSubtiersValues() {
         Mode[] modeArray = new Mode[9];
         ArrayList<Mode> modeArrayList = new ArrayList<>();
-        for (Mode mode : Mode.values())
+        for (Mode mode : values())
             if (mode.toString().contains("SUBTIERS"))
                 modeArrayList.add(mode);
         return modeArrayList.toArray(modeArray);

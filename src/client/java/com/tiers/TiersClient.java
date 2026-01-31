@@ -86,10 +86,10 @@ public class TiersClient implements ClientModInitializer {
         });
 
         KeyBinding.Category category = KeyBinding.Category.create(Identifier.of("tiers"));
-        TiersClient.autoDetectKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Auto Detect Kit", GLFW.GLFW_KEY_Y, category));
-        TiersClient.openClosestPlayerProfile = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open Closest Player Profile", GLFW.GLFW_KEY_H, category));
-        TiersClient.cycleRightKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Right Gamemodes", GLFW.GLFW_KEY_I, category));
-        TiersClient.cycleLeftKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Left Gamemodes", GLFW.GLFW_KEY_U, category));
+        autoDetectKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Auto Detect Kit", GLFW.GLFW_KEY_Y, category));
+        openClosestPlayerProfile = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open Closest Player Profile", GLFW.GLFW_KEY_H, category));
+        cycleRightKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Right Gamemodes", GLFW.GLFW_KEY_I, category));
+        cycleLeftKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Left Gamemodes", GLFW.GLFW_KEY_U, category));
 
         ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(Identifier.of("tiers"), new ColorLoader());
         ClientTickEvents.END_CLIENT_TICK.register(TiersClient::checkKeys);
@@ -385,7 +385,7 @@ public class TiersClient implements ClientModInitializer {
 
         if (toggleMod && MinecraftClient.getInstance().world != null)
             for (PlayerEntity playerEntity : MinecraftClient.getInstance().world.getPlayers())
-                TiersClient.addGetPlayer(playerEntity.getNameForScoreboard(), false);
+                addGetPlayer(playerEntity.getNameForScoreboard(), false);
     }
 
     public static void updateTextDisplayEntities() {
