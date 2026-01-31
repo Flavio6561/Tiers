@@ -1,6 +1,7 @@
 package com.tiers.misc;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.tiers.TiersClient;
 import com.tiers.textures.Icons;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -54,7 +55,7 @@ public class ConfigManager {
                 config = gson.fromJson(fileReader, Config.class);
                 if (config == null)
                     restoreFromClient();
-            } catch (IOException ignored) {
+            } catch (IOException | JsonSyntaxException ignored) {
                 restoreFromClient();
             }
         } else
@@ -89,6 +90,8 @@ public class ConfigManager {
             TiersClient.activeSubtiersMode = config.activeSubtiersMode;
 
         if (!version.equals(config.version)) {
+            // Code below is reserved to the current version (not every version upgrade changes config values)
+
             ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
                 if (toastShown)
                     return;
@@ -98,6 +101,15 @@ public class ConfigManager {
 
                     if (launchTickCounter >= 20) {
                         minecraftClient.getToastManager().add(SystemToast.create(minecraftClient, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Thanks for updating Tiers"), Text.of("Some settings may have changed")));
+                        TiersClient.toggleMod = true;
+                        TiersClient.toggleIcons = true;
+                        TiersClient.toggleTab = true;
+                        TiersClient.toggleChat = true;
+                        TiersClient.toggleAdaptiveSeparator = true;
+                        TiersClient.toggleAutoKitDetect = false;
+
+                        saveConfig();
+
                         toastShown = true;
                     }
                 }
@@ -129,6 +141,8 @@ public class ConfigManager {
         config.activeSubtiersMode = TiersClient.activeSubtiersMode;
 
         config.version = version;
+
+        TiersClient.LOGGER.info("Broken config file: Tiers has restored values from the client memory");
 
         saveConfig();
     }

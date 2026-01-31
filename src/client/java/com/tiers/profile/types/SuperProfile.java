@@ -12,6 +12,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -52,6 +53,7 @@ public class SuperProfile {
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl + uuid))
                 .header("User-Agent", userAgent)
+                .timeout(Duration.ofSeconds(4))
                 .GET()
                 .build();
 
