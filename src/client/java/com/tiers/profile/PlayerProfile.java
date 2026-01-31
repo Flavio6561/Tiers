@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -55,6 +56,10 @@ public class PlayerProfile {
 
     private int numberOfRequests;
     private final boolean regular;
+
+    private static final String UUID_API_1 = "https://playerdb.co/api/player/minecraft/";
+    private static final String UUID_API_2 = "https://api.mojang.com/users/profiles/minecraft/";
+    private static final String UUID_API_3 = "https://api.minecraftservices.com/minecraft/profile/lookup/name/";
 
     public PlayerProfile(String name, boolean regular) {
         this.regular = regular;
@@ -85,7 +90,8 @@ public class PlayerProfile {
         Path path = FabricLoader.getInstance().getGameDir().resolve("cache/tiers/06ec3577329945fabbdf613b1f86c8ab.png");
 
         try (InputStream inputStream = MinecraftClient.getInstance().getResourceManager().getResource(Identifier.of("minecraft", "textures/default.png")).orElseThrow().getInputStream()) {
-            if (inputStream == null) throw new IOException();
+            if (inputStream == null)
+                throw new IOException();
 
             Files.createDirectories(path.getParent());
             Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
@@ -107,15 +113,16 @@ public class PlayerProfile {
             return;
 
         if (numberOfRequests == 3) {
-            buildRequest("https://api.mojang.com/users/profiles/minecraft/");
+            buildRequest(UUID_API_2);
             return;
         }
 
         numberOfRequests++;
 
         HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create("https://playerdb.co/api/player/minecraft/" + name))
+                .uri(URI.create(UUID_API_1 + name))
                 .header("User-Agent", userAgent)
+                .timeout(Duration.ofSeconds(2))
                 .GET()
                 .build();
 
@@ -127,7 +134,7 @@ public class PlayerProfile {
                     status = Status.NOT_EXISTING;
                     return;
                 } else if (statusCode != 200) {
-                    buildRequest("https://api.mojang.com/users/profiles/minecraft/");
+                    buildRequest(UUID_API_2);
                     return;
                 }
                 parseJson(response.body());
@@ -149,6 +156,7 @@ public class PlayerProfile {
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl + name))
                 .header("User-Agent", userAgent)
+                .timeout(Duration.ofSeconds(2))
                 .GET()
                 .build();
 
@@ -165,7 +173,7 @@ public class PlayerProfile {
                     status = Status.NOT_EXISTING;
                     return;
                 } else if (statusCode == 403) {
-                    CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS).execute(() -> buildRequest("https://api.minecraftservices.com/minecraft/profile/lookup/name/"));
+                    CompletableFuture.delayedExecutor(50, TimeUnit.MILLISECONDS).execute(() -> buildRequest(UUID_API_3));
                     return;
                 } else if (statusCode != 200) {
                     long delay = switch (numberOfRequests) {
@@ -231,7 +239,7 @@ public class PlayerProfile {
 
         if (jsonObject.has("code") && jsonObject.has("data") && jsonObject.has("success")) {
             if (!jsonObject.get("success").getAsString().contains("true")) {
-                buildRequest("https://api.mojang.com/users/profiles/minecraft/");
+                buildRequest(UUID_API_2);
                 return;
             }
             JsonObject data = jsonObject.getAsJsonObject("data");
@@ -255,7 +263,7 @@ public class PlayerProfile {
         if (!regular)
             savePlayerImage();
 
-        profileMCTiers = new MCTiersProfile(uuid, "https://mctiers.com/api/profile/");
+        profileMCTiers = new MCTiersProfile(uuid, "https://mctiers.com/api/v2/profile/");
         profilePvPTiers = new PvPTiersProfile(uuid, "https://pvptiers.com/api/profile/");
         profileSubtiers = new SubtiersProfile(uuid, "https://subtiers.net/api/profile/");
 

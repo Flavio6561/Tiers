@@ -14,7 +14,12 @@ public abstract class ModifyNametagsClientMixin {
     public abstract String getNameForScoreboard();
 
     @ModifyReturnValue(at = @At("RETURN"), method = "getDisplayName")
-    private Text modifyDisplayName(Text original) {
-        return TiersClient.toggleMod ? TiersClient.addGetPlayer(getNameForScoreboard(), false).getFullName(original) : original;
+    private Text getDisplayName(Text original) {
+        return TiersClient.toggleMod && !TiersClient.isOnLunar ? TiersClient.addGetPlayer(getNameForScoreboard(), false).getFullName(original) : original;
+    }
+
+    @ModifyReturnValue(at = @At("RETURN"), method = "getName")
+    private Text getName(Text original) {
+        return TiersClient.toggleMod && TiersClient.isOnLunar ? TiersClient.addGetPlayer(getNameForScoreboard(), false).getFullName(original) : original;
     }
 }
