@@ -15,9 +15,8 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.MinecraftClient;
@@ -81,15 +80,15 @@ public class TiersClient implements ClientModInitializer {
         Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer("tiers");
 
         modContainer.ifPresent(tiers -> {
-            ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("resourcepacks", "tiers-resources"), tiers, Text.of("Resources for Tiers"), ResourcePackActivationType.ALWAYS_ENABLED);
+            ResourceLoader.registerBuiltinPack(Identifier.of("resourcepacks", "tiers-resources"), tiers, Text.of("Resources for Tiers"), PackActivationType.ALWAYS_ENABLED);
             userAgent += " v" + tiers.getMetadata().getVersion().getFriendlyString();
         });
 
         KeyBinding.Category category = KeyBinding.Category.create(Identifier.of("tiers"));
-        TiersClient.autoDetectKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Auto Detect Kit", GLFW.GLFW_KEY_Y, category));
-        TiersClient.openClosestPlayerProfile = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open Closest Player Profile", GLFW.GLFW_KEY_H, category));
-        TiersClient.cycleRightKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Right Gamemodes", GLFW.GLFW_KEY_I, category));
-        TiersClient.cycleLeftKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Left Gamemodes", GLFW.GLFW_KEY_U, category));
+        autoDetectKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Auto Detect Kit", GLFW.GLFW_KEY_Y, category));
+        openClosestPlayerProfile = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open Closest Player Profile", GLFW.GLFW_KEY_H, category));
+        cycleRightKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Right Gamemodes", GLFW.GLFW_KEY_I, category));
+        cycleLeftKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Cycle Left Gamemodes", GLFW.GLFW_KEY_U, category));
 
         ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(Identifier.of("tiers"), new ColorLoader());
         ClientTickEvents.END_CLIENT_TICK.register(TiersClient::checkKeys);
@@ -385,7 +384,7 @@ public class TiersClient implements ClientModInitializer {
 
         if (toggleMod && MinecraftClient.getInstance().world != null)
             for (PlayerEntity playerEntity : MinecraftClient.getInstance().world.getPlayers())
-                TiersClient.addGetPlayer(playerEntity.getNameForScoreboard(), false);
+                addGetPlayer(playerEntity.getNameForScoreboard(), false);
     }
 
     public static void updateTextDisplayEntities() {
