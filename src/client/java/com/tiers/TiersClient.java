@@ -374,7 +374,7 @@ public class TiersClient implements ClientModInitializer {
         debugInfo[1] += "RAM info (MB):\n\tMax: " + runtime.maxMemory() / (1024 * 1024) + "\n\tTotal: " + runtime.totalMemory() / (1024 * 1024) + "\n\tFree: " + runtime.freeMemory() / (1024 * 1024) + "\n\tIn use: " + (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024) + "\n";
         debugInfo[1] += "GPU info:\n\t" + GlDebugInfo.getRenderer() + "\n\t" + GlDebugInfo.getVersion() + "\n";
         debugInfo[1] += "Java version: " + System.getProperty("java.version") + "\n";
-        debugInfo[1] += "Launch args: " + Arrays.toString(FabricLoader.getInstance().getLaunchArguments(false)) + "\n";
+        debugInfo[1] += "Launch args: " + Arrays.toString(FabricLoader.getInstance().getLaunchArguments(true)) + "\n";
         debugInfo[1] += "All Fabric mods: " + FabricLoader.getInstance().getAllMods() + "\n";
         debugInfo[1] += "Resource packs: " + ResourcePackManager.listPacks(MinecraftClient.getInstance().getResourcePackManager().getEnabledProfiles()) + "\n";
 
