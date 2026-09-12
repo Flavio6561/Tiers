@@ -6,6 +6,7 @@ import com.tiers.TiersClient;
 import com.tiers.misc.Mode;
 import com.tiers.profile.types.PvPTiersProfile;
 import com.tiers.profile.types.SuperProfile;
+import com.tiers.screens.ConfigScreen;
 import com.tiers.textures.ColorControl;
 import com.tiers.textures.Icons;
 import net.fabricmc.loader.api.FabricLoader;
@@ -240,6 +241,12 @@ public class PlayerProfile {
 
                 try (InputStream inputStream = httpURLConnection.getInputStream()) {
                     ImageIO.write(ImageIO.read(inputStream), "png", new File(path + uuid + ".png"));
+                    if (!regular && !uuid.equalsIgnoreCase(ConfigScreen.defaultProfile.uuid)) {
+                        Path ownSkinPath = FabricLoader.getInstance().getGameDir().resolve("cache/tiers/" + uuid + ".png");
+                        Path cacheSkinPath = FabricLoader.getInstance().getGameDir().resolve("cache/tiers/players/" + uuid + ".png");
+                        Files.createDirectories(cacheSkinPath.getParent());
+                        Files.copy(ownSkinPath, cacheSkinPath, StandardCopyOption.REPLACE_EXISTING);
+                    }
                     imageSaved = numberOfImageRequests;
                 }
             } catch (IOException | URISyntaxException ignored) {
