@@ -427,7 +427,7 @@ public class TiersClient implements ClientModInitializer {
         GpuDevice gpuDevice = RenderSystem.getDevice();
         debugInfo[1] += "GPU info:\n\t" + gpuDevice.getDeviceInfo().backendName() + "\n\t" + gpuDevice.getDeviceInfo().driverInfo() + "\n\t" + gpuDevice.getDeviceInfo().name() + "\n\t" + gpuDevice.getDeviceInfo().vendorName() + "\n";
         debugInfo[1] += "Java version: " + System.getProperty("java.version") + "\n";
-        debugInfo[1] += "Launch args: " + Arrays.toString(FabricLoader.getInstance().getLaunchArguments(false)) + "\n";
+        debugInfo[1] += "Launch args: " + Arrays.toString(FabricLoader.getInstance().getLaunchArguments(true)) + "\n";
         debugInfo[1] += "All Fabric mods: " + FabricLoader.getInstance().getAllMods() + "\n";
         debugInfo[1] += "Resource packs: " + Minecraft.getInstance().getResourceManager().listPacks().map(PackResources::packId).collect(Collectors.joining(", ")) + "\n";
 
